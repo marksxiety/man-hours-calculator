@@ -230,9 +230,13 @@
                         <TableRow class="bg-muted/40 font-bold">
                             <TableCell class="font-mono text-xs">Totals</TableCell>
                             <TableCell colspan="3" />
-                            <TableCell class="text-right text-primary">—</TableCell>
+                            <TableCell class="text-right text-primary">
+                                {{ analysis.totalExpectedTime }}
+                            </TableCell>
                             <TableCell />
-                            <TableCell class="text-right">—</TableCell>
+                            <TableCell class="text-right">
+                                {{ analysis.totalVariance }}
+                            </TableCell>
                             <TableCell />
                         </TableRow>
                     </TableFooter>
@@ -273,6 +277,7 @@ import { useRouter } from 'vue-router'
 import { calculateExpectedTime } from '@/utils/calculateExpectedTime'
 import { calculateStandardDeviation } from '@/utils/calculateStandardDeviation'
 import { calculateVariance } from '@/utils/calculateVariance'
+import { calculateTotalExpectedTime, calculateTotalVariance } from '@/utils/calculateTotals'
 
 const router = useRouter()
 const goToHome = () => router.push('/')
@@ -293,6 +298,9 @@ const AddTask = () => {
     const standardDeviation = calculateStandardDeviation(newTask)
     const variance = calculateVariance(standardDeviation)
 
+    analysis.totalExpectedTime = calculateTotalExpectedTime(taskList)
+    analysis.totalVariance = calculateTotalVariance(taskList)
+
     taskList.push({
         taskName: newTask.taskName,
         optimistic: newTask.optimistic,
@@ -304,9 +312,9 @@ const AddTask = () => {
     })
     console.log(taskList)
 
-    newTask.taskName = ''
-    newTask.optimistic = 0
-    newTask.mostLikely = 0
-    newTask.pessimistic = 0
+    newTask.taskName = 'test123'
+    newTask.optimistic = 1
+    newTask.mostLikely = 2
+    newTask.pessimistic = 3
 }
 </script>
