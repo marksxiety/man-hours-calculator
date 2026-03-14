@@ -168,10 +168,16 @@
                 <p class="font-mono text-xs tracking-widest uppercase text-muted-foreground">
                     Task Breakdown
                 </p>
-                <Button variant="outline" size="sm" class="gap-2">
-                    <Download />
-                    Export Excel
-                </Button>
+                <div class="flex justify-end gap-2">
+                    <Button variant="outline" size="sm" class="gap-2">
+                        <Download />
+                        Export Excel
+                    </Button>
+                    <Button size="sm" class="gap-2" @click="resetPageState()">
+                        <RotateCcw />
+                        Reset
+                    </Button>
+                </div>
             </div>
 
             <div class="overflow-hidden rounded-xl border border-border bg-card shadow-sm">
@@ -279,7 +285,7 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table'
-import { ChevronLeft, Download, X } from 'lucide-vue-next'
+import { ChevronLeft, Download, X,RotateCcw } from 'lucide-vue-next'
 import { useRouter } from 'vue-router'
 import { calculateExpectedTime } from '@/utils/calculateExpectedTime'
 import { calculateStandardDeviation } from '@/utils/calculateStandardDeviation'
@@ -315,6 +321,12 @@ function resetTask() {
     newTask.optimistic = 1
     newTask.mostLikely = 1
     newTask.pessimistic = 1
+}
+
+function resetPageState () {
+    resetTask()
+    desiredTime.value = 0
+    taskList.length = 0
 }
 
 const AddTask = () => {
