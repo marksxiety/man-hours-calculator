@@ -278,6 +278,8 @@ import { calculateExpectedTime } from '@/utils/calculateExpectedTime'
 import { calculateStandardDeviation } from '@/utils/calculateStandardDeviation'
 import { calculateVariance } from '@/utils/calculateVariance'
 import { calculateTotalExpectedTime, calculateTotalVariance } from '@/utils/calculateTotals'
+import { calculateZScore } from '@/utils/calculateZScore'
+import { calculateProbability } from '@/utils/calculateProbability'
 
 const router = useRouter()
 const goToHome = () => router.push('/')
@@ -285,7 +287,7 @@ const goToHome = () => router.push('/')
 const taskList = reactive<PERTTaskResult[]>([]);
 
 const newTask = reactive<NewTask>({ taskName: '', optimistic: 0, mostLikely: 0, pessimistic: 0 })
-const desiredTime = ref<number>(0)
+const desiredTime = ref<number>(35)
 const analysis = reactive<Analysis>({
     totalExpectedTime: 0,
     totalVariance: 0,
@@ -298,9 +300,6 @@ const AddTask = () => {
     const standardDeviation = calculateStandardDeviation(newTask)
     const variance = calculateVariance(standardDeviation)
 
-    analysis.totalExpectedTime = calculateTotalExpectedTime(taskList)
-    analysis.totalVariance = calculateTotalVariance(taskList)
-
     taskList.push({
         taskName: newTask.taskName,
         optimistic: newTask.optimistic,
@@ -310,11 +309,18 @@ const AddTask = () => {
         standardDeviation,
         variance
     })
+
+    analysis.totalExpectedTime = calculateTotalExpectedTime(taskList)
+    analysis.totalVariance = calculateTotalVariance(taskList)
+    analysis.zScore = calculateZScore(desiredTime.value, analysis.totalExpectedTime, analysis.totalVariance)
+    analysis.probability = calculateProbability(analysis.zScore) * 100
+
+    console.log(analysis)
     console.log(taskList)
 
-    newTask.taskName = 'test123'
+    newTask.taskName = ''
     newTask.optimistic = 1
-    newTask.mostLikely = 2
-    newTask.pessimistic = 3
+    newTask.mostLikely = 1
+    newTask.pessimistic = 1
 }
 </script>
