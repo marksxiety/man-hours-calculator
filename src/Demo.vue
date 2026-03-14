@@ -1,28 +1,42 @@
 <template>
-    <div class="flex flex-1 flex-col gap-6 p-6">
+    <div class="relative flex flex-1 flex-col gap-8 px-8 py-10 max-w-4xl mx-auto w-full">
+
+        <!-- Section label -->
+        <div>
+            <p class="font-mono text-xs tracking-widest uppercase text-muted-foreground mb-1">
+                PERT Analysis
+            </p>
+            <h1 class="text-2xl font-bold tracking-tight">Project Estimator</h1>
+            <p class="text-sm text-muted-foreground mt-1">
+                Add tasks with three-point estimates. The model updates automatically.
+            </p>
+        </div>
 
         <!-- Top row: Add Task + Probability -->
         <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
 
             <!-- Add New Task -->
-            <div class="rounded-xl border border-sidebar-border/70 bg-card p-6 shadow-sm">
+            <div class="rounded-xl border border-border bg-card p-6 shadow-sm">
                 <div class="mb-5">
-                    <h2 class="text-lg font-semibold">Add New Task</h2>
-                    <p class="text-sm text-muted-foreground">
+                    <p class="font-mono text-xs tracking-widest uppercase text-muted-foreground mb-1">
+                        Input
+                    </p>
+                    <h2 class="text-base font-semibold tracking-tight">Add New Task</h2>
+                    <p class="text-xs text-muted-foreground mt-0.5">
                         Enter task estimates to update the PERT model.
                     </p>
                 </div>
 
                 <div class="space-y-4">
                     <div class="grid gap-2">
-                        <Label for="taskName">Task Name</Label>
+                        <Label for="taskName" class="text-xs font-medium">Task Name</Label>
                         <Input id="taskName" v-model="newTask.taskName" type="text"
                             placeholder="e.g. API Integration" />
                     </div>
 
                     <div class="grid grid-cols-3 gap-3">
                         <div class="grid gap-2">
-                            <Label class="text-xs font-medium tracking-widest uppercase text-muted-foreground">
+                            <Label class="font-mono text-[10px] tracking-widest uppercase text-muted-foreground">
                                 Optimistic (O)
                             </Label>
                             <NumberField v-model="newTask.optimistic" :min="0"
@@ -33,7 +47,7 @@
                             </NumberField>
                         </div>
                         <div class="grid gap-2">
-                            <Label class="text-xs font-medium tracking-widest uppercase text-muted-foreground">
+                            <Label class="font-mono text-[10px] tracking-widest uppercase text-muted-foreground">
                                 Most Likely (M)
                             </Label>
                             <NumberField v-model="newTask.mostLikely" :min="0"
@@ -44,7 +58,7 @@
                             </NumberField>
                         </div>
                         <div class="grid gap-2">
-                            <Label class="text-xs font-medium tracking-widest uppercase text-muted-foreground">
+                            <Label class="font-mono text-[10px] tracking-widest uppercase text-muted-foreground">
                                 Pessimistic (P)
                             </Label>
                             <NumberField v-model="newTask.pessimistic" :min="0"
@@ -63,18 +77,22 @@
             </div>
 
             <!-- Project Probability -->
-            <div class="flex flex-col rounded-xl border border-sidebar-border/70 bg-card p-6 shadow-sm">
+            <div class="flex flex-col rounded-xl border border-border bg-card p-6 shadow-sm">
                 <div class="mb-5">
-                    <h2 class="text-lg font-semibold">Project Probability</h2>
-                    <p class="text-sm text-muted-foreground">Statistical Confidence Analysis</p>
+                    <p class="font-mono text-xs tracking-widest uppercase text-muted-foreground mb-1">
+                        Analysis
+                    </p>
+                    <h2 class="text-base font-semibold tracking-tight">Project Probability</h2>
+                    <p class="text-xs text-muted-foreground mt-0.5">Statistical confidence analysis</p>
                 </div>
 
                 <div class="grid flex-1 gap-4">
                     <div class="grid gap-2">
-                        <Label for="desiredTime" class="text-sm font-medium">
+                        <Label for="desiredTime" class="text-xs font-medium">
                             Desired Completion Time (D)
                         </Label>
-                        <NumberField v-model="desiredTime" :min="0" :format-options="{ minimumFractionDigits: 1 }">
+                        <NumberField v-model="desiredTime" :min="0"
+                            :format-options="{ minimumFractionDigits: 1 }">
                             <NumberFieldContent>
                                 <NumberFieldInput class="bg-background" />
                             </NumberFieldContent>
@@ -84,49 +102,49 @@
                     <div class="grid grid-cols-2 gap-3">
                         <!-- Total Expected -->
                         <div class="rounded-lg border border-border/50 bg-muted/50 p-3">
-                            <div class="text-[10px] font-bold tracking-widest uppercase text-muted-foreground">
+                            <div class="font-mono text-[10px] tracking-widest uppercase text-muted-foreground">
                                 Total Expected (T<sub>e</sub>)
                             </div>
-                            <div class="text-xl font-bold tabular-nums">
+                            <div class="text-xl font-bold tabular-nums mt-1">
                                 {{ analysis.totalExpectedTime.toFixed(2) }}
                             </div>
                             <div class="mt-1 text-[10px] leading-tight text-muted-foreground">
-                                Sum of Expected
+                                Sum of expected durations
                             </div>
                         </div>
 
                         <!-- Total Variance -->
                         <div class="rounded-lg border border-border/50 bg-muted/50 p-3">
-                            <div class="text-[10px] font-bold tracking-widest uppercase text-muted-foreground">
+                            <div class="font-mono text-[10px] tracking-widest uppercase text-muted-foreground">
                                 Total Variance (σ<sup>2</sup>)
                             </div>
-                            <div class="text-xl font-bold tabular-nums">
+                            <div class="text-xl font-bold tabular-nums mt-1">
                                 {{ analysis.totalVariance.toFixed(3) }}
                             </div>
                             <div class="mt-1 text-[10px] leading-tight text-muted-foreground">
-                                Sum of Variances
+                                Higher = less confident
                             </div>
                         </div>
 
                         <!-- Z-Score -->
                         <div class="rounded-lg border border-border/50 bg-muted/50 p-3">
-                            <div class="text-[10px] font-bold tracking-widest uppercase text-muted-foreground">
+                            <div class="font-mono text-[10px] tracking-widest uppercase text-muted-foreground">
                                 Z-Score
                             </div>
-                            <div class="text-xl font-bold tabular-nums">
+                            <div class="text-xl font-bold tabular-nums mt-1">
                                 {{ analysis.zScore.toFixed(3) }}
                             </div>
                             <div class="mt-1 text-[10px] leading-tight text-muted-foreground">
-                                (Desired − Expected) / √Variance
+                                (D − T<sub>e</sub>) / √σ²
                             </div>
                         </div>
 
                         <!-- On-Time Probability -->
                         <div class="rounded-lg border border-primary/30 bg-primary/10 p-3 shadow-sm">
-                            <div class="text-[10px] font-bold tracking-widest uppercase text-primary">
+                            <div class="font-mono text-[10px] tracking-widest uppercase text-primary">
                                 On-Time Probability
                             </div>
-                            <div class="text-2xl font-black tabular-nums text-primary">
+                            <div class="text-2xl font-black tabular-nums text-primary mt-1">
                                 {{ analysis.probability.toFixed(1) }}%
                             </div>
                             <div class="mt-1 text-[10px] leading-tight text-primary/70 italic">
@@ -139,40 +157,39 @@
         </div>
 
         <!-- Task Breakdown Table -->
-        <div class="overflow-hidden rounded-xl border border-sidebar-border/70 bg-card shadow-sm">
-            <div class="border-b bg-muted/30 px-6 py-4">
-                <h3 class="font-semibold">Task Breakdown</h3>
-                <p class="text-xs text-muted-foreground mt-0.5">
-                    All PERT calculations per task — expected duration, standard deviation, and variance.
-                </p>
-            </div>
+        <div>
+            <p class="font-mono text-xs tracking-widest uppercase text-muted-foreground mb-4">
+                Task Breakdown
+            </p>
 
-            <div class="px-4 py-2">
+            <div class="overflow-hidden rounded-xl border border-border bg-card shadow-sm">
                 <Table>
                     <TableHeader>
-                        <TableRow class="bg-muted/20">
-                            <TableHead>Task Name</TableHead>
-                            <TableHead class="text-right">O</TableHead>
-                            <TableHead class="text-right">M</TableHead>
-                            <TableHead class="text-right">P</TableHead>
-                            <TableHead class="text-right font-bold text-primary">Expected (tₑ)</TableHead>
-                            <TableHead class="text-right">Std Dev (σ)</TableHead>
-                            <TableHead class="text-right">Variance (σ²)</TableHead>
+                        <TableRow class="bg-muted/30">
+                            <TableHead class="font-mono text-[10px] tracking-widest uppercase">Task Name</TableHead>
+                            <TableHead class="text-right font-mono text-[10px] tracking-widest uppercase">O</TableHead>
+                            <TableHead class="text-right font-mono text-[10px] tracking-widest uppercase">M</TableHead>
+                            <TableHead class="text-right font-mono text-[10px] tracking-widest uppercase">P</TableHead>
+                            <TableHead class="text-right font-mono text-[10px] tracking-widest uppercase text-primary">
+                                Expected (tₑ)
+                            </TableHead>
+                            <TableHead class="text-right font-mono text-[10px] tracking-widest uppercase">Std Dev (σ)</TableHead>
+                            <TableHead class="text-right font-mono text-[10px] tracking-widest uppercase">Variance (σ²)</TableHead>
                             <TableHead class="text-right" />
                         </TableRow>
                     </TableHeader>
 
                     <TableBody>
                         <TableRow>
-                            <TableCell colspan="8" class="py-16 text-center text-muted-foreground text-sm">
+                            <TableCell colspan="8" class="py-16 text-center text-sm text-muted-foreground">
                                 No tasks added yet. Start by adding a task above.
                             </TableCell>
                         </TableRow>
                     </TableBody>
 
                     <TableFooter>
-                        <TableRow class="bg-muted/50 font-bold">
-                            <TableCell>Totals</TableCell>
+                        <TableRow class="bg-muted/40 font-bold">
+                            <TableCell class="font-mono text-xs">Totals</TableCell>
                             <TableCell colspan="3" />
                             <TableCell class="text-right text-primary">—</TableCell>
                             <TableCell />
@@ -181,10 +198,10 @@
                         </TableRow>
                     </TableFooter>
                 </Table>
-            </div>
 
-            <div class="border-t px-6 py-3 text-center text-[11px] italic text-muted-foreground">
-                Formula: tₑ = (O + 4M + P) / 6 &nbsp;·&nbsp; σ = (P − O) / 6 &nbsp;·&nbsp; σ² = σ × σ
+                <div class="border-t px-6 py-3 text-center font-mono text-[10px] tracking-wide text-muted-foreground">
+                    tₑ = (O + 4M + P) / 6 &nbsp;·&nbsp; σ = (P − O) / 6 &nbsp;·&nbsp; σ² = σ × σ
+                </div>
             </div>
         </div>
 
@@ -213,7 +230,7 @@ import {
 } from '@/components/ui/table'
 
 const newTask = reactive<NewTask>({ taskName: '', optimistic: 0, mostLikely: 0, pessimistic: 0 })
-const desiredTime = ref(0)
+const desiredTime = ref<number>(0)
 const analysis = reactive<Analysis>({
     totalExpectedTime: 0,
     totalVariance: 0,
