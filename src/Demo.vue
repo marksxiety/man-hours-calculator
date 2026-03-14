@@ -259,7 +259,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
+import { ref, reactive, computed } from 'vue'
 import type { NewTask, Analysis, PERTTaskResult } from '@/types'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -295,11 +295,19 @@ const taskList = reactive<PERTTaskResult[]>([]);
 
 const newTask = reactive<NewTask>({ taskName: '', optimistic: 0, mostLikely: 0, pessimistic: 0 })
 const desiredTime = ref<number>(35)
-const analysis = reactive<Analysis>({
-    totalExpectedTime: 0,
-    totalVariance: 0,
-    zScore: 0,
-    probability: 0,
+
+const analysis = computed<Analysis>(() => {
+    const totalExpectedTime = calculateTotalExpectedTime(taskList)
+    const totalVariance = calculateTotalVariance(taskList)
+    const zScore = calculateZScore(desiredTime.value, totalExpectedTime, totalVariance)
+    const probability = calculateProbability(zScore) * 100
+
+    return {
+        totalExpectedTime,
+        totalVariance,
+        zScore,
+        probability
+    }
 })
 
 const AddTask = () => {
@@ -316,14 +324,6 @@ const AddTask = () => {
         standardDeviation,
         variance
     })
-
-    analysis.totalExpectedTime = calculateTotalExpectedTime(taskList)
-    analysis.totalVariance = calculateTotalVariance(taskList)
-    analysis.zScore = calculateZScore(desiredTime.value, analysis.totalExpectedTime, analysis.totalVariance)
-    analysis.probability = calculateProbability(analysis.zScore) * 100
-
-    console.log(analysis)
-    console.log(taskList)
 
     newTask.taskName = ''
     newTask.optimistic = 1
