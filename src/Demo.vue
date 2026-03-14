@@ -190,6 +190,7 @@
                             <TableHead class="text-right font-mono text-[10px] tracking-widest uppercase">Variance (σ²)
                             </TableHead>
                             <TableHead class="text-right" />
+                            <TableHead class="text-right"></TableHead>
                         </TableRow>
                     </TableHeader>
 
@@ -223,6 +224,12 @@
                             <TableCell class="text-right">{{
                                 task.variance.toFixed(3)
                             }}</TableCell>
+                            <TableCell class="text-right">
+                                <Button variant="ghost" size="icon" @click="removeTask(index)"
+                                    class="h-8 w-8 text-destructive hover:bg-destructive/10 hover:text-destructive">
+                                    <X/>
+                                </Button>
+                            </TableCell>
                         </TableRow>
                     </TableBody>
 
@@ -272,7 +279,7 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table'
-import { ChevronLeft, Download } from 'lucide-vue-next'
+import { ChevronLeft, Download, X } from 'lucide-vue-next'
 import { useRouter } from 'vue-router'
 import { calculateExpectedTime } from '@/utils/calculateExpectedTime'
 import { calculateStandardDeviation } from '@/utils/calculateStandardDeviation'
@@ -322,5 +329,9 @@ const AddTask = () => {
     newTask.optimistic = 1
     newTask.mostLikely = 1
     newTask.pessimistic = 1
+}
+
+function removeTask(index: number) {
+    taskList.splice(index, 1);
 }
 </script>
