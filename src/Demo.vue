@@ -36,7 +36,7 @@
                 <div class="space-y-4">
                     <div class="grid gap-2">
                         <Label for="taskName" class="text-xs font-medium">Task Name</Label>
-                        <Input id="taskName" v-model="newTask.taskName" type="text"
+                        <Input id="taskName" v-model="newTaskForm.taskName" type="text"
                             placeholder="e.g. API Integration" />
                     </div>
 
@@ -45,7 +45,7 @@
                             <Label class="font-mono text-[10px] tracking-widest uppercase text-muted-foreground">
                                 Optimistic (O)
                             </Label>
-                            <NumberField v-model="newTask.optimistic" :min="0"
+                            <NumberField v-model="newTaskForm.optimistic" :min="0"
                                 :format-options="{ minimumFractionDigits: 1 }">
                                 <NumberFieldContent>
                                     <NumberFieldInput />
@@ -56,7 +56,7 @@
                             <Label class="font-mono text-[10px] tracking-widest uppercase text-muted-foreground">
                                 Most Likely (M)
                             </Label>
-                            <NumberField v-model="newTask.mostLikely" :min="0"
+                            <NumberField v-model="newTaskForm.mostLikely" :min="0"
                                 :format-options="{ minimumFractionDigits: 1 }">
                                 <NumberFieldContent>
                                     <NumberFieldInput />
@@ -67,7 +67,7 @@
                             <Label class="font-mono text-[10px] tracking-widest uppercase text-muted-foreground">
                                 Pessimistic (P)
                             </Label>
-                            <NumberField v-model="newTask.pessimistic" :min="0"
+                            <NumberField v-model="newTaskForm.pessimistic" :min="0"
                                 :format-options="{ minimumFractionDigits: 1 }">
                                 <NumberFieldContent>
                                     <NumberFieldInput />
@@ -76,7 +76,7 @@
                         </div>
                     </div>
 
-                    <Button :disabled="!newTask.taskName.trim()" class="w-full font-mono" @click="AddTask()">
+                    <Button :disabled="!newTaskForm.taskName.trim()" class="w-full font-mono" @click="addTask()">
                         Add Task
                     </Button>
                 </div>
@@ -94,10 +94,10 @@
 
                 <div class="grid flex-1 gap-4">
                     <div class="grid gap-2">
-                        <Label for="desiredTime" class="text-xs font-medium">
+                        <Label for="targetDuration" class="text-xs font-medium">
                             Desired Completion Time (D)
                         </Label>
-                        <NumberField v-model="desiredTime" :min="0" :format-options="{ minimumFractionDigits: 1 }">
+                        <NumberField v-model="targetDuration" :min="0" :format-options="{ minimumFractionDigits: 1 }">
                             <NumberFieldContent>
                                 <NumberFieldInput class="bg-background" />
                             </NumberFieldContent>
@@ -111,7 +111,7 @@
                                 Total Expected (T<sub>e</sub>)
                             </div>
                             <div class="text-xl font-bold tabular-nums mt-1">
-                                {{ analysis.totalExpectedTime.toFixed(2) }}
+                                {{ pertAnalysis.totalExpectedTime.toFixed(2) }}
                             </div>
                             <div class="mt-1 text-[10px] leading-tight text-muted-foreground">
                                 Sum of expected durations
@@ -124,7 +124,7 @@
                                 Total Variance (σ<sup>2</sup>)
                             </div>
                             <div class="text-xl font-bold tabular-nums mt-1">
-                                {{ analysis.totalVariance.toFixed(3) }}
+                                {{ pertAnalysis.totalVariance.toFixed(3) }}
                             </div>
                             <div class="mt-1 text-[10px] leading-tight text-muted-foreground">
                                 Higher = less confident
@@ -137,7 +137,7 @@
                                 Z-Score
                             </div>
                             <div class="text-xl font-bold tabular-nums mt-1">
-                                {{ analysis.zScore.toFixed(3) }}
+                                {{ pertAnalysis.zScore.toFixed(3) }}
                             </div>
                             <div class="mt-1 text-[10px] leading-tight text-muted-foreground">
                                 (D − T<sub>e</sub>) / √σ²
@@ -150,7 +150,7 @@
                                 On-Time Probability
                             </div>
                             <div class="text-2xl font-black tabular-nums text-primary mt-1">
-                                {{ analysis.probability.toFixed(1) }}%
+                                {{ pertAnalysis.probability.toFixed(1) }}%
                             </div>
                             <div class="mt-1 text-[10px] leading-tight text-primary/70 italic">
                                 Based on Z-score lookup
@@ -173,7 +173,7 @@
                         <Download />
                         Export Excel
                     </Button>
-                    <Button size="sm" class="gap-2" @click="resetPageState()">
+                    <Button size="sm" class="gap-2" @click="resetAll()">
                         <RotateCcw />
                         Reset
                     </Button>
@@ -185,10 +185,10 @@
                     <TableHeader>
                         <TableRow class="bg-muted/30">
                             <TableHead class="font-mono text-[10px] tracking-widest uppercase">Task Name</TableHead>
-                            <TableHead class="text-right font-mono text-[10px] tracking-widest uppercase">O</TableHead>
-                            <TableHead class="text-right font-mono text-[10px] tracking-widest uppercase">M</TableHead>
-                            <TableHead class="text-right font-mono text-[10px] tracking-widest uppercase">P</TableHead>
-                            <TableHead class="text-right font-mono text-[10px] tracking-widest uppercase text-primary">
+                            <TableHead class="text-right font-mono text-[12px] tracking-widest uppercase">O</TableHead>
+                            <TableHead class="text-right font-mono text-[12px] tracking-widest uppercase">M</TableHead>
+                            <TableHead class="text-right font-mono text-[12px] tracking-widest uppercase">P</TableHead>
+                            <TableHead class="text-right font-mono text-[12px] tracking-widest uppercase text-primary">
                                 Expected (tₑ)
                             </TableHead>
                             <TableHead class="text-right font-mono text-[10px] tracking-widest uppercase">Std Dev (σ)
@@ -211,29 +211,29 @@
                         <TableRow v-else v-for="(task, index) in taskList" :key="index">
                             <TableCell class="font-medium">{{
                                 task.taskName
-                            }}</TableCell>
+                                }}</TableCell>
                             <TableCell class="text-right">{{
                                 task.optimistic.toFixed(1)
-                            }}</TableCell>
+                                }}</TableCell>
                             <TableCell class="text-right">{{
                                 task.mostLikely.toFixed(1)
-                            }}</TableCell>
+                                }}</TableCell>
                             <TableCell class="text-right">{{
                                 task.pessimistic.toFixed(1)
-                            }}</TableCell>
+                                }}</TableCell>
                             <TableCell class="text-right font-bold">{{
                                 task.expectedTime.toFixed(2)
-                            }}</TableCell>
+                                }}</TableCell>
                             <TableCell class="text-right">{{
                                 task.standardDeviation.toFixed(3)
-                            }}</TableCell>
+                                }}</TableCell>
                             <TableCell class="text-right">{{
                                 task.variance.toFixed(3)
-                            }}</TableCell>
+                                }}</TableCell>
                             <TableCell class="text-right">
                                 <Button variant="ghost" size="icon" @click="removeTask(index)"
                                     class="h-8 w-8 text-destructive hover:bg-destructive/10 hover:text-destructive">
-                                    <X/>
+                                    <X />
                                 </Button>
                             </TableCell>
                         </TableRow>
@@ -244,11 +244,11 @@
                             <TableCell class="font-mono text-xs">Totals</TableCell>
                             <TableCell colspan="3" />
                             <TableCell class="text-right text-primary">
-                                {{ analysis.totalExpectedTime }}
+                                {{ pertAnalysis.totalExpectedTime }}
                             </TableCell>
                             <TableCell />
                             <TableCell class="text-right">
-                                {{ analysis.totalVariance }}
+                                {{ pertAnalysis.totalVariance }}
                             </TableCell>
                             <TableCell />
                         </TableRow>
@@ -265,28 +265,25 @@
 </template>
 
 <script setup lang="ts">
+// ─── Vue Core ────────────────────────────────────────────────────────────────
 import { ref, reactive, computed } from 'vue'
+import { useRouter } from 'vue-router'
+
+// ─── Types ───────────────────────────────────────────────────────────────────
 import type { NewTask, Analysis, PERTTaskResult } from '@/types'
+
+// ─── UI Components ───────────────────────────────────────────────────────────
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
-import {
-    NumberField,
-    NumberFieldContent,
-    NumberFieldInput,
-} from '@/components/ui/number-field'
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableFooter,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from '@/components/ui/table'
-import { ChevronLeft, Download, X,RotateCcw } from 'lucide-vue-next'
-import { useRouter } from 'vue-router'
+import { NumberField, NumberFieldContent, NumberFieldInput } from '@/components/ui/number-field'
+import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+
+// ─── Icons ───────────────────────────────────────────────────────────────────
+import { ChevronLeft, Download, X, RotateCcw } from 'lucide-vue-next'
+
+// ─── Utilities ───────────────────────────────────────────────────────────────
 import { calculateExpectedTime } from '@/utils/calculateExpectedTime'
 import { calculateStandardDeviation } from '@/utils/calculateStandardDeviation'
 import { calculateVariance } from '@/utils/calculateVariance'
@@ -294,60 +291,73 @@ import { calculateTotalExpectedTime, calculateTotalVariance } from '@/utils/calc
 import { calculateZScore } from '@/utils/calculateZScore'
 import { calculateProbability } from '@/utils/calculateProbability'
 
+// ─── Router ──────────────────────────────────────────────────────────────────
 const router = useRouter()
-const goToHome = () => router.push('/')
 
-const taskList = reactive<PERTTaskResult[]>([]);
+// ─── State ───────────────────────────────────────────────────────────────────
+const taskList = reactive<PERTTaskResult[]>([])
 
-const newTask = reactive<NewTask>({ taskName: '', optimistic: 0, mostLikely: 0, pessimistic: 0 })
-const desiredTime = ref<number>(35)
+const newTaskForm = reactive<NewTask>({
+    taskName: '',
+    optimistic: 0,
+    mostLikely: 0,
+    pessimistic: 0,
+})
 
-const analysis = computed<Analysis>(() => {
+const targetDuration = ref<number>(35)
+
+// ─── Computed ────────────────────────────────────────────────────────────────
+const pertAnalysis = computed<Analysis>(() => {
     const totalExpectedTime = calculateTotalExpectedTime(taskList)
     const totalVariance = calculateTotalVariance(taskList)
-    const zScore = calculateZScore(desiredTime.value, totalExpectedTime, totalVariance)
+    const zScore = calculateZScore(targetDuration.value, totalExpectedTime, totalVariance)
     const probability = calculateProbability(zScore) * 100
 
     return {
         totalExpectedTime,
         totalVariance,
         zScore,
-        probability
+        probability,
     }
 })
 
-function resetTask() {
-    newTask.taskName = ''
-    newTask.optimistic = 1
-    newTask.mostLikely = 1
-    newTask.pessimistic = 1
+// ─── Functions ───────────────────────────────────────────────────────────────
+function resetTaskForm(): void {
+    newTaskForm.taskName = ''
+    newTaskForm.optimistic = 1
+    newTaskForm.mostLikely = 1
+    newTaskForm.pessimistic = 1
 }
 
-function resetPageState () {
-    resetTask()
-    desiredTime.value = 0
+function resetAll(): void {
+    resetTaskForm()
+    targetDuration.value = 0
     taskList.length = 0
 }
 
-const AddTask = () => {
-    const expectedTime = calculateExpectedTime(newTask)
-    const standardDeviation = calculateStandardDeviation(newTask)
+function addTask(): void {
+    const expectedTime = calculateExpectedTime(newTaskForm)
+    const standardDeviation = calculateStandardDeviation(newTaskForm)
     const variance = calculateVariance(standardDeviation)
 
     taskList.push({
-        taskName: newTask.taskName,
-        optimistic: newTask.optimistic,
-        mostLikely: newTask.mostLikely,
-        pessimistic: newTask.pessimistic,
+        taskName: newTaskForm.taskName,
+        optimistic: newTaskForm.optimistic,
+        mostLikely: newTaskForm.mostLikely,
+        pessimistic: newTaskForm.pessimistic,
         expectedTime,
         standardDeviation,
-        variance
+        variance,
     })
 
-    resetTask()
+    resetTaskForm()
 }
 
-function removeTask(index: number) {
-    taskList.splice(index, 1);
+function removeTask(index: number): void {
+    taskList.splice(index, 1)
+}
+
+function goToHome(): void {
+    router.push('/')
 }
 </script>
