@@ -1,5 +1,5 @@
 <template>
-    <div class="relative flex flex-1 flex-col gap-8 px-8 py-10 max-w-4xl mx-auto w-full">
+    <div class="relative flex flex-1 flex-col gap-4 px-8 py-10 max-w-4xl mx-auto w-full">
 
         <!-- Section label -->
         <div>
@@ -8,7 +8,7 @@
             </p>
             <div class="flex justify-start items-center gap-4">
                 <div class="hover:bg-neutral-300 rounded-lg p-2" @click="goToHome()">
-                    <ChevronLeft/>
+                    <ChevronLeft />
                 </div>
                 <h1 class="text-2xl font-bold tracking-tight">Project Estimator</h1>
             </div>
@@ -97,8 +97,7 @@
                         <Label for="desiredTime" class="text-xs font-medium">
                             Desired Completion Time (D)
                         </Label>
-                        <NumberField v-model="desiredTime" :min="0"
-                            :format-options="{ minimumFractionDigits: 1 }">
+                        <NumberField v-model="desiredTime" :min="0" :format-options="{ minimumFractionDigits: 1 }">
                             <NumberFieldContent>
                                 <NumberFieldInput class="bg-background" />
                             </NumberFieldContent>
@@ -162,11 +161,18 @@
             </div>
         </div>
 
+        <Separator />
         <!-- Task Breakdown Table -->
         <div>
-            <p class="font-mono text-xs tracking-widest uppercase text-muted-foreground mb-4">
-                Task Breakdown
-            </p>
+            <div class="flex items-center justify-between bg-muted/30 pb-4">
+                <p class="font-mono text-xs tracking-widest uppercase text-muted-foreground">
+                    Task Breakdown
+                </p>
+                <Button variant="outline" size="sm" class="gap-2">
+                    <Download />
+                    Export Excel
+                </Button>
+            </div>
 
             <div class="overflow-hidden rounded-xl border border-border bg-card shadow-sm">
                 <Table>
@@ -179,8 +185,10 @@
                             <TableHead class="text-right font-mono text-[10px] tracking-widest uppercase text-primary">
                                 Expected (tₑ)
                             </TableHead>
-                            <TableHead class="text-right font-mono text-[10px] tracking-widest uppercase">Std Dev (σ)</TableHead>
-                            <TableHead class="text-right font-mono text-[10px] tracking-widest uppercase">Variance (σ²)</TableHead>
+                            <TableHead class="text-right font-mono text-[10px] tracking-widest uppercase">Std Dev (σ)
+                            </TableHead>
+                            <TableHead class="text-right font-mono text-[10px] tracking-widest uppercase">Variance (σ²)
+                            </TableHead>
                             <TableHead class="text-right" />
                         </TableRow>
                     </TableHeader>
@@ -220,6 +228,7 @@ import type { NewTask, Analysis } from '@/types'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { Separator } from '@/components/ui/separator'
 import {
     NumberField,
     NumberFieldContent,
@@ -234,7 +243,7 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table'
-import { ChevronLeft } from 'lucide-vue-next'
+import { ChevronLeft, Download } from 'lucide-vue-next'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
