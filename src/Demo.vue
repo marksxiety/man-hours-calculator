@@ -310,6 +310,13 @@ const analysis = computed<Analysis>(() => {
     }
 })
 
+function resetTask() {
+    newTask.taskName = ''
+    newTask.optimistic = 1
+    newTask.mostLikely = 1
+    newTask.pessimistic = 1
+}
+
 const AddTask = () => {
     const expectedTime = calculateExpectedTime(newTask)
     const standardDeviation = calculateStandardDeviation(newTask)
@@ -325,10 +332,7 @@ const AddTask = () => {
         variance
     })
 
-    newTask.taskName = ''
-    newTask.optimistic = 1
-    newTask.mostLikely = 1
-    newTask.pessimistic = 1
+    resetTask()
 }
 
 function removeTask(index: number) {
