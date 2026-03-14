@@ -1,21 +1,26 @@
 <template>
-  <div class="flex items-center justify-center min-h-screen p-4">
-    <Card class="w-full max-w-md">
-      <CardHeader>
-        <CardTitle>Test Card</CardTitle>
-        <CardDescription>Shadcn Vue components are working!</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <p>This is a test to verify that shadcn-vue components are properly configured.</p>
-      </CardContent>
-      <CardFooter>
-        <Button>Click Me</Button>
-      </CardFooter>
-    </Card>
-  </div>
+  <main class="relative h-screen bg-background text-foreground overflow-hidden">
+    <div class="grid-bg" aria-hidden="true" />
+    <ScrollArea class="h-full">
+      <router-view />
+    </ScrollArea>
+  </main>
 </template>
 
 <script setup lang="ts">
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
+import { ScrollArea } from '@/components/ui/scroll-area'
 </script>
+
+<style scoped>
+.grid-bg {
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(hsl(var(--border)) 1px, transparent 1px),
+    linear-gradient(90deg, hsl(var(--border)) 1px, transparent 1px);
+  background-size: 48px 48px;
+  opacity: 0.3;
+  pointer-events: none;
+  z-index: 0;
+}
+</style>
