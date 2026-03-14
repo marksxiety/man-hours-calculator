@@ -76,7 +76,7 @@
                         </div>
                     </div>
 
-                    <Button :disabled="!newTask.taskName.trim()" class="w-full font-mono">
+                    <Button :disabled="!newTask.taskName.trim()" class="w-full font-mono" @click="AddTask()">
                         Add Task
                     </Button>
                 </div>
@@ -194,10 +194,35 @@
                     </TableHeader>
 
                     <TableBody>
-                        <TableRow>
+
+                        <TableRow v-if="taskList.length === 0">
                             <TableCell colspan="8" class="py-16 text-center text-sm text-muted-foreground">
                                 No tasks added yet. Start by adding a task above.
                             </TableCell>
+                        </TableRow>
+
+                        <TableRow v-else v-for="(task, index) in taskList" :key="index">
+                            <TableCell class="font-medium">{{
+                                task.taskName
+                            }}</TableCell>
+                            <TableCell class="text-right">{{
+                                task.optimistic.toFixed(1)
+                            }}</TableCell>
+                            <TableCell class="text-right">{{
+                                task.mostLikely.toFixed(1)
+                            }}</TableCell>
+                            <TableCell class="text-right">{{
+                                task.pessimistic.toFixed(1)
+                            }}</TableCell>
+                            <TableCell class="text-right font-bold">{{
+                                task.expectedTime.toFixed(2)
+                            }}</TableCell>
+                            <TableCell class="text-right">{{
+                                task.standardDeviation.toFixed(3)
+                            }}</TableCell>
+                            <TableCell class="text-right">{{
+                                task.variance.toFixed(3)
+                            }}</TableCell>
                         </TableRow>
                     </TableBody>
 
@@ -224,7 +249,7 @@
 
 <script setup lang="ts">
 import { ref, reactive } from 'vue'
-import type { NewTask, Analysis } from '@/types'
+import type { NewTask, Analysis, PERTTaskResult } from '@/types'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -249,6 +274,8 @@ import { useRouter } from 'vue-router'
 const router = useRouter()
 const goToHome = () => router.push('/')
 
+const taskList = reactive<PERTTaskResult[]>([]);
+
 const newTask = reactive<NewTask>({ taskName: '', optimistic: 0, mostLikely: 0, pessimistic: 0 })
 const desiredTime = ref<number>(0)
 const analysis = reactive<Analysis>({
@@ -257,4 +284,26 @@ const analysis = reactive<Analysis>({
     zScore: 0,
     probability: 0,
 })
+
+const AddTask = () => {
+    const expectedTime = 0
+    const standardDeviation = 0
+    const variance = 0
+
+    taskList.push({
+        taskName: newTask.taskName,
+        optimistic: newTask.optimistic,
+        mostLikely: newTask.mostLikely,
+        pessimistic: newTask.pessimistic,
+        expectedTime,
+        standardDeviation,
+        variance
+    })
+    console.log(taskList)
+
+    newTask.taskName = ''
+    newTask.optimistic = 0
+    newTask.mostLikely = 0
+    newTask.pessimistic = 0
+}
 </script>
