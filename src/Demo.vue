@@ -6,7 +6,13 @@
             <p class="font-mono text-xs tracking-widest uppercase text-muted-foreground mb-1">
                 PERT Analysis
             </p>
-            <h1 class="text-2xl font-bold tracking-tight">Project Estimator</h1>
+            <div class="flex justify-start items-center gap-4">
+                <div class="hover:bg-neutral-300 rounded-lg p-2" @click="goToHome()">
+                    <ChevronLeft/>
+                </div>
+                <h1 class="text-2xl font-bold tracking-tight">Project Estimator</h1>
+            </div>
+
             <p class="text-sm text-muted-foreground mt-1">
                 Add tasks with three-point estimates. The model updates automatically.
             </p>
@@ -228,6 +234,11 @@ import {
     TableHeader,
     TableRow,
 } from '@/components/ui/table'
+import { ChevronLeft } from 'lucide-vue-next'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+const goToHome = () => router.push('/')
 
 const newTask = reactive<NewTask>({ taskName: '', optimistic: 0, mostLikely: 0, pessimistic: 0 })
 const desiredTime = ref<number>(0)
