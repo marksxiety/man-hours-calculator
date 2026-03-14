@@ -270,6 +270,9 @@ import {
 } from '@/components/ui/table'
 import { ChevronLeft, Download } from 'lucide-vue-next'
 import { useRouter } from 'vue-router'
+import { calculateExpectedTime } from '@/utils/calculateExpectedTime'
+import { calculateStandardDeviation } from '@/utils/calculateStandardDeviation'
+import { calculateVariance } from '@/utils/calculateVariance'
 
 const router = useRouter()
 const goToHome = () => router.push('/')
@@ -286,9 +289,9 @@ const analysis = reactive<Analysis>({
 })
 
 const AddTask = () => {
-    const expectedTime = 0
-    const standardDeviation = 0
-    const variance = 0
+    const expectedTime = calculateExpectedTime(newTask)
+    const standardDeviation = calculateStandardDeviation(newTask)
+    const variance = calculateVariance(standardDeviation)
 
     taskList.push({
         taskName: newTask.taskName,
