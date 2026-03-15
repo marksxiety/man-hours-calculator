@@ -12,10 +12,6 @@
                 </div>
                 <h1 class="text-2xl font-bold tracking-tight">Project Estimator</h1>
             </div>
-
-            <p class="text-sm text-muted-foreground mt-1">
-                Add tasks with three-point estimates. The model updates automatically.
-            </p>
         </div>
 
         <!-- Top row: Add Task + Probability -->
@@ -29,7 +25,7 @@
                     </p>
                     <h2 class="text-base font-semibold tracking-tight">Add New Task</h2>
                     <p class="text-xs text-muted-foreground mt-0.5">
-                        Enter task estimates to update the PERT model.
+                        Add tasks with three-point estimates. The model updates automatically.
                     </p>
                 </div>
 
