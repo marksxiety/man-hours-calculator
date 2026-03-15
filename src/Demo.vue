@@ -164,7 +164,8 @@
                     Task Breakdown
                 </p>
                 <div class="flex gap-2">
-                    <Button variant="outline" size="sm" class="gap-2 font-mono">
+                    <Button variant="outline" size="sm" class="gap-2 font-mono" @click="exportToExcel()"
+                        :disabled="taskList.length === 0">
                         <Download class="w-3.5 h-3.5" />
                         Export
                     </Button>
@@ -240,6 +241,7 @@
 
 <script setup lang="ts">
 import { ref, reactive, computed } from 'vue'
+import ExcelJS from 'exceljs';
 import { useRouter } from 'vue-router'
 import type { NewTask, Analysis, PERTTaskResult } from '@/types'
 import { Badge } from '@/components/ui/badge'
@@ -313,5 +315,50 @@ function removeTask(index: number): void {
 
 function goToHome(): void {
     router.push('/')
+}
+
+function exportToExcel(): void {
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('PERT Analysis');
+
+    worksheet.columns = [
+        { header: 'Task Name', key: 'taskName', width: 30 },
+        { header: 'Expected', key: 'expected', width: 15 },
+    ];
+
+    taskList.forEach((task) => {
+        worksheet.addRow({
+            taskName: task.taskName,
+            expected: task.expectedTime.toFixed(2),
+        });
+    });
+
+    worksheet.addRow([]);
+    worksheet.addRow({
+        taskName: 'Total',
+        expected: pertAnalysis.value.totalExpectedTime.toFixed(2),
+    });
+
+    const headerRow = worksheet.getRow(1);
+    headerRow.font = { bold: true };
+    headerRow.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FFE0E0E0' },
+    };
+
+    workbook.xlsx.writeBuffer().then((buffer) => {
+        const blob = new Blob([buffer], {
+            type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'Man_Hours_Analysis.xlsx';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    });
 }
 </script>
