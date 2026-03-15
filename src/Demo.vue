@@ -6,11 +6,16 @@
             <p class="font-mono text-xs tracking-widest uppercase text-muted-foreground mb-1">
                 PERT Analysis
             </p>
-            <div class="flex justify-start items-center gap-4">
-                <div class="hover:bg-neutral-300 rounded-lg p-2" @click="goToHome()">
-                    <ChevronLeft />
+            <div class="flex justify-between items-center">
+                <div class="flex justify-start gap-2">
+                    <Button variant="outline" @click="goToHome()" class="border-none">
+                        <ChevronLeft />
+                    </Button>
+                    <h1 class="text-2xl font-bold tracking-tight">Man Hours Estimator</h1>
                 </div>
-                <h1 class="text-2xl font-bold tracking-tight">Project Estimator</h1>
+                <Button variant="outline">
+                    <Info />
+                </Button>
             </div>
         </div>
 
@@ -207,25 +212,25 @@
                         <TableRow v-else v-for="(task, index) in taskList" :key="index">
                             <TableCell class="font-medium">{{
                                 task.taskName
-                                }}</TableCell>
+                            }}</TableCell>
                             <TableCell class="text-right">{{
                                 task.optimistic.toFixed(1)
-                                }}</TableCell>
+                            }}</TableCell>
                             <TableCell class="text-right">{{
                                 task.mostLikely.toFixed(1)
-                                }}</TableCell>
+                            }}</TableCell>
                             <TableCell class="text-right">{{
                                 task.pessimistic.toFixed(1)
-                                }}</TableCell>
+                            }}</TableCell>
                             <TableCell class="text-right font-bold">{{
                                 task.expectedTime.toFixed(2)
-                                }}</TableCell>
+                            }}</TableCell>
                             <TableCell class="text-right">{{
                                 task.standardDeviation.toFixed(3)
-                                }}</TableCell>
+                            }}</TableCell>
                             <TableCell class="text-right">{{
                                 task.variance.toFixed(3)
-                                }}</TableCell>
+                            }}</TableCell>
                             <TableCell class="text-right">
                                 <Button variant="ghost" size="icon" @click="removeTask(index)"
                                     class="h-8 w-8 text-destructive hover:bg-destructive/10 hover:text-destructive">
@@ -277,7 +282,7 @@ import { NumberField, NumberFieldContent, NumberFieldInput } from '@/components/
 import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 
 // ─── Icons ───────────────────────────────────────────────────────────────────
-import { ChevronLeft, Download, X, RotateCcw } from 'lucide-vue-next'
+import { ChevronLeft, Download, X, RotateCcw, Info } from 'lucide-vue-next'
 
 // ─── Utilities ───────────────────────────────────────────────────────────────
 import { calculateExpectedTime } from '@/utils/calculateExpectedTime'
