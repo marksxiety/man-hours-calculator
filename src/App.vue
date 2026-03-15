@@ -2,7 +2,11 @@
   <main class="relative h-screen bg-background text-foreground overflow-hidden">
     <div class="grid-bg" aria-hidden="true" />
     <ScrollArea class="h-full">
-      <router-view />
+      <router-view v-slot="{ Component }">
+        <Transition name="slide-left" mode="out-in">
+          <component :is="Component" />
+        </Transition>
+      </router-view>
     </ScrollArea>
 
     <Button
@@ -39,17 +43,3 @@ function cycleTheme(): void {
   updateAppearance(themeOrder[nextIndex])
 }
 </script>
-
-<style scoped>
-.grid-bg {
-  position: fixed;
-  inset: 0;
-  background-image:
-    linear-gradient(hsl(var(--border)) 1px, transparent 1px),
-    linear-gradient(90deg, hsl(var(--border)) 1px, transparent 1px);
-  background-size: 48px 48px;
-  opacity: 0.3;
-  pointer-events: none;
-  z-index: 0;
-}
-</style>
