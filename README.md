@@ -1,10 +1,9 @@
 # Man-Hours Calculator
 
-<p align="center">
-  <img src="https://github.com/marksxiety/man-hours-calculator/actions/workflows/tests.yml/badge.svg" alt="Tests" />
-  <img src="https://github.com/marksxiety/man-hours-calculator/actions/workflows/build.yml/badge.svg" alt="Build" />
-  <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="MIT License" />
-</p>
+![Tests](https://github.com/marksxiety/man-hours-calculator/actions/workflows/tests.yml/badge.svg)
+![Build](https://github.com/marksxiety/man-hours-calculator/actions/workflows/build.yml/badge.svg)
+![Lint](https://github.com/marksxiety/man-hours-calculator/actions/workflows/lints.yml/badge.svg)
+![MIT License](https://img.shields.io/badge/License-MIT-yellow.svg)
 
 ### A Data-Driven Framework for Software Project Quoting
 
