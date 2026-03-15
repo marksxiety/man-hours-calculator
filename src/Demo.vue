@@ -1,6 +1,5 @@
 <template>
     <div class="relative flex flex-1 flex-col gap-4 px-8 py-10 max-w-4xl mx-auto w-full">
-
         <!-- Section label -->
         <div>
             <p class="font-mono text-xs tracking-widest uppercase text-muted-foreground mb-1">
@@ -212,25 +211,25 @@
                         <TableRow v-else v-for="(task, index) in taskList" :key="index">
                             <TableCell class="font-medium">{{
                                 task.taskName
-                            }}</TableCell>
+                                }}</TableCell>
                             <TableCell class="text-right">{{
                                 task.optimistic.toFixed(1)
-                            }}</TableCell>
+                                }}</TableCell>
                             <TableCell class="text-right">{{
                                 task.mostLikely.toFixed(1)
-                            }}</TableCell>
+                                }}</TableCell>
                             <TableCell class="text-right">{{
                                 task.pessimistic.toFixed(1)
-                            }}</TableCell>
+                                }}</TableCell>
                             <TableCell class="text-right font-bold">{{
                                 task.expectedTime.toFixed(2)
-                            }}</TableCell>
+                                }}</TableCell>
                             <TableCell class="text-right">{{
                                 task.standardDeviation.toFixed(3)
-                            }}</TableCell>
+                                }}</TableCell>
                             <TableCell class="text-right">{{
                                 task.variance.toFixed(3)
-                            }}</TableCell>
+                                }}</TableCell>
                             <TableCell class="text-right">
                                 <Button variant="ghost" size="icon" @click="removeTask(index)"
                                     class="h-8 w-8 text-destructive hover:bg-destructive/10 hover:text-destructive">
@@ -307,7 +306,6 @@ const newTaskForm = reactive<NewTask>({
 
 const targetDuration = ref<number>(35)
 
-// ─── Computed ────────────────────────────────────────────────────────────────
 const pertAnalysis = computed<Analysis>(() => {
     const totalExpectedTime = calculateTotalExpectedTime(taskList)
     const totalVariance = calculateTotalVariance(taskList)
