@@ -1,32 +1,31 @@
 <template>
-    <div class="relative flex flex-1 flex-col gap-4 px-8 py-10 max-w-4xl mx-auto w-full">
-        <!-- Section label -->
-        <div>
-            <p class="font-mono text-xs tracking-widest uppercase text-muted-foreground mb-1">
+    <div class="relative z-10 max-w-4xl mx-auto px-8 pt-16 pb-28 w-full">
+
+        <!-- Header -->
+        <div class="mb-10">
+            <Badge variant="outline" class="mb-6 font-mono text-xs tracking-widest uppercase">
                 PERT Analysis
-            </p>
-            <div class="flex justify-between items-center">
-                <div class="flex justify-start gap-2">
-                    <Button variant="outline" @click="goToHome()" class="border-none">
-                        <ChevronLeft />
+            </Badge>
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <Button variant="ghost" size="icon" class="-ml-2" @click="goToHome()">
+                        <ChevronLeft class="w-4 h-4" />
                     </Button>
-                    <h1 class="text-2xl font-bold tracking-tight">Man Hours Estimator</h1>
+                    <h1 class="text-3xl font-bold tracking-tight">Man Hours Estimator</h1>
                 </div>
-                <Button variant="outline">
-                    <Info />
+                <Button variant="outline" size="icon">
+                    <Info class="w-4 h-4" />
                 </Button>
             </div>
         </div>
 
         <!-- Top row: Add Task + Probability -->
-        <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <div class="grid grid-cols-1 gap-6 lg:grid-cols-2 mb-6">
 
             <!-- Add New Task -->
             <div class="rounded-xl border border-border bg-card p-6 shadow-sm">
                 <div class="mb-5">
-                    <p class="font-mono text-xs tracking-widest uppercase text-muted-foreground mb-1">
-                        Input
-                    </p>
+                    <p class="font-mono text-xs tracking-widest uppercase text-muted-foreground mb-1">Input</p>
                     <h2 class="text-base font-semibold tracking-tight">Add New Task</h2>
                     <p class="text-xs text-muted-foreground mt-0.5">
                         Add tasks with three-point estimates. The model updates automatically.
@@ -76,7 +75,8 @@
                         </div>
                     </div>
 
-                    <Button :disabled="!newTaskForm.taskName.trim()" class="w-full font-mono" @click="addTask()">
+                    <Button :disabled="!newTaskForm.taskName.trim()" class="w-full font-mono gap-2" @click="addTask()">
+                        <Plus class="w-4 h-4" />
                         Add Task
                     </Button>
                 </div>
@@ -85,9 +85,7 @@
             <!-- Project Probability -->
             <div class="flex flex-col rounded-xl border border-border bg-card p-6 shadow-sm">
                 <div class="mb-5">
-                    <p class="font-mono text-xs tracking-widest uppercase text-muted-foreground mb-1">
-                        Analysis
-                    </p>
+                    <p class="font-mono text-xs tracking-widest uppercase text-muted-foreground mb-1">Analysis</p>
                     <h2 class="text-base font-semibold tracking-tight">Project Probability</h2>
                     <p class="text-xs text-muted-foreground mt-0.5">Statistical confidence analysis</p>
                 </div>
@@ -105,7 +103,6 @@
                     </div>
 
                     <div class="grid grid-cols-2 gap-3">
-                        <!-- Total Expected -->
                         <div class="rounded-lg border border-border/50 bg-muted/50 p-3">
                             <div class="font-mono text-[10px] tracking-widest uppercase text-muted-foreground">
                                 Total Expected (T<sub>e</sub>)
@@ -118,7 +115,6 @@
                             </div>
                         </div>
 
-                        <!-- Total Variance -->
                         <div class="rounded-lg border border-border/50 bg-muted/50 p-3">
                             <div class="font-mono text-[10px] tracking-widest uppercase text-muted-foreground">
                                 Total Variance (σ<sup>2</sup>)
@@ -131,7 +127,6 @@
                             </div>
                         </div>
 
-                        <!-- Z-Score -->
                         <div class="rounded-lg border border-border/50 bg-muted/50 p-3">
                             <div class="font-mono text-[10px] tracking-widest uppercase text-muted-foreground">
                                 Z-Score
@@ -144,7 +139,6 @@
                             </div>
                         </div>
 
-                        <!-- On-Time Probability -->
                         <div class="rounded-lg border border-primary/30 bg-primary/10 p-3 shadow-sm">
                             <div class="font-mono text-[10px] tracking-widest uppercase text-primary">
                                 On-Time Probability
@@ -161,20 +155,21 @@
             </div>
         </div>
 
-        <Separator />
-        <!-- Task Breakdown Table -->
+        <Separator class="mb-6" />
+
+        <!-- Task Breakdown -->
         <div>
-            <div class="flex items-center justify-between bg-muted/30 pb-4">
+            <div class="flex items-center justify-between mb-4">
                 <p class="font-mono text-xs tracking-widest uppercase text-muted-foreground">
                     Task Breakdown
                 </p>
-                <div class="flex justify-end gap-2">
-                    <Button variant="outline" size="sm" class="gap-2">
-                        <Download />
-                        Export Excel
+                <div class="flex gap-2">
+                    <Button variant="outline" size="sm" class="gap-2 font-mono">
+                        <Download class="w-3.5 h-3.5" />
+                        Export
                     </Button>
-                    <Button size="sm" class="gap-2" @click="resetAll()">
-                        <RotateCcw />
+                    <Button size="sm" class="gap-2 font-mono" @click="resetAll()">
+                        <RotateCcw class="w-3.5 h-3.5" />
                         Reset
                     </Button>
                 </div>
@@ -185,55 +180,41 @@
                     <TableHeader>
                         <TableRow class="bg-muted/30">
                             <TableHead class="font-mono text-[10px] tracking-widest uppercase">Task Name</TableHead>
-                            <TableHead class="text-right font-mono text-[12px] tracking-widest uppercase">O</TableHead>
-                            <TableHead class="text-right font-mono text-[12px] tracking-widest uppercase">M</TableHead>
-                            <TableHead class="text-right font-mono text-[12px] tracking-widest uppercase">P</TableHead>
-                            <TableHead class="text-right font-mono text-[12px] tracking-widest uppercase text-primary">
+                            <TableHead class="text-right font-mono text-[10px] tracking-widest uppercase">O</TableHead>
+                            <TableHead class="text-right font-mono text-[10px] tracking-widest uppercase">M</TableHead>
+                            <TableHead class="text-right font-mono text-[10px] tracking-widest uppercase">P</TableHead>
+                            <TableHead class="text-right font-mono text-[10px] tracking-widest uppercase text-primary">
                                 Expected (tₑ)
                             </TableHead>
                             <TableHead class="text-right font-mono text-[10px] tracking-widest uppercase">Std Dev (σ)
                             </TableHead>
                             <TableHead class="text-right font-mono text-[10px] tracking-widest uppercase">Variance (σ²)
                             </TableHead>
-                            <TableHead class="text-right" />
-                            <TableHead class="text-right"></TableHead>
+                            <TableHead />
                         </TableRow>
                     </TableHeader>
 
                     <TableBody>
-
                         <TableRow v-if="taskList.length === 0">
                             <TableCell colspan="8" class="py-16 text-center text-sm text-muted-foreground">
                                 No tasks added yet. Start by adding a task above.
                             </TableCell>
                         </TableRow>
 
-                        <TableRow v-else v-for="(task, index) in taskList" :key="index">
-                            <TableCell class="font-medium">{{
-                                task.taskName
-                                }}</TableCell>
-                            <TableCell class="text-right">{{
-                                task.optimistic.toFixed(1)
-                                }}</TableCell>
-                            <TableCell class="text-right">{{
-                                task.mostLikely.toFixed(1)
-                                }}</TableCell>
-                            <TableCell class="text-right">{{
-                                task.pessimistic.toFixed(1)
-                                }}</TableCell>
-                            <TableCell class="text-right font-bold">{{
-                                task.expectedTime.toFixed(2)
-                                }}</TableCell>
-                            <TableCell class="text-right">{{
-                                task.standardDeviation.toFixed(3)
-                                }}</TableCell>
-                            <TableCell class="text-right">{{
-                                task.variance.toFixed(3)
-                                }}</TableCell>
+                        <TableRow v-else v-for="(task, index) in taskList" :key="index"
+                            class="transition-colors duration-150">
+                            <TableCell class="font-medium">{{ task.taskName }}</TableCell>
+                            <TableCell class="text-right">{{ task.optimistic.toFixed(1) }}</TableCell>
+                            <TableCell class="text-right">{{ task.mostLikely.toFixed(1) }}</TableCell>
+                            <TableCell class="text-right">{{ task.pessimistic.toFixed(1) }}</TableCell>
+                            <TableCell class="text-right font-bold">{{ task.expectedTime.toFixed(2) }}</TableCell>
+                            <TableCell class="text-right">{{ task.standardDeviation.toFixed(3) }}</TableCell>
+                            <TableCell class="text-right">{{ task.variance.toFixed(3) }}</TableCell>
                             <TableCell class="text-right">
-                                <Button variant="ghost" size="icon" @click="removeTask(index)"
-                                    class="h-8 w-8 text-destructive hover:bg-destructive/10 hover:text-destructive">
-                                    <X />
+                                <Button variant="ghost" size="icon"
+                                    class="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                                    @click="removeTask(index)">
+                                    <X class="w-3.5 h-3.5" />
                                 </Button>
                             </TableCell>
                         </TableRow>
@@ -265,25 +246,17 @@
 </template>
 
 <script setup lang="ts">
-// ─── Vue Core ────────────────────────────────────────────────────────────────
 import { ref, reactive, computed } from 'vue'
 import { useRouter } from 'vue-router'
-
-// ─── Types ───────────────────────────────────────────────────────────────────
 import type { NewTask, Analysis, PERTTaskResult } from '@/types'
-
-// ─── UI Components ───────────────────────────────────────────────────────────
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { NumberField, NumberFieldContent, NumberFieldInput } from '@/components/ui/number-field'
 import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-
-// ─── Icons ───────────────────────────────────────────────────────────────────
-import { ChevronLeft, Download, X, RotateCcw, Info } from 'lucide-vue-next'
-
-// ─── Utilities ───────────────────────────────────────────────────────────────
+import { ChevronLeft, Download, X, RotateCcw, Info, Plus } from 'lucide-vue-next'
 import { calculateExpectedTime } from '@/utils/calculateExpectedTime'
 import { calculateStandardDeviation } from '@/utils/calculateStandardDeviation'
 import { calculateVariance } from '@/utils/calculateVariance'
@@ -291,19 +264,15 @@ import { calculateTotalExpectedTime, calculateTotalVariance } from '@/utils/calc
 import { calculateZScore } from '@/utils/calculateZScore'
 import { calculateProbability } from '@/utils/calculateProbability'
 
-// ─── Router ──────────────────────────────────────────────────────────────────
 const router = useRouter()
 
-// ─── State ───────────────────────────────────────────────────────────────────
 const taskList = reactive<PERTTaskResult[]>([])
-
 const newTaskForm = reactive<NewTask>({
     taskName: '',
     optimistic: 0,
     mostLikely: 0,
     pessimistic: 0,
 })
-
 const targetDuration = ref<number>(35)
 
 const pertAnalysis = computed<Analysis>(() => {
@@ -311,21 +280,14 @@ const pertAnalysis = computed<Analysis>(() => {
     const totalVariance = calculateTotalVariance(taskList)
     const zScore = taskList.length === 0 ? 0 : calculateZScore(targetDuration.value, totalExpectedTime, totalVariance)
     const probability = taskList.length === 0 ? 0 : calculateProbability(zScore) * 100
-
-    return {
-        totalExpectedTime,
-        totalVariance,
-        zScore,
-        probability,
-    }
+    return { totalExpectedTime, totalVariance, zScore, probability }
 })
 
-// ─── Functions ───────────────────────────────────────────────────────────────
 function resetTaskForm(): void {
     newTaskForm.taskName = ''
-    newTaskForm.optimistic = 1
-    newTaskForm.mostLikely = 1
-    newTaskForm.pessimistic = 1
+    newTaskForm.optimistic = 0
+    newTaskForm.mostLikely = 0
+    newTaskForm.pessimistic = 0
 }
 
 function resetAll(): void {
@@ -338,7 +300,6 @@ function addTask(): void {
     const expectedTime = calculateExpectedTime(newTaskForm)
     const standardDeviation = calculateStandardDeviation(newTaskForm)
     const variance = calculateVariance(standardDeviation)
-
     taskList.push({
         taskName: newTaskForm.taskName,
         optimistic: newTaskForm.optimistic,
@@ -348,7 +309,6 @@ function addTask(): void {
         standardDeviation,
         variance,
     })
-
     resetTaskForm()
 }
 
