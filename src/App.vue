@@ -1,9 +1,15 @@
 <template>
   <main class="relative h-screen bg-background text-foreground overflow-hidden">
-    <div class="grid-bg" aria-hidden="true" />
+    <div
+      class="grid-bg"
+      aria-hidden="true"
+    />
     <ScrollArea class="h-full">
       <router-view v-slot="{ Component }">
-        <Transition name="slide-left" mode="out-in">
+        <Transition
+          name="slide-left"
+          mode="out-in"
+        >
           <component :is="Component" />
         </Transition>
       </router-view>
@@ -11,8 +17,13 @@
 
     <Button
       class="fixed right-6 bottom-6 z-50 flex items-center justify-center rounded-full bg-primary p-4 text-primary-foreground shadow-lg transition-all hover:bg-primary/90 hover:scale-110"
-      @click="cycleTheme">
-      <component :is="currentThemeIcon" :key="appearance" class="h-5 w-5 animate-in zoom-in duration-300" />
+      @click="cycleTheme"
+    >
+      <component
+        :is="currentThemeIcon"
+        :key="appearance"
+        class="h-5 w-5 animate-in zoom-in duration-300"
+      />
     </Button>
   </main>
 </template>

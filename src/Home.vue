@@ -1,12 +1,15 @@
 <template>
   <div>
     <section class="relative z-10 max-w-3xl mx-auto px-8 pt-28 pb-24">
-      <Badge variant="outline" class="mb-8 font-mono text-xs tracking-widest uppercase">
+      <Badge
+        variant="outline"
+        class="mb-8 font-mono text-xs tracking-widest uppercase"
+      >
         PERT-based estimation
       </Badge>
 
       <h1 class="text-5xl sm:text-6xl font-bold tracking-tight leading-[1.08] mb-6">
-        Stop guessing.<br />
+        Stop guessing.<br>
         <span class="text-primary">Start calculating.</span>
       </h1>
 
@@ -17,14 +20,26 @@
       </p>
 
       <div class="flex items-center gap-6">
-        <Button size="lg" class="gap-2 font-mono group" @click="goToDemo">
+        <Button
+          size="lg"
+          class="gap-2 font-mono group"
+          @click="goToDemo"
+        >
           Get Started
           <ArrowRight class="w-4 h-4 transition-transform duration-150 group-hover:translate-x-1" />
         </Button>
 
-        <a href="https://github.com/marksxiety/man-hours-calculator" target="_blank" rel="noopener noreferrer"
-          class="inline-flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors duration-150 group">
-          <Icon icon="mdi:github" width="24" height="24" />
+        <a
+          href="https://github.com/marksxiety/man-hours-calculator"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors duration-150 group"
+        >
+          <Icon
+            icon="mdi:github"
+            width="24"
+            height="24"
+          />
           <span class="font-mono tracking-wide">View on GitHub</span>
         </a>
       </div>
@@ -37,7 +52,10 @@
       </p>
 
       <div class="flex flex-col">
-        <template v-for="(step, i) in steps" :key="step.num">
+        <template
+          v-for="(step, i) in steps"
+          :key="step.num"
+        >
           <div class="grid grid-cols-[48px_1fr] gap-x-5 gap-y-1 py-7">
             <!-- Step number -->
             <span class="font-mono text-xs text-primary tracking-wider pt-0.5 row-span-2">
@@ -52,9 +70,10 @@
               <template v-if="step.code">
                 {{ step.description.split(step.code)[0] }}
                 <code
-                  class="font-mono text-xs text-primary bg-primary/10 border border-primary/20 px-1.5 py-0.5 rounded-sm">
-                    {{ step.code }}
-                  </code>
+                  class="font-mono text-xs text-primary bg-primary/10 border border-primary/20 px-1.5 py-0.5 rounded-sm"
+                >
+                  {{ step.code }}
+                </code>
                 {{ step.description.split(step.code)[1] }}
               </template>
               <template v-else>
@@ -74,10 +93,17 @@
       </p>
 
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <Card v-for="card in whyCards" :key="card.title"
-          class="bg-card border-border transition-colors duration-200 hover:border-primary/30">
+        <Card
+          v-for="card in whyCards"
+          :key="card.title"
+          class="bg-card border-border transition-colors duration-200 hover:border-primary/30"
+        >
           <CardHeader class="pb-2">
-            <component :is="card.icon" class="w-5 h-5 text-primary mb-3" :stroke-width="1.5" />
+            <component
+              :is="card.icon"
+              class="w-5 h-5 text-primary mb-3"
+              :stroke-width="1.5"
+            />
             <CardTitle class="text-sm font-semibold leading-snug">
               {{ card.title }}
             </CardTitle>
@@ -99,7 +125,11 @@
         <p class="text-xl font-semibold tracking-tight">
           Ready to build your first estimate?
         </p>
-        <Button variant="outline" class="gap-2 font-mono shrink-0 group" @click="goToDemo">
+        <Button
+          variant="outline"
+          class="gap-2 font-mono shrink-0 group"
+          @click="goToDemo"
+        >
           Open the Calculator
           <ArrowRight class="w-4 h-4 transition-transform duration-150 group-hover:translate-x-1" />
         </Button>
