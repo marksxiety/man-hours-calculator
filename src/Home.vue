@@ -145,7 +145,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { Shield, Clock, BarChart2, ArrowRight } from 'lucide-vue-next'
-import Icon from '@iconify/vue'
+import { Icon } from '@iconify/vue'
 
 const router = useRouter()
 const goToDemo = () => router.push('/demo')
