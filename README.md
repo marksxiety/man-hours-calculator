@@ -1,5 +1,11 @@
 # Man-Hours Calculator
 
+<p align="center">
+  <img src="https://github.com/marksxiety/man-hours-calculator/actions/workflows/tests.yml/badge.svg" alt="Tests" />
+  <img src="https://github.com/marksxiety/man-hours-calculator/actions/workflows/build.yml/badge.svg" alt="Build" />
+  <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="MIT License" />
+</p>
+
 ### A Data-Driven Framework for Software Project Quoting
 
 This system replaces "gut-feeling" guesses with **Program Evaluation and Review Technique (PERT)**. It is designed to bridge the gap between developer technical uncertainty and business requirements for fixed-timeline accuracy.
