@@ -1,101 +1,103 @@
 <template>
-  <section class="relative z-10 max-w-3xl mx-auto px-8 pt-28 pb-24">
-        <Badge variant="outline" class="mb-8 font-mono text-xs tracking-widest uppercase">
-          PERT-based estimation
-        </Badge>
+  <div>
+    <section class="relative z-10 max-w-4xl mx-auto px-8 pt-28 pb-24">
+      <Badge variant="outline" class="mb-8 font-mono text-xs tracking-widest uppercase">
+        PERT-based estimation
+      </Badge>
 
-        <h1 class="text-5xl sm:text-6xl font-bold tracking-tight leading-[1.08] mb-6">
-          Stop guessing.<br />
-          <span class="text-primary">Start calculating.</span>
-        </h1>
+      <h1 class="text-5xl sm:text-6xl font-bold tracking-tight leading-[1.08] mb-6">
+        Stop guessing.<br />
+        <span class="text-primary">Start calculating.</span>
+      </h1>
 
-        <p class="text-muted-foreground text-base leading-relaxed max-w-xl mb-12">
-          Man-Hours Calculator replaces instinct-based project quotes with
-          <strong class="text-foreground font-medium">structured, statistical estimates</strong>
-          — so you commit to timelines you can actually defend.
-        </p>
+      <p class="text-muted-foreground text-base leading-relaxed max-w-xl mb-12">
+        Man-Hours Calculator replaces instinct-based project quotes with
+        <strong class="text-foreground font-medium">structured, statistical estimates</strong>
+        — so you commit to timelines you can actually defend.
+      </p>
 
-        <Button size="lg" class="gap-2 font-mono group" @click="goToDemo">
-          Get Started
-          <ArrowRight class="w-4 h-4 transition-transform duration-150 group-hover:translate-x-1" />
-        </Button>
-      </section>
+      <Button size="lg" class="gap-2 font-mono group" @click="goToDemo">
+        Get Started
+        <ArrowRight class="w-4 h-4 transition-transform duration-150 group-hover:translate-x-1" />
+      </Button>
+    </section>
 
-      <!-- ── How it works ── -->
-      <section class="relative z-10 max-w-3xl mx-auto px-8 pb-24">
-        <p class="font-mono text-xs tracking-widest uppercase text-muted-foreground mb-10">
-          How it works
-        </p>
+    <!-- ── How it works ── -->
+    <section class="relative z-10 max-w-3xl mx-auto px-8 pb-24">
+      <p class="font-mono text-xs tracking-widest uppercase text-muted-foreground mb-10">
+        How it works
+      </p>
 
-        <div class="flex flex-col">
-          <template v-for="(step, i) in steps" :key="step.num">
-            <div class="grid grid-cols-[48px_1fr] gap-x-5 gap-y-1 py-7">
-              <!-- Step number -->
-              <span class="font-mono text-xs text-primary tracking-wider pt-0.5 row-span-2">
-                {{ step.num }}
-              </span>
-              <!-- Title -->
-              <h3 class="text-sm font-semibold text-foreground tracking-tight">
-                {{ step.title }}
-              </h3>
-              <!-- Description with optional inline code -->
-              <p class="text-sm text-muted-foreground leading-relaxed">
-                <template v-if="step.code">
-                  {{ step.description.split(step.code)[0] }}
-                  <code
-                    class="font-mono text-xs text-primary bg-primary/10 border border-primary/20 px-1.5 py-0.5 rounded-sm">
+      <div class="flex flex-col">
+        <template v-for="(step, i) in steps" :key="step.num">
+          <div class="grid grid-cols-[48px_1fr] gap-x-5 gap-y-1 py-7">
+            <!-- Step number -->
+            <span class="font-mono text-xs text-primary tracking-wider pt-0.5 row-span-2">
+              {{ step.num }}
+            </span>
+            <!-- Title -->
+            <h3 class="text-sm font-semibold text-foreground tracking-tight">
+              {{ step.title }}
+            </h3>
+            <!-- Description with optional inline code -->
+            <p class="text-sm text-muted-foreground leading-relaxed">
+              <template v-if="step.code">
+                {{ step.description.split(step.code)[0] }}
+                <code
+                  class="font-mono text-xs text-primary bg-primary/10 border border-primary/20 px-1.5 py-0.5 rounded-sm">
                     {{ step.code }}
                   </code>
-                  {{ step.description.split(step.code)[1] }}
-                </template>
-                <template v-else>
-                  {{ step.description }}
-                </template>
-              </p>
-            </div>
-            <Separator v-if="i < steps.length - 1" />
-          </template>
-        </div>
-      </section>
+                {{ step.description.split(step.code)[1] }}
+              </template>
+              <template v-else>
+                {{ step.description }}
+              </template>
+            </p>
+          </div>
+          <Separator v-if="i < steps.length - 1" />
+        </template>
+      </div>
+    </section>
 
-      <!-- ── Why it matters ── -->
-      <section class="relative z-10 max-w-3xl mx-auto px-8 pb-24">
-        <p class="font-mono text-xs tracking-widest uppercase text-muted-foreground mb-10">
-          Why it matters
+    <!-- ── Why it matters ── -->
+    <section class="relative z-10 max-w-3xl mx-auto px-8 pb-24">
+      <p class="font-mono text-xs tracking-widest uppercase text-muted-foreground mb-10">
+        Why it matters
+      </p>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <Card v-for="card in whyCards" :key="card.title"
+          class="bg-card border-border transition-colors duration-200 hover:border-primary/30">
+          <CardHeader class="pb-2">
+            <component :is="card.icon" class="w-5 h-5 text-primary mb-3" :stroke-width="1.5" />
+            <CardTitle class="text-sm font-semibold leading-snug">
+              {{ card.title }}
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <CardDescription class="text-xs leading-relaxed">
+              {{ card.description }}
+            </CardDescription>
+          </CardContent>
+        </Card>
+      </div>
+    </section>
+
+    <!-- ── Bottom CTA ── -->
+    <section class="relative z-10 max-w-3xl mx-auto px-8 pb-28">
+      <Separator class="mb-14" />
+
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
+        <p class="text-xl font-semibold tracking-tight">
+          Ready to build your first estimate?
         </p>
-
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <Card v-for="card in whyCards" :key="card.title"
-            class="bg-card border-border transition-colors duration-200 hover:border-primary/30">
-            <CardHeader class="pb-2">
-              <component :is="card.icon" class="w-5 h-5 text-primary mb-3" :stroke-width="1.5" />
-              <CardTitle class="text-sm font-semibold leading-snug">
-                {{ card.title }}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <CardDescription class="text-xs leading-relaxed">
-                {{ card.description }}
-              </CardDescription>
-            </CardContent>
-          </Card>
-        </div>
-      </section>
-
-      <!-- ── Bottom CTA ── -->
-      <section class="relative z-10 max-w-3xl mx-auto px-8 pb-28">
-        <Separator class="mb-14" />
-
-        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
-          <p class="text-xl font-semibold tracking-tight">
-            Ready to build your first estimate?
-          </p>
-          <Button variant="outline" class="gap-2 font-mono shrink-0 group" @click="goToDemo">
-            Open the Calculator
-            <ArrowRight class="w-4 h-4 transition-transform duration-150 group-hover:translate-x-1" />
-          </Button>
-        </div>
-  </section>
+        <Button variant="outline" class="gap-2 font-mono shrink-0 group" @click="goToDemo">
+          Open the Calculator
+          <ArrowRight class="w-4 h-4 transition-transform duration-150 group-hover:translate-x-1" />
+        </Button>
+      </div>
+    </section>
+  </div>
 </template>
 
 <script setup lang="ts">
