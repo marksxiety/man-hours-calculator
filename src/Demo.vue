@@ -175,71 +175,64 @@
                 </div>
             </div>
 
-            <div class="overflow-hidden rounded-xl border border-border bg-card shadow-sm">
-                <Table>
-                    <TableHeader>
-                        <TableRow class="bg-muted/30">
-                            <TableHead class="font-mono text-[10px] tracking-widest uppercase">Task Name</TableHead>
-                            <TableHead class="text-right font-mono text-[10px] tracking-widest uppercase">O</TableHead>
-                            <TableHead class="text-right font-mono text-[10px] tracking-widest uppercase">M</TableHead>
-                            <TableHead class="text-right font-mono text-[10px] tracking-widest uppercase">P</TableHead>
-                            <TableHead class="text-right font-mono text-[10px] tracking-widest uppercase text-primary">
-                                Expected (tₑ)
-                            </TableHead>
-                            <TableHead class="text-right font-mono text-[10px] tracking-widest uppercase">Std Dev (σ)
-                            </TableHead>
-                            <TableHead class="text-right font-mono text-[10px] tracking-widest uppercase">Variance (σ²)
-                            </TableHead>
-                            <TableHead />
-                        </TableRow>
-                    </TableHeader>
+            <Card class="overflow-hidden shadow-sm p-2">
+                <CardContent class="p-0 h-auto">
+                    <ScrollArea class="h-80">
+                        <Table class="overflow-hidden">
+                            <TableHeader>
+                                <TableRow class="sticky top-0 z-10 bg-muted/30">
+                                    <TableHead class="font-mono text-[10px] tracking-widest uppercase">Task Name
+                                    </TableHead>
+                                    <TableHead class="text-right font-mono text-[10px] tracking-widest uppercase">O
+                                    </TableHead>
+                                    <TableHead class="text-right font-mono text-[10px] tracking-widest uppercase">M
+                                    </TableHead>
+                                    <TableHead class="text-right font-mono text-[10px] tracking-widest uppercase">P
+                                    </TableHead>
+                                    <TableHead
+                                        class="text-right font-mono text-[10px] tracking-widest uppercase text-primary">
+                                        Expected (tₑ)
+                                    </TableHead>
+                                    <TableHead class="text-right font-mono text-[10px] tracking-widest uppercase">Std
+                                        Dev (σ)
+                                    </TableHead>
+                                    <TableHead class="text-right font-mono text-[10px] tracking-widest uppercase">
+                                        Variance (σ²)
+                                    </TableHead>
+                                    <TableHead />
+                                </TableRow>
+                            </TableHeader>
 
-                    <TableBody>
-                        <TableRow v-if="taskList.length === 0">
-                            <TableCell colspan="8" class="py-16 text-center text-sm text-muted-foreground">
-                                No tasks added yet. Start by adding a task above.
-                            </TableCell>
-                        </TableRow>
+                            <TableBody>
+                                <TableRow v-if="taskList.length === 0">
+                                    <TableCell colspan="8" class="py-16 text-center text-sm text-muted-foreground">
+                                        No tasks added yet. Start by adding a task above.
+                                    </TableCell>
+                                </TableRow>
 
-                        <TableRow v-else v-for="(task, index) in taskList" :key="index"
-                            class="transition-colors duration-150">
-                            <TableCell class="font-medium">{{ task.taskName }}</TableCell>
-                            <TableCell class="text-right">{{ task.optimistic.toFixed(1) }}</TableCell>
-                            <TableCell class="text-right">{{ task.mostLikely.toFixed(1) }}</TableCell>
-                            <TableCell class="text-right">{{ task.pessimistic.toFixed(1) }}</TableCell>
-                            <TableCell class="text-right font-bold">{{ task.expectedTime.toFixed(2) }}</TableCell>
-                            <TableCell class="text-right">{{ task.standardDeviation.toFixed(3) }}</TableCell>
-                            <TableCell class="text-right">{{ task.variance.toFixed(3) }}</TableCell>
-                            <TableCell class="text-right">
-                                <Button variant="ghost" size="icon"
-                                    class="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
-                                    @click="removeTask(index)">
-                                    <X class="w-3.5 h-3.5" />
-                                </Button>
-                            </TableCell>
-                        </TableRow>
-                    </TableBody>
-
-                    <TableFooter>
-                        <TableRow class="bg-muted/40 font-bold">
-                            <TableCell class="font-mono text-xs">Totals</TableCell>
-                            <TableCell colspan="3" />
-                            <TableCell class="text-right text-primary">
-                                {{ pertAnalysis.totalExpectedTime }}
-                            </TableCell>
-                            <TableCell />
-                            <TableCell class="text-right">
-                                {{ pertAnalysis.totalVariance }}
-                            </TableCell>
-                            <TableCell />
-                        </TableRow>
-                    </TableFooter>
-                </Table>
-
-                <div class="border-t px-6 py-3 text-center font-mono text-[10px] tracking-wide text-muted-foreground">
-                    tₑ = (O + 4M + P) / 6 &nbsp;·&nbsp; σ = (P − O) / 6 &nbsp;·&nbsp; σ² = σ × σ
-                </div>
-            </div>
+                                <TableRow v-else v-for="(task, index) in taskList" :key="index"
+                                    class="transition-colors duration-150">
+                                    <TableCell class="font-medium">{{ task.taskName }}</TableCell>
+                                    <TableCell class="text-right">{{ task.optimistic.toFixed(1) }}</TableCell>
+                                    <TableCell class="text-right">{{ task.mostLikely.toFixed(1) }}</TableCell>
+                                    <TableCell class="text-right">{{ task.pessimistic.toFixed(1) }}</TableCell>
+                                    <TableCell class="text-right font-bold">{{ task.expectedTime.toFixed(2) }}
+                                    </TableCell>
+                                    <TableCell class="text-right">{{ task.standardDeviation.toFixed(3) }}</TableCell>
+                                    <TableCell class="text-right">{{ task.variance.toFixed(3) }}</TableCell>
+                                    <TableCell class="text-right">
+                                        <Button variant="ghost" size="icon"
+                                            class="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                                            @click="removeTask(index)">
+                                            <X class="w-3.5 h-3.5" />
+                                        </Button>
+                                    </TableCell>
+                                </TableRow>
+                            </TableBody>
+                        </Table>
+                    </ScrollArea>
+                </CardContent>
+            </Card>
         </div>
 
     </div>
@@ -255,7 +248,9 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { NumberField, NumberFieldContent, NumberFieldInput } from '@/components/ui/number-field'
-import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
+import { Card, CardContent } from '@/components/ui/card'
+import { ScrollArea } from '@/components/ui/scroll-area'
 import { ChevronLeft, Download, X, RotateCcw, Info, Plus } from 'lucide-vue-next'
 import { calculateExpectedTime } from '@/utils/calculateExpectedTime'
 import { calculateStandardDeviation } from '@/utils/calculateStandardDeviation'
