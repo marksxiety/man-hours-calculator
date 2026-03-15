@@ -306,8 +306,8 @@ const targetDuration = ref<number>(35)
 const pertAnalysis = computed<Analysis>(() => {
     const totalExpectedTime = calculateTotalExpectedTime(taskList)
     const totalVariance = calculateTotalVariance(taskList)
-    const zScore = calculateZScore(targetDuration.value, totalExpectedTime, totalVariance)
-    const probability = calculateProbability(zScore) * 100
+    const zScore = taskList.length === 0 ? 0 : calculateZScore(targetDuration.value, totalExpectedTime, totalVariance)
+    const probability = taskList.length === 0 ? 0 : calculateProbability(zScore) * 100
 
     return {
         totalExpectedTime,
