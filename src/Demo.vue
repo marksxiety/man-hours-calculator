@@ -270,7 +270,7 @@ const newTaskForm = reactive<NewTask>({
     mostLikely: 0,
     pessimistic: 0,
 })
-const targetDuration = ref<number>(35)
+const targetDuration = ref<number>(0)
 
 const pertAnalysis = computed<Analysis>(() => {
     const totalExpectedTime = calculateTotalExpectedTime(taskList)
@@ -319,34 +319,111 @@ function goToHome(): void {
 
 function exportToExcel(): void {
     const workbook = new ExcelJS.Workbook();
-    const worksheet = workbook.addWorksheet('PERT Analysis');
 
-    worksheet.columns = [
+    // ── Sheet 1: Task Breakdown ──────────────────────────────────────────────
+    const taskSheet = workbook.addWorksheet('Task Breakdown');
+
+    taskSheet.columns = [
         { header: 'Task Name', key: 'taskName', width: 30 },
-        { header: 'Expected', key: 'expected', width: 15 },
+        { header: 'Optimistic (O)', key: 'optimistic', width: 16 },
+        { header: 'Most Likely (M)', key: 'mostLikely', width: 16 },
+        { header: 'Pessimistic (P)', key: 'pessimistic', width: 16 },
+        { header: 'Expected (tₑ)', key: 'expectedTime', width: 16 },
+        { header: 'Std Dev (σ)', key: 'standardDeviation', width: 16 },
+        { header: 'Variance (σ²)', key: 'variance', width: 16 },
     ];
 
     taskList.forEach((task) => {
-        worksheet.addRow({
+        taskSheet.addRow({
             taskName: task.taskName,
-            expected: task.expectedTime.toFixed(2),
+            optimistic: task.optimistic,
+            mostLikely: task.mostLikely,
+            pessimistic: task.pessimistic,
+            expectedTime: parseFloat(task.expectedTime.toFixed(2)),
+            standardDeviation: parseFloat(task.standardDeviation.toFixed(3)),
+            variance: parseFloat(task.variance.toFixed(3)),
         });
     });
 
-    worksheet.addRow([]);
-    worksheet.addRow({
-        taskName: 'Total',
-        expected: pertAnalysis.value.totalExpectedTime.toFixed(2),
+    // Totals row
+    taskSheet.addRow([]);
+    const totalRow = taskSheet.addRow({
+        taskName: 'TOTALS',
+        expectedTime: parseFloat(pertAnalysis.value.totalExpectedTime.toFixed(2)),
+        variance: parseFloat(pertAnalysis.value.totalVariance.toFixed(3)),
     });
+    totalRow.font = { bold: true };
+    totalRow.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FFF0F0F0' },
+    };
 
-    const headerRow = worksheet.getRow(1);
-    headerRow.font = { bold: true };
-    headerRow.fill = {
+    // Style header row
+    const taskHeader = taskSheet.getRow(1);
+    taskHeader.font = { bold: true };
+    taskHeader.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FFE0E0E0' },
+    };
+    taskHeader.alignment = { horizontal: 'center' };
+
+    // Formula footnote
+    taskSheet.addRow([]);
+    const footnote = taskSheet.addRow(['tₑ = (O + 4M + P) / 6   ·   σ = (P − O) / 6   ·   σ² = σ × σ']);
+    footnote.font = { italic: true, color: { argb: 'FF888888' }, size: 9 };
+
+    // ── Sheet 2: PERT Analysis ───────────────────────────────────────────────
+    const analysisSheet = workbook.addWorksheet('PERT Analysis');
+
+    analysisSheet.columns = [
+        { header: 'Metric', key: 'metric', width: 35 },
+        { header: 'Value', key: 'value', width: 20 },
+    ];
+
+    const analysisHeader = analysisSheet.getRow(1);
+    analysisHeader.font = { bold: true };
+    analysisHeader.fill = {
         type: 'pattern',
         pattern: 'solid',
         fgColor: { argb: 'FFE0E0E0' },
     };
 
+    const { totalExpectedTime, totalVariance, zScore, probability } = pertAnalysis.value;
+
+    const analysisRows = [
+        { metric: 'Desired Completion Time (D)', value: targetDuration.value },
+        { metric: 'Total Expected Time (Tₑ)', value: parseFloat(totalExpectedTime.toFixed(2)) },
+        { metric: 'Total Variance (σ²)', value: parseFloat(totalVariance.toFixed(3)) },
+        { metric: 'Standard Deviation (√σ²)', value: parseFloat(Math.sqrt(totalVariance).toFixed(3)) },
+        { metric: 'Z-Score', value: parseFloat(zScore.toFixed(3)) },
+        { metric: 'On-Time Probability (%)', value: parseFloat(probability.toFixed(1)) },
+    ];
+
+    analysisRows.forEach((row) => analysisSheet.addRow(row));
+
+    // Highlight probability row
+    const probabilityRow = analysisSheet.getRow(analysisSheet.rowCount);
+    probabilityRow.font = { bold: true };
+    probabilityRow.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FFE8F5E9' },
+    };
+
+    const now = new Date();
+    const pad = (n: number) => String(n).padStart(2, '0');
+
+    const YY = String(now.getFullYear()).slice(2);
+    const MM = pad(now.getMonth() + 1);
+    const DD = pad(now.getDate());
+    const HH = pad(now.getHours());
+    const SS = pad(now.getSeconds());
+
+    const timestamp = `${YY}-${MM}-${DD}_${HH}-${SS}`;
+
+    // ── Export ───────────────────────────────────────────────────────────────
     workbook.xlsx.writeBuffer().then((buffer) => {
         const blob = new Blob([buffer], {
             type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
@@ -354,7 +431,7 @@ function exportToExcel(): void {
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
         link.href = url;
-        link.download = 'Man_Hours_Analysis.xlsx';
+        link.download = `ManHoursEstimation_${timestamp}.xlsx`;
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
