@@ -3,5 +3,8 @@ import { PERT_WEIGHT_DIVISOR } from './constants';
 
 export const calculateExpectedTime = (task: NewTask): number => {
   const { optimistic, mostLikely, pessimistic } = task;
-  return (optimistic + 4 * mostLikely + pessimistic) / PERT_WEIGHT_DIVISOR;
+  const o = optimistic ?? 0;
+  const m = mostLikely ?? 0;
+  const p = pessimistic ?? 0;
+  return (o + 4 * m + p) / PERT_WEIGHT_DIVISOR;
 };
