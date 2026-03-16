@@ -33,4 +33,24 @@ describe('calculateExpectedTime', () => {
     const task = { taskName: 'Test', optimistic: 1.5, mostLikely: 3.5, pessimistic: 7.5 }
     expect(calculateExpectedTime(task)).toBeCloseTo(3.83, 1)
   })
+
+  it('treats null optimistic as 0', () => {
+    const task = { taskName: 'Test', optimistic: null, mostLikely: 5, pessimistic: 14 }
+    expect(calculateExpectedTime(task)).toBe(5.666666666666667)
+  })
+
+  it('treats null mostLikely as 0', () => {
+    const task = { taskName: 'Test', optimistic: 2, mostLikely: null, pessimistic: 14 }
+    expect(calculateExpectedTime(task)).toBe(16 / 6)
+  })
+
+  it('treats null pessimistic as 0', () => {
+    const task = { taskName: 'Test', optimistic: 2, mostLikely: 5, pessimistic: null }
+    expect(calculateExpectedTime(task)).toBe(22 / 6)
+  })
+
+  it('treats all null values as 0', () => {
+    const task = { taskName: 'Test', optimistic: null, mostLikely: null, pessimistic: null }
+    expect(calculateExpectedTime(task)).toBe(0)
+  })
 })
