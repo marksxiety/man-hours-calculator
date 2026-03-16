@@ -48,6 +48,22 @@
         </div>
 
         <div class="space-y-4">
+          <Alert
+            v-if="showAlert"
+            :variant="alertType"
+            class="transition-all duration-300"
+          >
+            <AlertCircle
+              v-if="alertType === 'destructive'"
+              class="w-4 h-4"
+            />
+            <CheckCircle
+              v-else
+              class="w-4 h-4 text-green-500"
+            />
+            <AlertTitle>{{ alertType === 'destructive' ? 'Missing Values' : 'Success' }}</AlertTitle>
+            <AlertDescription>{{ alertMessage }}</AlertDescription>
+          </Alert>
           <div class="grid gap-2">
             <Label
               for="taskName"
@@ -338,7 +354,8 @@ import { NumberField, NumberFieldContent, NumberFieldInput } from '@/components/
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { Card, CardContent } from '@/components/ui/card'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { ChevronLeft, Download, X, RotateCcw, Info, Plus } from 'lucide-vue-next'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { ChevronLeft, Download, X, RotateCcw, Info, Plus, AlertCircle, CheckCircle } from 'lucide-vue-next'
 import { calculateExpectedTime } from '@/utils/calculateExpectedTime'
 import { calculateStandardDeviation } from '@/utils/calculateStandardDeviation'
 import { calculateVariance } from '@/utils/calculateVariance'
@@ -356,6 +373,10 @@ const newTaskForm = reactive<NewTask>({
     pessimistic: null,
 })
 const targetDuration = ref<number | null>(null)
+const showAlert = ref(false)
+const alertMessage = ref('')
+const alertType = ref<'destructive' | 'default'>('destructive')
+let alertTimeout: ReturnType<typeof setTimeout> | null = null
 
 const pertAnalysis = computed<Analysis>(() => {
     const totalExpectedTime = calculateTotalExpectedTime(taskList)
@@ -379,6 +400,24 @@ function resetAll(): void {
 }
 
 function addTask(): void {
+    if (newTaskForm.optimistic === null || newTaskForm.mostLikely === null || newTaskForm.pessimistic === null) {
+        const missingFields = []
+        if (newTaskForm.optimistic === null) missingFields.push('Optimistic (O)')
+        if (newTaskForm.mostLikely === null) missingFields.push('Most Likely (M)')
+        if (newTaskForm.pessimistic === null) missingFields.push('Pessimistic (P)')
+        
+        alertMessage.value = `Please fill in all fields: ${missingFields.join(', ')}`
+        alertType.value = 'destructive'
+        showAlert.value = true
+        
+        if (alertTimeout) clearTimeout(alertTimeout)
+        alertTimeout = setTimeout(() => {
+            showAlert.value = false
+        }, 4000)
+        
+        return
+    }
+    
     const expectedTime = calculateExpectedTime(newTaskForm)
     const standardDeviation = calculateStandardDeviation(newTaskForm)
     const variance = calculateVariance(standardDeviation)
@@ -392,6 +431,15 @@ function addTask(): void {
         variance,
     })
     resetTaskForm()
+    
+    alertMessage.value = 'Task added successfully!'
+    alertType.value = 'default'
+    showAlert.value = true
+    
+    if (alertTimeout) clearTimeout(alertTimeout)
+    alertTimeout = setTimeout(() => {
+        showAlert.value = false
+    }, 4000)
 }
 
 function removeTask(index: number): void {
