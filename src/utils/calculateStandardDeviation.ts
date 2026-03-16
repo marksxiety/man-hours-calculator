@@ -3,5 +3,7 @@ import { PERT_SIGMA_DIVISOR } from './constants';
 
 export const calculateStandardDeviation = (task: NewTask): number => {
   const { optimistic, pessimistic } = task;
-  return (pessimistic - optimistic) / PERT_SIGMA_DIVISOR;
+  const o = optimistic ?? 0;
+  const p = pessimistic ?? 0;
+  return (p - o) / PERT_SIGMA_DIVISOR;
 };

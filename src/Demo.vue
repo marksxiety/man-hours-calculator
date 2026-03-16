@@ -1,329 +1,688 @@
 <template>
-  <div class="relative z-10 max-w-4xl mx-auto px-8 pt-16 pb-28 w-full">
-    <!-- Header -->
-    <div class="mb-10">
-      <Badge
-        variant="outline"
-        class="mb-6 font-mono text-xs tracking-widest uppercase"
-      >
-        PERT Analysis
-      </Badge>
-      <div class="flex items-center justify-between">
-        <div class="flex items-center gap-3">
-          <Button
-            variant="ghost"
-            size="icon"
-            class="-ml-2"
-            @click="goToHome()"
-          >
-            <ChevronLeft class="w-4 h-4" />
-          </Button>
-          <h1 class="text-3xl font-bold tracking-tight">
-            Man Hours Estimator
-          </h1>
-        </div>
-        <Button
+  <div>
+    <div class="relative z-10 max-w-4xl mx-auto px-8 pt-16 pb-28 w-full">
+      <!-- Header -->
+      <div class="mb-10">
+        <Badge
           variant="outline"
-          size="icon"
+          class="mb-6 font-mono text-xs tracking-widest uppercase"
         >
-          <Info class="w-4 h-4" />
-        </Button>
-      </div>
-    </div>
-
-    <!-- Top row: Add Task + Probability -->
-    <div class="grid grid-cols-1 gap-6 lg:grid-cols-2 mb-6">
-      <!-- Add New Task -->
-      <div class="rounded-xl border border-border bg-card p-6 shadow-sm">
-        <div class="mb-5">
-          <p class="font-mono text-xs tracking-widest uppercase text-muted-foreground mb-1">
-            Input
-          </p>
-          <h2 class="text-base font-semibold tracking-tight">
-            Add New Task
-          </h2>
-          <p class="text-xs text-muted-foreground mt-0.5">
-            Add tasks with three-point estimates. The model updates automatically.
-          </p>
-        </div>
-
-        <div class="space-y-4">
-          <div class="grid gap-2">
-            <Label
-              for="taskName"
-              class="text-xs font-medium"
-            >Task Name</Label>
-            <Input
-              id="taskName"
-              v-model="newTaskForm.taskName"
-              type="text"
-              placeholder="e.g. API Integration"
-            />
-          </div>
-
-          <div class="grid grid-cols-3 gap-3">
-            <div class="grid gap-2">
-              <Label class="font-mono text-[10px] tracking-widest uppercase text-muted-foreground">
-                Optimistic (O)
-              </Label>
-              <NumberField
-                v-model="newTaskForm.optimistic"
-                :min="0"
-                :format-options="{ minimumFractionDigits: 1 }"
-              >
-                <NumberFieldContent>
-                  <NumberFieldInput />
-                </NumberFieldContent>
-              </NumberField>
-            </div>
-            <div class="grid gap-2">
-              <Label class="font-mono text-[10px] tracking-widest uppercase text-muted-foreground">
-                Most Likely (M)
-              </Label>
-              <NumberField
-                v-model="newTaskForm.mostLikely"
-                :min="0"
-                :format-options="{ minimumFractionDigits: 1 }"
-              >
-                <NumberFieldContent>
-                  <NumberFieldInput />
-                </NumberFieldContent>
-              </NumberField>
-            </div>
-            <div class="grid gap-2">
-              <Label class="font-mono text-[10px] tracking-widest uppercase text-muted-foreground">
-                Pessimistic (P)
-              </Label>
-              <NumberField
-                v-model="newTaskForm.pessimistic"
-                :min="0"
-                :format-options="{ minimumFractionDigits: 1 }"
-              >
-                <NumberFieldContent>
-                  <NumberFieldInput />
-                </NumberFieldContent>
-              </NumberField>
-            </div>
-          </div>
-
-          <Button
-            :disabled="!newTaskForm.taskName.trim()"
-            class="w-full font-mono gap-2"
-            @click="addTask()"
-          >
-            <Plus class="w-4 h-4" />
-            Add Task
-          </Button>
-        </div>
-      </div>
-
-      <!-- Project Probability -->
-      <div class="flex flex-col rounded-xl border border-border bg-card p-6 shadow-sm">
-        <div class="mb-5">
-          <p class="font-mono text-xs tracking-widest uppercase text-muted-foreground mb-1">
-            Analysis
-          </p>
-          <h2 class="text-base font-semibold tracking-tight">
-            Project Probability
-          </h2>
-          <p class="text-xs text-muted-foreground mt-0.5">
-            Statistical confidence analysis
-          </p>
-        </div>
-
-        <div class="grid flex-1 gap-4">
-          <div class="grid gap-2">
-            <Label
-              for="targetDuration"
-              class="text-xs font-medium"
+          PERT Analysis
+        </Badge>
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <Button
+              variant="ghost"
+              size="icon"
+              class="-ml-2"
+              @click="goToHome()"
             >
-              Desired Completion Time (D)
-            </Label>
-            <NumberField
-              v-model="targetDuration"
-              :min="0"
-              :format-options="{ minimumFractionDigits: 1 }"
-            >
-              <NumberFieldContent>
-                <NumberFieldInput class="bg-background" />
-              </NumberFieldContent>
-            </NumberField>
+              <ChevronLeft class="w-4 h-4" />
+            </Button>
+            <h1 class="text-3xl font-bold tracking-tight">
+              Man Hours Estimator
+            </h1>
           </div>
-
-          <div class="grid grid-cols-2 gap-3">
-            <div class="rounded-lg border border-border/50 bg-muted/50 p-3">
-              <div class="font-mono text-[10px] tracking-widest uppercase text-muted-foreground">
-                Total Expected (T<sub>e</sub>)
-              </div>
-              <div class="text-xl font-bold tabular-nums mt-1">
-                {{ pertAnalysis.totalExpectedTime.toFixed(2) }}
-              </div>
-              <div class="mt-1 text-[10px] leading-tight text-muted-foreground">
-                Sum of expected durations
-              </div>
-            </div>
-
-            <div class="rounded-lg border border-border/50 bg-muted/50 p-3">
-              <div class="font-mono text-[10px] tracking-widest uppercase text-muted-foreground">
-                Total Variance (σ<sup>2</sup>)
-              </div>
-              <div class="text-xl font-bold tabular-nums mt-1">
-                {{ pertAnalysis.totalVariance.toFixed(3) }}
-              </div>
-              <div class="mt-1 text-[10px] leading-tight text-muted-foreground">
-                Higher = less confident
-              </div>
-            </div>
-
-            <div class="rounded-lg border border-border/50 bg-muted/50 p-3">
-              <div class="font-mono text-[10px] tracking-widest uppercase text-muted-foreground">
-                Z-Score
-              </div>
-              <div class="text-xl font-bold tabular-nums mt-1">
-                {{ pertAnalysis.zScore.toFixed(3) }}
-              </div>
-              <div class="mt-1 text-[10px] leading-tight text-muted-foreground">
-                (D − T<sub>e</sub>) / √σ²
-              </div>
-            </div>
-
-            <div class="rounded-lg border border-primary/30 bg-primary/10 p-3 shadow-sm">
-              <div class="font-mono text-[10px] tracking-widest uppercase text-primary">
-                On-Time Probability
-              </div>
-              <div class="text-2xl font-black tabular-nums text-primary mt-1">
-                {{ pertAnalysis.probability.toFixed(1) }}%
-              </div>
-              <div class="mt-1 text-[10px] leading-tight text-primary/70 italic">
-                Based on Z-score lookup
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <Separator class="mb-6" />
-
-    <!-- Task Breakdown -->
-    <div>
-      <div class="flex items-center justify-between mb-4">
-        <p class="font-mono text-xs tracking-widest uppercase text-muted-foreground">
-          Task Breakdown
-        </p>
-        <div class="flex gap-2">
           <Button
             variant="outline"
-            size="sm"
-            class="gap-2 font-mono"
-            :disabled="taskList.length === 0"
-            @click="exportToExcel()"
+            size="icon"
+            @click="showInfoDialog = true"
           >
-            <Download class="w-3.5 h-3.5" />
-            Export
-          </Button>
-          <Button
-            size="sm"
-            class="gap-2 font-mono"
-            @click="resetAll()"
-          >
-            <RotateCcw class="w-3.5 h-3.5" />
-            Reset
+            <Info class="w-4 h-4" />
           </Button>
         </div>
       </div>
 
-      <Card class="overflow-hidden shadow-sm p-2">
-        <CardContent class="p-0 h-auto">
-          <ScrollArea class="h-80">
-            <Table class="overflow-hidden">
-              <TableHeader>
-                <TableRow class="sticky top-0 z-10 bg-muted/30">
-                  <TableHead class="font-mono text-[10px] tracking-widest uppercase">
-                    Task Name
-                  </TableHead>
-                  <TableHead class="text-right font-mono text-[10px] tracking-widest uppercase">
-                    O
-                  </TableHead>
-                  <TableHead class="text-right font-mono text-[10px] tracking-widest uppercase">
-                    M
-                  </TableHead>
-                  <TableHead class="text-right font-mono text-[10px] tracking-widest uppercase">
-                    P
-                  </TableHead>
-                  <TableHead
-                    class="text-right font-mono text-[10px] tracking-widest uppercase text-primary"
-                  >
-                    Expected (tₑ)
-                  </TableHead>
-                  <TableHead class="text-right font-mono text-[10px] tracking-widest uppercase">
-                    Std
-                    Dev (σ)
-                  </TableHead>
-                  <TableHead class="text-right font-mono text-[10px] tracking-widest uppercase">
-                    Variance (σ²)
-                  </TableHead>
-                  <TableHead />
-                </TableRow>
-              </TableHeader>
+      <!-- Top row: Add Task + Probability -->
+      <div class="grid grid-cols-1 gap-6 lg:grid-cols-2 mb-6">
+        <!-- Add New Task -->
+        <div class="rounded-xl border border-border bg-card p-6 shadow-sm">
+          <div class="mb-5">
+            <p class="font-mono text-xs tracking-widest uppercase text-muted-foreground mb-1">
+              Input
+            </p>
+            <h2 class="text-base font-semibold tracking-tight">
+              Add New Task
+            </h2>
+            <p class="text-xs text-muted-foreground mt-0.5">
+              Add tasks with three-point estimates. The model updates automatically.
+            </p>
+          </div>
 
-              <TableBody>
-                <TableRow v-if="taskList.length === 0">
-                  <TableCell
+          <div class="space-y-4">
+            <Alert
+              v-if="showAlert"
+              :variant="alertType"
+              class="transition-all duration-300"
+            >
+              <AlertCircle
+                v-if="alertType === 'destructive'"
+                class="w-4 h-4"
+              />
+              <CheckCircle
+                v-else
+                class="w-4 h-4 text-green-500"
+              />
+              <AlertTitle>{{ alertType === 'destructive' ? 'Missing Values' : 'Success' }}</AlertTitle>
+              <AlertDescription>{{ alertMessage }}</AlertDescription>
+            </Alert>
+
+            <div class="grid gap-2">
+              <Label
+                for="taskName"
+                class="text-xs font-medium"
+              >Task Name</Label>
+              <Input
+                id="taskName"
+                v-model="newTaskForm.taskName"
+                type="text"
+                placeholder="e.g. API Integration"
+              />
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <!-- Optimistic -->
+              <div class="grid gap-2">
+                <div class="flex items-center gap-1.5">
+                  <Label class="font-mono text-[10px] uppercase text-muted-foreground">
+                    Optimistic (O)
+                  </Label>
+                  <HoverCard
+                    :open-delay="100"
+                    :close-delay="50"
+                  >
+                    <HoverCardTrigger as-child>
+                      <button
+                        class="inline-flex items-center justify-center w-4 h-4 rounded-full border border-border text-muted-foreground hover:border-foreground/40 hover:bg-muted transition-colors"
+                      >
+                        <HelpCircle class="w-2.5 h-2.5" />
+                      </button>
+                    </HoverCardTrigger>
+                    <HoverCardContent
+                      class="w-56 p-4"
+                      side="top"
+                      align="start"
+                    >
+                      <div class="flex flex-col gap-2">
+                        <div
+                          class="w-7 h-7 rounded-md bg-muted flex items-center justify-center"
+                        >
+                          <Star class="w-3.5 h-3.5 text-muted-foreground" />
+                        </div>
+                        <p class="text-xs font-medium leading-none">
+                          Best case scenario
+                        </p>
+                        <p class="text-xs text-muted-foreground leading-relaxed">
+                          Minimum hours if everything goes perfectly. Used as the lower bound
+                          in the PERT formula.
+                        </p>
+                      </div>
+                    </HoverCardContent>
+                  </HoverCard>
+                </div>
+                <NumberField
+                  v-model="newTaskForm.optimistic"
+                  :min="0"
+                  :format-options="newTaskForm.optimistic !== null ? { minimumFractionDigits: 1 } : undefined"
+                >
+                  <NumberFieldContent>
+                    <NumberFieldInput />
+                  </NumberFieldContent>
+                </NumberField>
+              </div>
+
+              <!-- Most Likely -->
+              <div class="grid gap-2">
+                <div class="flex items-center gap-1.5">
+                  <Label class="font-mono text-[10px] uppercase text-muted-foreground">
+                    Most Likely (M)
+                  </Label>
+                  <HoverCard
+                    :open-delay="100"
+                    :close-delay="50"
+                  >
+                    <HoverCardTrigger as-child>
+                      <button
+                        class="inline-flex items-center justify-center w-4 h-4 rounded-full border border-border text-muted-foreground hover:border-foreground/40 hover:bg-muted transition-colors"
+                      >
+                        <HelpCircle class="w-2.5 h-2.5" />
+                      </button>
+                    </HoverCardTrigger>
+                    <HoverCardContent
+                      class="w-56 p-4"
+                      side="top"
+                      align="start"
+                    >
+                      <div class="flex flex-col gap-2">
+                        <div
+                          class="w-7 h-7 rounded-md bg-muted flex items-center justify-center"
+                        >
+                          <Target class="w-3.5 h-3.5 text-muted-foreground" />
+                        </div>
+                        <p class="text-xs font-medium leading-none">
+                          Realistic estimate
+                        </p>
+                        <p class="text-xs text-muted-foreground leading-relaxed">
+                          Most probable hours based on experience. Weighted 4× in the PERT
+                          expected value.
+                        </p>
+                      </div>
+                    </HoverCardContent>
+                  </HoverCard>
+                </div>
+                <NumberField
+                  v-model="newTaskForm.mostLikely"
+                  :min="0"
+                  :format-options="newTaskForm.mostLikely !== null ? { minimumFractionDigits: 1 } : undefined"
+                >
+                  <NumberFieldContent>
+                    <NumberFieldInput />
+                  </NumberFieldContent>
+                </NumberField>
+              </div>
+
+              <!-- Pessimistic -->
+              <div class="grid gap-2">
+                <div class="flex items-center gap-1.5">
+                  <Label class="font-mono text-[10px] uppercase text-muted-foreground">
+                    Pessimistic (P)
+                  </Label>
+                  <HoverCard
+                    :open-delay="100"
+                    :close-delay="50"
+                  >
+                    <HoverCardTrigger as-child>
+                      <button
+                        class="inline-flex items-center justify-center w-4 h-4 rounded-full border border-border text-muted-foreground hover:border-foreground/40 hover:bg-muted transition-colors"
+                      >
+                        <HelpCircle class="w-2.5 h-2.5" />
+                      </button>
+                    </HoverCardTrigger>
+                    <HoverCardContent
+                      class="w-56 p-4"
+                      side="top"
+                      align="start"
+                    >
+                      <div class="flex flex-col gap-2">
+                        <div
+                          class="w-7 h-7 rounded-md bg-muted flex items-center justify-center"
+                        >
+                          <AlertTriangle class="w-3.5 h-3.5 text-muted-foreground" />
+                        </div>
+                        <p class="text-xs font-medium leading-none">
+                          Worst case scenario
+                        </p>
+                        <p class="text-xs text-muted-foreground leading-relaxed">
+                          Maximum hours if problems arise. Used as the upper bound in the PERT
+                          formula.
+                        </p>
+                      </div>
+                    </HoverCardContent>
+                  </HoverCard>
+                </div>
+                <NumberField
+                  v-model="newTaskForm.pessimistic"
+                  :min="0"
+                  :format-options="newTaskForm.pessimistic !== null ? { minimumFractionDigits: 1 } : undefined"
+                >
+                  <NumberFieldContent>
+                    <NumberFieldInput />
+                  </NumberFieldContent>
+                </NumberField>
+              </div>
+            </div>
+
+            <Button
+              :disabled="!newTaskForm.taskName.trim()"
+              class="w-full font-mono gap-2"
+              @click="addTask()"
+            >
+              <Plus class="w-4 h-4" />
+              Add Task
+            </Button>
+          </div>
+        </div>
+
+        <!-- Project Probability -->
+        <div class="flex flex-col rounded-xl border border-border bg-card p-6 shadow-sm">
+          <div class="mb-5">
+            <p class="font-mono text-xs tracking-widest uppercase text-muted-foreground mb-1">
+              Analysis
+            </p>
+            <h2 class="text-base font-semibold tracking-tight">
+              Project Probability
+            </h2>
+            <p class="text-xs text-muted-foreground mt-0.5">
+              Statistical confidence analysis
+            </p>
+          </div>
+
+          <div class="grid flex-1 gap-4">
+            <div class="grid gap-2">
+              <div class="flex items-center gap-1.5">
+                <Label
+                  for="targetDuration"
+                  class="text-xs font-medium"
+                >
+                  Desired Completion Time (D)
+                </Label>
+                <HoverCard
+                  :open-delay="100"
+                  :close-delay="50"
+                >
+                  <HoverCardTrigger as-child>
+                    <button
+                      class="inline-flex items-center justify-center w-4 h-4 rounded-full border border-border text-muted-foreground hover:border-foreground/40 hover:bg-muted transition-colors"
+                    >
+                      <HelpCircle class="w-2.5 h-2.5" />
+                    </button>
+                  </HoverCardTrigger>
+                  <HoverCardContent
+                    class="w-56 p-4"
+                    side="top"
+                    align="start"
+                  >
+                    <div class="flex flex-col gap-2">
+                      <div class="w-7 h-7 rounded-md bg-muted flex items-center justify-center">
+                        <CalendarClock class="w-3.5 h-3.5 text-muted-foreground" />
+                      </div>
+                      <p class="text-xs font-medium leading-none">
+                        Target deadline
+                      </p>
+                      <p class="text-xs text-muted-foreground leading-relaxed">
+                        Your desired completion hours. Used to calculate the Z-score and on-time
+                        probability.
+                      </p>
+                    </div>
+                  </HoverCardContent>
+                </HoverCard>
+              </div>
+              <NumberField
+                v-model="targetDuration"
+                :min="0"
+                :format-options="targetDuration !== null ? { minimumFractionDigits: 1 } : undefined"
+              >
+                <NumberFieldContent>
+                  <NumberFieldInput class="bg-background" />
+                </NumberFieldContent>
+              </NumberField>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3">
+              <div class="rounded-lg border border-border/50 bg-muted/50 p-3">
+                <div class="font-mono text-[10px] tracking-widest uppercase text-muted-foreground">
+                  Total Expected
+                </div>
+                <div class="text-xl font-bold tabular-nums mt-1">
+                  {{ pertAnalysis.totalExpectedTime.toFixed(2) }}
+                </div>
+                <div class="mt-1 text-[10px] leading-tight text-muted-foreground">
+                  Sum of expected durations
+                </div>
+              </div>
+
+              <div class="rounded-lg border border-border/50 bg-muted/50 p-3">
+                <div class="font-mono text-[10px] tracking-widest uppercase text-muted-foreground">
+                  Total Variance
+                </div>
+                <div class="text-xl font-bold tabular-nums mt-1">
+                  {{ pertAnalysis.totalVariance.toFixed(3) }}
+                </div>
+                <div class="mt-1 text-[10px] leading-tight text-muted-foreground">
+                  Higher = less confident
+                </div>
+              </div>
+
+              <div class="rounded-lg border border-border/50 bg-muted/50 p-3">
+                <div class="font-mono text-[10px] tracking-widest uppercase text-muted-foreground">
+                  Z-Score
+                </div>
+                <div class="text-xl font-bold tabular-nums mt-1">
+                  {{ pertAnalysis.zScore.toFixed(3) }}
+                </div>
+                <div class="mt-1 text-[10px] leading-tight text-muted-foreground">
+                  (Target - Expected) / Std Dev
+                </div>
+              </div>
+
+              <div class="rounded-lg border border-primary/30 bg-primary/10 p-3 shadow-sm">
+                <div class="font-mono text-[10px] tracking-widest uppercase text-primary">
+                  On-Time Probability
+                </div>
+                <div class="text-2xl font-black tabular-nums text-primary mt-1">
+                  {{ pertAnalysis.probability.toFixed(1) }}%
+                </div>
+                <div class="mt-1 text-[10px] leading-tight text-primary/70 italic">
+                  Based on Z-score lookup
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <Separator class="mb-6" />
+
+      <!-- Task Breakdown -->
+      <div>
+        <div class="flex items-center justify-between mb-4">
+          <p class="font-mono text-xs tracking-widest uppercase text-muted-foreground">
+            Task Breakdown
+          </p>
+          <div class="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              class="gap-2 font-mono"
+              :disabled="taskList.length === 0"
+              @click="exportToExcel()"
+            >
+              <Download class="w-3.5 h-3.5" />
+              Export
+            </Button>
+            <Button
+              size="sm"
+              class="gap-2 font-mono"
+              @click="resetAll()"
+            >
+              <RotateCcw class="w-3.5 h-3.5" />
+              Reset
+            </Button>
+          </div>
+        </div>
+        <div class="rounded-xl border border-border bg-card shadow-sm overflow-hidden">
+          <div class="overflow-x-auto overflow-y-auto max-h-80">
+            <table class="w-full text-sm border-separate border-spacing-0">
+              <thead class="bg-muted sticky top-0 z-10">
+                <tr class="text-xs font-semibold">
+                  <th class="text-left text-muted-foreground px-4 py-2.5 border-b border-border">
+                    Task
+                    Name
+                  </th>
+                  <th class="text-center text-muted-foreground px-4 py-2.5 border-b border-border">
+                    O
+                  </th>
+                  <th class="text-center text-muted-foreground px-4 py-2.5 border-b border-border">
+                    M
+                  </th>
+                  <th class="text-center text-muted-foreground px-4 py-2.5 border-b border-border">
+                    P
+                  </th>
+                  <th class="text-center text-primary px-4 py-2.5 border-b border-border">
+                    Expected
+                  </th>
+                  <th class="text-center text-muted-foreground px-4 py-2.5 border-b border-border">
+                    Std
+                    Dev
+                  </th>
+                  <th class="text-center text-muted-foreground px-4 py-2.5 border-b border-border">
+                    Variance
+                  </th>
+                  <th class="w-10 border-b border-border" />
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-border/50">
+                <tr v-if="taskList.length === 0">
+                  <td
                     colspan="8"
-                    class="py-16 text-center text-sm text-muted-foreground"
+                    class="py-16 text-center text-muted-foreground"
                   >
                     No tasks added yet. Start by adding a task above.
-                  </TableCell>
-                </TableRow>
-
-                <TableRow
+                  </td>
+                </tr>
+                <tr
                   v-for="(task, index) in taskList"
                   v-else
                   :key="index"
-                  class="transition-colors duration-150"
+                  class="hover:bg-muted/20 transition-colors duration-150"
                 >
-                  <TableCell class="font-medium">
+                  <td class="px-4 py-3 font-medium min-w-[200px]">
                     {{ task.taskName }}
-                  </TableCell>
-                  <TableCell class="text-right">
-                    {{ task.optimistic.toFixed(1) }}
-                  </TableCell>
-                  <TableCell class="text-right">
-                    {{ task.mostLikely.toFixed(1) }}
-                  </TableCell>
-                  <TableCell class="text-right">
-                    {{ task.pessimistic.toFixed(1) }}
-                  </TableCell>
-                  <TableCell class="text-right font-bold">
-                    {{ task.expectedTime.toFixed(2) }}
-                  </TableCell>
-                  <TableCell class="text-right">
-                    {{ task.standardDeviation.toFixed(3) }}
-                  </TableCell>
-                  <TableCell class="text-right">
+                  </td>
+                  <td class="px-4 py-3 text-center tabular-nums">
+                    {{ task.optimistic?.toFixed(1) ?? ''
+                    }}
+                  </td>
+                  <td class="px-4 py-3 text-center tabular-nums">
+                    {{ task.mostLikely?.toFixed(1) ?? ''
+                    }}
+                  </td>
+                  <td class="px-4 py-3 text-center tabular-nums">
+                    {{ task.pessimistic?.toFixed(1) ?? ''
+                    }}
+                  </td>
+                  <td class="px-4 py-3 text-center font-bold tabular-nums text-primary">
+                    {{
+                      task.expectedTime.toFixed(2) }}
+                  </td>
+                  <td class="px-4 py-3 text-center tabular-nums">
+                    {{ task.standardDeviation.toFixed(3)
+                    }}
+                  </td>
+                  <td class="px-4 py-3 text-center tabular-nums">
                     {{ task.variance.toFixed(3) }}
-                  </TableCell>
-                  <TableCell class="text-right">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      class="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                  </td>
+                  <td class="px-4 py-3 text-right">
+                    <button
+                      class="h-8 w-8 inline-flex items-center justify-center rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
                       @click="removeTask(index)"
                     >
                       <X class="w-3.5 h-3.5" />
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
-          </ScrollArea>
-        </CardContent>
-      </Card>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <!-- Info Dialog -->
+      <Dialog v-model:open="showInfoDialog">
+        <DialogContent class="flex flex-col gap-0 p-0 max-w-md w-[calc(100vw-2rem)] max-h-[90dvh] rounded-xl overflow-hidden">
+          <!-- Fixed Header -->
+          <DialogHeader class="px-5 pt-5 pb-4 border-b border-border shrink-0">
+            <DialogTitle class="flex items-center gap-2 text-sm">
+              <div class="w-7 h-7 rounded-md bg-muted flex items-center justify-center shrink-0">
+                <Info class="w-3.5 h-3.5 text-muted-foreground" />
+              </div>
+              How to Use the Estimator
+            </DialogTitle>
+            <DialogDescription class="text-xs mt-1">
+              A quick guide to PERT-based man-hour estimation.
+            </DialogDescription>
+          </DialogHeader>
+
+          <!-- Scrollable Body -->
+          <div class="overflow-y-auto flex-1 px-5 py-4 space-y-5">
+            <!-- Steps -->
+            <div class="space-y-4">
+              <p class="font-mono text-[10px] tracking-widest uppercase text-muted-foreground">
+                Steps
+              </p>
+
+              <div class="flex gap-3">
+                <div class="flex-shrink-0 w-6 h-6 rounded-full bg-muted flex items-center justify-center mt-0.5">
+                  <span class="font-mono text-[10px] font-semibold text-primary">1</span>
+                </div>
+                <div class="space-y-0.5">
+                  <p class="text-sm font-medium">
+                    Enter three-point estimates per task
+                  </p>
+                  <p class="text-xs text-muted-foreground leading-relaxed">
+                    For each task, provide an <span class="font-medium text-foreground">Optimistic (O)</span> best-case,
+                    <span class="font-medium text-foreground">Most Likely (M)</span> realistic, and
+                    <span class="font-medium text-foreground">Pessimistic (P)</span> worst-case hour estimate.
+                  </p>
+                </div>
+              </div>
+
+              <div class="flex gap-3">
+                <div class="flex-shrink-0 w-6 h-6 rounded-full bg-muted flex items-center justify-center mt-0.5">
+                  <span class="font-mono text-[10px] font-semibold text-primary">2</span>
+                </div>
+                <div class="space-y-0.5">
+                  <p class="text-sm font-medium">
+                    Expected time is auto-calculated
+                  </p>
+                  <p class="text-xs text-muted-foreground leading-relaxed">
+                    Once a task is added, the PERT formula runs automatically — no manual calculation needed.
+                  </p>
+                </div>
+              </div>
+
+              <div class="flex gap-3">
+                <div class="flex-shrink-0 w-6 h-6 rounded-full bg-muted flex items-center justify-center mt-0.5">
+                  <span class="font-mono text-[10px] font-semibold text-primary">3</span>
+                </div>
+                <div class="space-y-0.5">
+                  <p class="text-sm font-medium">
+                    Set a desired completion time
+                  </p>
+                  <p class="text-xs text-muted-foreground leading-relaxed">
+                    Enter your target deadline in hours under <span class="font-medium text-foreground">Desired Completion Time (D)</span>.
+                    The tool calculates a Z-score and maps it to an on-time probability.
+                  </p>
+                </div>
+              </div>
+
+              <div class="flex gap-3">
+                <div class="flex-shrink-0 w-6 h-6 rounded-full bg-muted flex items-center justify-center mt-0.5">
+                  <span class="font-mono text-[10px] font-semibold text-primary">4</span>
+                </div>
+                <div class="space-y-0.5">
+                  <p class="text-sm font-medium">
+                    Interpret the probability
+                  </p>
+                  <p class="text-xs text-muted-foreground leading-relaxed">
+                    Aim for <span class="font-medium text-foreground">≥ 80%</span> for reliable delivery.
+                    Below 50% signals the deadline is too aggressive.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <Separator />
+
+            <!-- Formulas -->
+            <div class="space-y-3">
+              <p class="font-mono text-[10px] tracking-widest uppercase text-muted-foreground">
+                Formulas
+              </p>
+
+              <div class="space-y-2.5">
+                <div class="rounded-lg border border-primary/50 bg-muted/40 p-3 space-y-1.5">
+                  <div class="flex items-center justify-between gap-2">
+                    <p class="text-xs font-medium">
+                      Expected Duration
+                    </p>
+                    <span class="font-mono text-[10px] tracking-widest uppercase text-muted-foreground bg-muted px-1.5 py-0.5 rounded">E</span>
+                  </div>
+                  <code class="block font-mono text-xs bg-background border border-border rounded-md px-3 py-2 text-center tracking-wide">
+                    E = (O + 4M + P) / 6
+                  </code>
+                  <p class="text-[11px] text-muted-foreground leading-relaxed">
+                    Weighted average that emphasises the most likely estimate 4×.
+                  </p>
+                </div>
+
+                <div class="rounded-lg border border-primary/50 bg-muted/40 p-3 space-y-1.5">
+                  <div class="flex items-center justify-between gap-2">
+                    <p class="text-xs font-medium">
+                      Variance
+                    </p>
+                    <span class="font-mono text-[10px] tracking-widest uppercase text-muted-foreground bg-muted px-1.5 py-0.5 rounded">σ²</span>
+                  </div>
+                  <code class="block font-mono text-xs bg-background border border-border rounded-md px-3 py-2 text-center tracking-wide">
+                    σ² = ((P − O) / 6)²
+                  </code>
+                  <p class="text-[11px] text-muted-foreground leading-relaxed">
+                    Measures uncertainty. Higher variance means a wider spread between best and worst case.
+                  </p>
+                </div>
+
+                <div class="rounded-lg border border-primary/50 bg-muted/40 p-3 space-y-1.5">
+                  <div class="flex items-center justify-between gap-2">
+                    <p class="text-xs font-medium">
+                      Standard Deviation
+                    </p>
+                    <span class="font-mono text-[10px] tracking-widest uppercase text-muted-foreground bg-muted px-1.5 py-0.5 rounded">σ</span>
+                  </div>
+                  <code class="block font-mono text-xs bg-background border border-border rounded-md px-3 py-2 text-center tracking-wide">
+                    σ = (P − O) / 6
+                  </code>
+                  <p class="text-[11px] text-muted-foreground leading-relaxed">
+                    Square root of variance. Used to compute the Z-score for probability lookup.
+                  </p>
+                </div>
+
+                <div class="rounded-lg border border-primary/50 bg-muted/40 p-3 space-y-1.5">
+                  <div class="flex items-center justify-between gap-2">
+                    <p class="text-xs font-medium">
+                      Z-Score
+                    </p>
+                    <span class="font-mono text-[10px] tracking-widest uppercase text-muted-foreground bg-muted px-1.5 py-0.5 rounded">Z</span>
+                  </div>
+                  <code class="block font-mono text-xs bg-background border border-border rounded-md px-3 py-2 text-center tracking-wide">
+                    Z = (D − ΣE) / √Σσ²
+                  </code>
+                  <p class="text-[11px] text-muted-foreground leading-relaxed">
+                    How many standard deviations your deadline (D) is from the total expected time. Mapped to a normal distribution for the final probability.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <Separator />
+
+            <!-- FAQ -->
+            <div class="space-y-3 pb-1">
+              <p class="font-mono text-[10px] tracking-widest uppercase text-muted-foreground">
+                FAQ
+              </p>
+
+              <div class="space-y-1">
+                <p class="text-xs font-medium">
+                  What if I only have one estimate?
+                </p>
+                <p class="text-xs text-muted-foreground leading-relaxed">
+                  Set O, M, and P to the same value. Variance becomes zero, indicating full confidence in that estimate.
+                </p>
+              </div>
+
+              <div class="space-y-1">
+                <p class="text-xs font-medium">
+                  What does a negative Z-score mean?
+                </p>
+                <p class="text-xs text-muted-foreground leading-relaxed">
+                  Your target is shorter than the expected total — probability drops below 50%, meaning the project is likely to overrun.
+                </p>
+              </div>
+
+              <div class="space-y-1">
+                <p class="text-xs font-medium">
+                  How do I export the results?
+                </p>
+                <p class="text-xs text-muted-foreground leading-relaxed">
+                  Use the <span class="font-medium text-foreground">Export</span> button in the Task Breakdown section to download an Excel file of all tasks and computed values.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Fixed Footer -->
+          <div class="px-5 py-4 border-t border-border shrink-0">
+            <Button
+              class="w-full font-mono text-xs border-primary/50 hover:bg-primary/10"
+              @click="showInfoDialog = false"
+            >
+              Got it
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   </div>
 </template>
-
 <script setup lang="ts">
 import { ref, reactive, computed } from 'vue'
 import ExcelJS from 'exceljs';
@@ -335,10 +694,10 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { NumberField, NumberFieldContent, NumberFieldInput } from '@/components/ui/number-field'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Card, CardContent } from '@/components/ui/card'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { ChevronLeft, Download, X, RotateCcw, Info, Plus } from 'lucide-vue-next'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { HoverCard, HoverCardTrigger, HoverCardContent } from '@/components/ui/hover-card'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
+import { ChevronLeft, Download, X, RotateCcw, Info, Plus, AlertCircle, CheckCircle, HelpCircle, Star, Target, AlertTriangle, CalendarClock } from 'lucide-vue-next'
 import { calculateExpectedTime } from '@/utils/calculateExpectedTime'
 import { calculateStandardDeviation } from '@/utils/calculateStandardDeviation'
 import { calculateVariance } from '@/utils/calculateVariance'
@@ -351,34 +710,57 @@ const router = useRouter()
 const taskList = reactive<PERTTaskResult[]>([])
 const newTaskForm = reactive<NewTask>({
     taskName: '',
-    optimistic: 0,
-    mostLikely: 0,
-    pessimistic: 0,
+    optimistic: null,
+    mostLikely: null,
+    pessimistic: null,
 })
-const targetDuration = ref<number>(0)
+const targetDuration = ref<number | null>(null)
+const showAlert = ref(false)
+const showInfoDialog = ref(false)
+const alertMessage = ref('')
+const alertType = ref<'destructive' | 'default'>('destructive')
+let alertTimeout: ReturnType<typeof setTimeout> | null = null
 
 const pertAnalysis = computed<Analysis>(() => {
     const totalExpectedTime = calculateTotalExpectedTime(taskList)
     const totalVariance = calculateTotalVariance(taskList)
-    const zScore = taskList.length === 0 ? 0 : calculateZScore(targetDuration.value, totalExpectedTime, totalVariance)
+    const zScore = taskList.length === 0 || targetDuration.value === null ? 0 : calculateZScore(targetDuration.value, totalExpectedTime, totalVariance)
     const probability = taskList.length === 0 ? 0 : calculateProbability(zScore) * 100
     return { totalExpectedTime, totalVariance, zScore, probability }
 })
 
 function resetTaskForm(): void {
     newTaskForm.taskName = ''
-    newTaskForm.optimistic = 0
-    newTaskForm.mostLikely = 0
-    newTaskForm.pessimistic = 0
+    newTaskForm.optimistic = null
+    newTaskForm.mostLikely = null
+    newTaskForm.pessimistic = null
 }
 
 function resetAll(): void {
     resetTaskForm()
-    targetDuration.value = 0
+    targetDuration.value = null
     taskList.length = 0
 }
 
 function addTask(): void {
+    if (newTaskForm.optimistic === null || newTaskForm.mostLikely === null || newTaskForm.pessimistic === null) {
+        const missingFields = []
+        if (newTaskForm.optimistic === null) missingFields.push('Optimistic (O)')
+        if (newTaskForm.mostLikely === null) missingFields.push('Most Likely (M)')
+        if (newTaskForm.pessimistic === null) missingFields.push('Pessimistic (P)')
+
+        alertMessage.value = `Please fill in all fields: ${missingFields.join(', ')}`
+        alertType.value = 'destructive'
+        showAlert.value = true
+
+        if (alertTimeout) clearTimeout(alertTimeout)
+        alertTimeout = setTimeout(() => {
+            showAlert.value = false
+        }, 4000)
+
+        return
+    }
+
     const expectedTime = calculateExpectedTime(newTaskForm)
     const standardDeviation = calculateStandardDeviation(newTaskForm)
     const variance = calculateVariance(standardDeviation)
@@ -392,6 +774,15 @@ function addTask(): void {
         variance,
     })
     resetTaskForm()
+
+    alertMessage.value = 'Task added successfully!'
+    alertType.value = 'default'
+    showAlert.value = true
+
+    if (alertTimeout) clearTimeout(alertTimeout)
+    alertTimeout = setTimeout(() => {
+        showAlert.value = false
+    }, 4000)
 }
 
 function removeTask(index: number): void {
@@ -413,9 +804,9 @@ function exportToExcel(): void {
         { header: 'Optimistic (O)', key: 'optimistic', width: 16 },
         { header: 'Most Likely (M)', key: 'mostLikely', width: 16 },
         { header: 'Pessimistic (P)', key: 'pessimistic', width: 16 },
-        { header: 'Expected (tₑ)', key: 'expectedTime', width: 16 },
-        { header: 'Std Dev (σ)', key: 'standardDeviation', width: 16 },
-        { header: 'Variance (σ²)', key: 'variance', width: 16 },
+        { header: 'Expected', key: 'expectedTime', width: 16 },
+        { header: 'Std Dev', key: 'standardDeviation', width: 16 },
+        { header: 'Variance', key: 'variance', width: 16 },
     ];
 
     taskList.forEach((task) => {
@@ -456,7 +847,7 @@ function exportToExcel(): void {
 
     // Formula footnote
     taskSheet.addRow([]);
-    const footnote = taskSheet.addRow(['tₑ = (O + 4M + P) / 6   ·   σ = (P − O) / 6   ·   σ² = σ × σ']);
+    const footnote = taskSheet.addRow(['te = (O + 4M + P) / 6   ·   sigma = (P - O) / 6   ·   variance = sigma * sigma']);
     footnote.font = { italic: true, color: { argb: 'FF888888' }, size: 9 };
 
     // ── Sheet 2: PERT Analysis ───────────────────────────────────────────────
@@ -479,9 +870,9 @@ function exportToExcel(): void {
 
     const analysisRows = [
         { metric: 'Desired Completion Time (D)', value: targetDuration.value },
-        { metric: 'Total Expected Time (Tₑ)', value: parseFloat(totalExpectedTime.toFixed(2)) },
-        { metric: 'Total Variance (σ²)', value: parseFloat(totalVariance.toFixed(3)) },
-        { metric: 'Standard Deviation (√σ²)', value: parseFloat(Math.sqrt(totalVariance).toFixed(3)) },
+        { metric: 'Total Expected Time', value: parseFloat(totalExpectedTime.toFixed(2)) },
+        { metric: 'Total Variance', value: parseFloat(totalVariance.toFixed(3)) },
+        { metric: 'Standard Deviation', value: parseFloat(Math.sqrt(totalVariance).toFixed(3)) },
         { metric: 'Z-Score', value: parseFloat(zScore.toFixed(3)) },
         { metric: 'On-Time Probability (%)', value: parseFloat(probability.toFixed(1)) },
     ];
