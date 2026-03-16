@@ -69,7 +69,7 @@
               <NumberField
                 v-model="newTaskForm.optimistic"
                 :min="0"
-                :format-options="{ minimumFractionDigits: 1 }"
+                :format-options="newTaskForm.optimistic !== null ? { minimumFractionDigits: 1 } : undefined"
               >
                 <NumberFieldContent>
                   <NumberFieldInput />
@@ -83,7 +83,7 @@
               <NumberField
                 v-model="newTaskForm.mostLikely"
                 :min="0"
-                :format-options="{ minimumFractionDigits: 1 }"
+                :format-options="newTaskForm.mostLikely !== null ? { minimumFractionDigits: 1 } : undefined"
               >
                 <NumberFieldContent>
                   <NumberFieldInput />
@@ -97,7 +97,7 @@
               <NumberField
                 v-model="newTaskForm.pessimistic"
                 :min="0"
-                :format-options="{ minimumFractionDigits: 1 }"
+                :format-options="newTaskForm.pessimistic !== null ? { minimumFractionDigits: 1 } : undefined"
               >
                 <NumberFieldContent>
                   <NumberFieldInput />
@@ -142,7 +142,7 @@
             <NumberField
               v-model="targetDuration"
               :min="0"
-              :format-options="{ minimumFractionDigits: 1 }"
+              :format-options="targetDuration !== null ? { minimumFractionDigits: 1 } : undefined"
             >
               <NumberFieldContent>
                 <NumberFieldInput class="bg-background" />
@@ -287,13 +287,13 @@
                     {{ task.taskName }}
                   </TableCell>
                   <TableCell class="text-right">
-                    {{ task.optimistic.toFixed(1) }}
+                    {{ task.optimistic !== null ? task.optimistic.toFixed(1) : '' }}
                   </TableCell>
                   <TableCell class="text-right">
-                    {{ task.mostLikely.toFixed(1) }}
+                    {{ task.mostLikely !== null ? task.mostLikely.toFixed(1) : '' }}
                   </TableCell>
                   <TableCell class="text-right">
-                    {{ task.pessimistic.toFixed(1) }}
+                    {{ task.pessimistic !== null ? task.pessimistic.toFixed(1) : '' }}
                   </TableCell>
                   <TableCell class="text-right font-bold">
                     {{ task.expectedTime.toFixed(2) }}
@@ -351,30 +351,30 @@ const router = useRouter()
 const taskList = reactive<PERTTaskResult[]>([])
 const newTaskForm = reactive<NewTask>({
     taskName: '',
-    optimistic: 0,
-    mostLikely: 0,
-    pessimistic: 0,
+    optimistic: null,
+    mostLikely: null,
+    pessimistic: null,
 })
-const targetDuration = ref<number>(0)
+const targetDuration = ref<number | null>(null)
 
 const pertAnalysis = computed<Analysis>(() => {
     const totalExpectedTime = calculateTotalExpectedTime(taskList)
     const totalVariance = calculateTotalVariance(taskList)
-    const zScore = taskList.length === 0 ? 0 : calculateZScore(targetDuration.value, totalExpectedTime, totalVariance)
+    const zScore = taskList.length === 0 || targetDuration.value === null ? 0 : calculateZScore(targetDuration.value, totalExpectedTime, totalVariance)
     const probability = taskList.length === 0 ? 0 : calculateProbability(zScore) * 100
     return { totalExpectedTime, totalVariance, zScore, probability }
 })
 
 function resetTaskForm(): void {
     newTaskForm.taskName = ''
-    newTaskForm.optimistic = 0
-    newTaskForm.mostLikely = 0
-    newTaskForm.pessimistic = 0
+    newTaskForm.optimistic = null
+    newTaskForm.mostLikely = null
+    newTaskForm.pessimistic = null
 }
 
 function resetAll(): void {
     resetTaskForm()
-    targetDuration.value = 0
+    targetDuration.value = null
     taskList.length = 0
 }
 
