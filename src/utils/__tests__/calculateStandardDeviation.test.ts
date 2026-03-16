@@ -31,4 +31,19 @@ describe('calculateStandardDeviation', () => {
     const task = { taskName: 'Test', optimistic: 4.9, mostLikely: 5, pessimistic: 5.1 }
     expect(calculateStandardDeviation(task)).toBeCloseTo(0.033, 2)
   })
+
+  it('treats null optimistic as 0', () => {
+    const task = { taskName: 'Test', optimistic: null, mostLikely: 5, pessimistic: 8 }
+    expect(calculateStandardDeviation(task)).toBe(1.3333333333333333)
+  })
+
+  it('treats null pessimistic as 0', () => {
+    const task = { taskName: 'Test', optimistic: 2, mostLikely: 5, pessimistic: null }
+    expect(calculateStandardDeviation(task)).toBe(-0.3333333333333333)
+  })
+
+  it('treats both null as 0', () => {
+    const task = { taskName: 'Test', optimistic: null, mostLikely: 5, pessimistic: null }
+    expect(calculateStandardDeviation(task)).toBe(0)
+  })
 })
