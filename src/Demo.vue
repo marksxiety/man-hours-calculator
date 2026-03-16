@@ -169,7 +169,7 @@
           <div class="grid grid-cols-2 gap-3">
             <div class="rounded-lg border border-border/50 bg-muted/50 p-3">
               <div class="font-mono text-[10px] tracking-widest uppercase text-muted-foreground">
-                Total Expected (T<sub>e</sub>)
+                Total Expected
               </div>
               <div class="text-xl font-bold tabular-nums mt-1">
                 {{ pertAnalysis.totalExpectedTime.toFixed(2) }}
@@ -181,7 +181,7 @@
 
             <div class="rounded-lg border border-border/50 bg-muted/50 p-3">
               <div class="font-mono text-[10px] tracking-widest uppercase text-muted-foreground">
-                Total Variance (σ<sup>2</sup>)
+                Total Variance
               </div>
               <div class="text-xl font-bold tabular-nums mt-1">
                 {{ pertAnalysis.totalVariance.toFixed(3) }}
@@ -199,7 +199,7 @@
                 {{ pertAnalysis.zScore.toFixed(3) }}
               </div>
               <div class="mt-1 text-[10px] leading-tight text-muted-foreground">
-                (D − T<sub>e</sub>) / √σ²
+                (Target - Expected) / Std Dev
               </div>
             </div>
 
@@ -248,94 +248,55 @@
           </Button>
         </div>
       </div>
+        <div class="rounded-xl border border-border bg-card shadow-sm overflow-hidden">
+            <div class="overflow-x-auto overflow-y-auto max-h-80">
+                <table class="w-full text-sm border-separate border-spacing-0">
+                <thead class="bg-muted sticky top-0 z-10">
+                    <tr class="text-xs font-semibold">
+                    <th class="text-left text-muted-foreground px-4 py-2.5 border-b border-border">Task Name</th>
+                    <th class="text-center text-muted-foreground px-4 py-2.5 border-b border-border">O</th>
+                    <th class="text-center text-muted-foreground px-4 py-2.5 border-b border-border">M</th>
+                    <th class="text-center text-muted-foreground px-4 py-2.5 border-b border-border">P</th>
+                    <th class="text-center text-primary px-4 py-2.5 border-b border-border">Expected</th>
+                    <th class="text-center text-muted-foreground px-4 py-2.5 border-b border-border">Std Dev</th>
+                    <th class="text-center text-muted-foreground px-4 py-2.5 border-b border-border">Variance</th>
+                    <th class="w-10 border-b border-border"></th>
+                    </tr>
+                </thead>
 
-      <Card class="overflow-hidden shadow-sm p-2">
-        <CardContent class="p-0 h-auto">
-          <ScrollArea class="h-80">
-            <Table class="overflow-hidden">
-              <TableHeader>
-                <TableRow class="sticky top-0 z-10 bg-muted/30">
-                  <TableHead class="font-mono text-[10px] tracking-widest uppercase">
-                    Task Name
-                  </TableHead>
-                  <TableHead class="text-right font-mono text-[10px] tracking-widest uppercase">
-                    O
-                  </TableHead>
-                  <TableHead class="text-right font-mono text-[10px] tracking-widest uppercase">
-                    M
-                  </TableHead>
-                  <TableHead class="text-right font-mono text-[10px] tracking-widest uppercase">
-                    P
-                  </TableHead>
-                  <TableHead
-                    class="text-right font-mono text-[10px] tracking-widest uppercase text-primary"
-                  >
-                    Expected (tₑ)
-                  </TableHead>
-                  <TableHead class="text-right font-mono text-[10px] tracking-widest uppercase">
-                    Std
-                    Dev (σ)
-                  </TableHead>
-                  <TableHead class="text-right font-mono text-[10px] tracking-widest uppercase">
-                    Variance (σ²)
-                  </TableHead>
-                  <TableHead />
-                </TableRow>
-              </TableHeader>
+                <tbody class="divide-y divide-border/50">
+                    <tr v-if="taskList.length === 0">
+                    <td colspan="8" class="py-16 text-center text-muted-foreground">
+                        No tasks added yet. Start by adding a task above.
+                    </td>
+                    </tr>
 
-              <TableBody>
-                <TableRow v-if="taskList.length === 0">
-                  <TableCell
-                    colspan="8"
-                    class="py-16 text-center text-sm text-muted-foreground"
-                  >
-                    No tasks added yet. Start by adding a task above.
-                  </TableCell>
-                </TableRow>
-
-                <TableRow
-                  v-for="(task, index) in taskList"
-                  v-else
-                  :key="index"
-                  class="transition-colors duration-150"
-                >
-                  <TableCell class="font-medium">
-                    {{ task.taskName }}
-                  </TableCell>
-                  <TableCell class="text-right">
-                    {{ task.optimistic !== null ? task.optimistic.toFixed(1) : '' }}
-                  </TableCell>
-                  <TableCell class="text-right">
-                    {{ task.mostLikely !== null ? task.mostLikely.toFixed(1) : '' }}
-                  </TableCell>
-                  <TableCell class="text-right">
-                    {{ task.pessimistic !== null ? task.pessimistic.toFixed(1) : '' }}
-                  </TableCell>
-                  <TableCell class="text-right font-bold">
-                    {{ task.expectedTime.toFixed(2) }}
-                  </TableCell>
-                  <TableCell class="text-right">
-                    {{ task.standardDeviation.toFixed(3) }}
-                  </TableCell>
-                  <TableCell class="text-right">
-                    {{ task.variance.toFixed(3) }}
-                  </TableCell>
-                  <TableCell class="text-right">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      class="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
-                      @click="removeTask(index)"
+                    <tr
+                    v-for="(task, index) in taskList"
+                    :key="index"
+                    v-else
+                    class="hover:bg-muted/20 transition-colors duration-150"
                     >
-                      <X class="w-3.5 h-3.5" />
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
-          </ScrollArea>
-        </CardContent>
-      </Card>
+                    <td class="px-4 py-3 font-medium min-w-[200px]">{{ task.taskName }}</td>
+                    <td class="px-4 py-3 text-center tabular-nums">{{ task.optimistic?.toFixed(1) ?? '' }}</td>
+                    <td class="px-4 py-3 text-center tabular-nums">{{ task.mostLikely?.toFixed(1) ?? '' }}</td>
+                    <td class="px-4 py-3 text-center tabular-nums">{{ task.pessimistic?.toFixed(1) ?? '' }}</td>
+                    <td class="px-4 py-3 text-center font-bold tabular-nums text-primary">{{ task.expectedTime.toFixed(2) }}</td>
+                    <td class="px-4 py-3 text-center tabular-nums">{{ task.standardDeviation.toFixed(3) }}</td>
+                    <td class="px-4 py-3 text-center tabular-nums">{{ task.variance.toFixed(3) }}</td>
+                    <td class="px-4 py-3 text-right">
+                        <button
+                        class="h-8 w-8 inline-flex items-center justify-center rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                        @click="removeTask(index)"
+                        >
+                        <X class="w-3.5 h-3.5" />
+                        </button>
+                    </td>
+                    </tr>
+                </tbody>
+                </table>
+            </div>
+        </div>
     </div>
   </div>
 </template>
@@ -351,9 +312,6 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { NumberField, NumberFieldContent, NumberFieldInput } from '@/components/ui/number-field'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { Card, CardContent } from '@/components/ui/card'
-import { ScrollArea } from '@/components/ui/scroll-area'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { ChevronLeft, Download, X, RotateCcw, Info, Plus, AlertCircle, CheckCircle } from 'lucide-vue-next'
 import { calculateExpectedTime } from '@/utils/calculateExpectedTime'
@@ -365,7 +323,23 @@ import { calculateProbability } from '@/utils/calculateProbability'
 
 const router = useRouter()
 
-const taskList = reactive<PERTTaskResult[]>([])
+const taskList = reactive<PERTTaskResult[]>([
+  { taskName: 'Project Kickoff', optimistic: 1, mostLikely: 2, pessimistic: 4, expectedTime: 2.17, standardDeviation: 0.5, variance: 0.25 },
+  { taskName: 'Requirements Gathering', optimistic: 3, mostLikely: 5, pessimistic: 9, expectedTime: 5.33, standardDeviation: 1.0, variance: 1.0 },
+  { taskName: 'System Architecture Design', optimistic: 4, mostLikely: 7, pessimistic: 12, expectedTime: 7.33, standardDeviation: 1.333, variance: 1.778 },
+  { taskName: 'Database Schema Design', optimistic: 2, mostLikely: 4, pessimistic: 7, expectedTime: 4.17, standardDeviation: 0.833, variance: 0.694 },
+  { taskName: 'API Integration', optimistic: 5, mostLikely: 8, pessimistic: 14, expectedTime: 8.5, standardDeviation: 1.5, variance: 2.25 },
+  { taskName: 'Frontend UI Development', optimistic: 6, mostLikely: 10, pessimistic: 18, expectedTime: 10.67, standardDeviation: 2.0, variance: 4.0 },
+  { taskName: 'Backend Logic Implementation', optimistic: 7, mostLikely: 12, pessimistic: 20, expectedTime: 12.5, standardDeviation: 2.167, variance: 4.694 },
+  { taskName: 'Authentication & Auth Module', optimistic: 3, mostLikely: 5, pessimistic: 10, expectedTime: 5.5, standardDeviation: 1.167, variance: 1.361 },
+  { taskName: 'Unit Testing', optimistic: 4, mostLikely: 6, pessimistic: 10, expectedTime: 6.33, standardDeviation: 1.0, variance: 1.0 },
+  { taskName: 'Integration Testing', optimistic: 3, mostLikely: 5, pessimistic: 9, expectedTime: 5.33, standardDeviation: 1.0, variance: 1.0 },
+  { taskName: 'Performance Optimization', optimistic: 2, mostLikely: 4, pessimistic: 8, expectedTime: 4.33, standardDeviation: 1.0, variance: 1.0 },
+  { taskName: 'Security Audit', optimistic: 3, mostLikely: 6, pessimistic: 11, expectedTime: 6.33, standardDeviation: 1.333, variance: 1.778 },
+  { taskName: 'User Acceptance Testing', optimistic: 4, mostLikely: 7, pessimistic: 13, expectedTime: 7.5, standardDeviation: 1.5, variance: 2.25 },
+  { taskName: 'Deployment & CI/CD Setup', optimistic: 2, mostLikely: 4, pessimistic: 7, expectedTime: 4.17, standardDeviation: 0.833, variance: 0.694 },
+  { taskName: 'Documentation & Handover', optimistic: 2, mostLikely: 3, pessimistic: 6, expectedTime: 3.33, standardDeviation: 0.667, variance: 0.444 },
+])
 const newTaskForm = reactive<NewTask>({
     taskName: '',
     optimistic: null,
@@ -461,9 +435,9 @@ function exportToExcel(): void {
         { header: 'Optimistic (O)', key: 'optimistic', width: 16 },
         { header: 'Most Likely (M)', key: 'mostLikely', width: 16 },
         { header: 'Pessimistic (P)', key: 'pessimistic', width: 16 },
-        { header: 'Expected (tₑ)', key: 'expectedTime', width: 16 },
-        { header: 'Std Dev (σ)', key: 'standardDeviation', width: 16 },
-        { header: 'Variance (σ²)', key: 'variance', width: 16 },
+        { header: 'Expected', key: 'expectedTime', width: 16 },
+        { header: 'Std Dev', key: 'standardDeviation', width: 16 },
+        { header: 'Variance', key: 'variance', width: 16 },
     ];
 
     taskList.forEach((task) => {
@@ -504,7 +478,7 @@ function exportToExcel(): void {
 
     // Formula footnote
     taskSheet.addRow([]);
-    const footnote = taskSheet.addRow(['tₑ = (O + 4M + P) / 6   ·   σ = (P − O) / 6   ·   σ² = σ × σ']);
+    const footnote = taskSheet.addRow(['te = (O + 4M + P) / 6   ·   sigma = (P - O) / 6   ·   variance = sigma * sigma']);
     footnote.font = { italic: true, color: { argb: 'FF888888' }, size: 9 };
 
     // ── Sheet 2: PERT Analysis ───────────────────────────────────────────────
@@ -527,9 +501,9 @@ function exportToExcel(): void {
 
     const analysisRows = [
         { metric: 'Desired Completion Time (D)', value: targetDuration.value },
-        { metric: 'Total Expected Time (Tₑ)', value: parseFloat(totalExpectedTime.toFixed(2)) },
-        { metric: 'Total Variance (σ²)', value: parseFloat(totalVariance.toFixed(3)) },
-        { metric: 'Standard Deviation (√σ²)', value: parseFloat(Math.sqrt(totalVariance).toFixed(3)) },
+        { metric: 'Total Expected Time', value: parseFloat(totalExpectedTime.toFixed(2)) },
+        { metric: 'Total Variance', value: parseFloat(totalVariance.toFixed(3)) },
+        { metric: 'Standard Deviation', value: parseFloat(Math.sqrt(totalVariance).toFixed(3)) },
         { metric: 'Z-Score', value: parseFloat(zScore.toFixed(3)) },
         { metric: 'On-Time Probability (%)', value: parseFloat(probability.toFixed(1)) },
     ];
