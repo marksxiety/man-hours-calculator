@@ -15,7 +15,7 @@
                             Man Hours Estimator
                         </h1>
                     </div>
-                    <Button variant="outline" size="icon">
+                    <Button variant="outline" size="icon" @click="showInfoDialog = true">
                         <Info class="w-4 h-4" />
                     </Button>
                 </div>
@@ -346,6 +346,182 @@
                     </div>
                 </div>
             </div>
+            <!-- Info Dialog -->
+<Dialog v-model:open="showInfoDialog">
+    <DialogContent class="flex flex-col gap-0 p-0 max-w-md w-[calc(100vw-2rem)] max-h-[90dvh] rounded-xl overflow-hidden">
+
+        <!-- Fixed Header -->
+        <DialogHeader class="px-5 pt-5 pb-4 border-b border-border shrink-0">
+            <DialogTitle class="flex items-center gap-2 text-sm">
+                <div class="w-7 h-7 rounded-md bg-muted flex items-center justify-center shrink-0">
+                    <Info class="w-3.5 h-3.5 text-muted-foreground" />
+                </div>
+                How to Use the Estimator
+            </DialogTitle>
+            <DialogDescription class="text-xs mt-1">
+                A quick guide to PERT-based man-hour estimation.
+            </DialogDescription>
+        </DialogHeader>
+
+        <!-- Scrollable Body -->
+        <div class="overflow-y-auto flex-1 px-5 py-4 space-y-5">
+
+            <!-- Steps -->
+            <div class="space-y-4">
+                <p class="font-mono text-[10px] tracking-widest uppercase text-muted-foreground">Steps</p>
+
+                <div class="flex gap-3">
+                    <div class="flex-shrink-0 w-6 h-6 rounded-full bg-muted flex items-center justify-center mt-0.5">
+                        <span class="font-mono text-[10px] font-semibold text-primary">1</span>
+                    </div>
+                    <div class="space-y-0.5">
+                        <p class="text-sm font-medium">Enter three-point estimates per task</p>
+                        <p class="text-xs text-muted-foreground leading-relaxed">
+                            For each task, provide an <span class="font-medium text-foreground">Optimistic (O)</span> best-case,
+                            <span class="font-medium text-foreground">Most Likely (M)</span> realistic, and
+                            <span class="font-medium text-foreground">Pessimistic (P)</span> worst-case hour estimate.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="flex gap-3">
+                    <div class="flex-shrink-0 w-6 h-6 rounded-full bg-muted flex items-center justify-center mt-0.5">
+                        <span class="font-mono text-[10px] font-semibold text-primary">2</span>
+                    </div>
+                    <div class="space-y-0.5">
+                        <p class="text-sm font-medium">Expected time is auto-calculated</p>
+                        <p class="text-xs text-muted-foreground leading-relaxed">
+                            Once a task is added, the PERT formula runs automatically — no manual calculation needed.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="flex gap-3">
+                    <div class="flex-shrink-0 w-6 h-6 rounded-full bg-muted flex items-center justify-center mt-0.5">
+                        <span class="font-mono text-[10px] font-semibold text-primary">3</span>
+                    </div>
+                    <div class="space-y-0.5">
+                        <p class="text-sm font-medium">Set a desired completion time</p>
+                        <p class="text-xs text-muted-foreground leading-relaxed">
+                            Enter your target deadline in hours under <span class="font-medium text-foreground">Desired Completion Time (D)</span>.
+                            The tool calculates a Z-score and maps it to an on-time probability.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="flex gap-3">
+                    <div class="flex-shrink-0 w-6 h-6 rounded-full bg-muted flex items-center justify-center mt-0.5">
+                        <span class="font-mono text-[10px] font-semibold text-primary">4</span>
+                    </div>
+                    <div class="space-y-0.5">
+                        <p class="text-sm font-medium">Interpret the probability</p>
+                        <p class="text-xs text-muted-foreground leading-relaxed">
+                            Aim for <span class="font-medium text-foreground">≥ 80%</span> for reliable delivery.
+                            Below 50% signals the deadline is too aggressive.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <Separator />
+
+            <!-- Formulas -->
+            <div class="space-y-3">
+                <p class="font-mono text-[10px] tracking-widest uppercase text-muted-foreground">Formulas</p>
+
+                <div class="space-y-2.5">
+                    <div class="rounded-lg border border-primary/50 bg-muted/40 p-3 space-y-1.5">
+                        <div class="flex items-center justify-between gap-2">
+                            <p class="text-xs font-medium">Expected Duration</p>
+                            <span class="font-mono text-[10px] tracking-widest uppercase text-muted-foreground bg-muted px-1.5 py-0.5 rounded">E</span>
+                        </div>
+                        <code class="block font-mono text-xs bg-background border border-border rounded-md px-3 py-2 text-center tracking-wide">
+                            E = (O + 4M + P) / 6
+                        </code>
+                        <p class="text-[11px] text-muted-foreground leading-relaxed">
+                            Weighted average that emphasises the most likely estimate 4×.
+                        </p>
+                    </div>
+
+                    <div class="rounded-lg border border-primary/50 bg-muted/40 p-3 space-y-1.5">
+                        <div class="flex items-center justify-between gap-2">
+                            <p class="text-xs font-medium">Variance</p>
+                            <span class="font-mono text-[10px] tracking-widest uppercase text-muted-foreground bg-muted px-1.5 py-0.5 rounded">σ²</span>
+                        </div>
+                        <code class="block font-mono text-xs bg-background border border-border rounded-md px-3 py-2 text-center tracking-wide">
+                            σ² = ((P − O) / 6)²
+                        </code>
+                        <p class="text-[11px] text-muted-foreground leading-relaxed">
+                            Measures uncertainty. Higher variance means a wider spread between best and worst case.
+                        </p>
+                    </div>
+
+                    <div class="rounded-lg border border-primary/50 bg-muted/40 p-3 space-y-1.5">
+                        <div class="flex items-center justify-between gap-2">
+                            <p class="text-xs font-medium">Standard Deviation</p>
+                            <span class="font-mono text-[10px] tracking-widest uppercase text-muted-foreground bg-muted px-1.5 py-0.5 rounded">σ</span>
+                        </div>
+                        <code class="block font-mono text-xs bg-background border border-border rounded-md px-3 py-2 text-center tracking-wide">
+                            σ = (P − O) / 6
+                        </code>
+                        <p class="text-[11px] text-muted-foreground leading-relaxed">
+                            Square root of variance. Used to compute the Z-score for probability lookup.
+                        </p>
+                    </div>
+
+                    <div class="rounded-lg border border-primary/50 bg-muted/40 p-3 space-y-1.5">
+                        <div class="flex items-center justify-between gap-2">
+                            <p class="text-xs font-medium">Z-Score</p>
+                            <span class="font-mono text-[10px] tracking-widest uppercase text-muted-foreground bg-muted px-1.5 py-0.5 rounded">Z</span>
+                        </div>
+                        <code class="block font-mono text-xs bg-background border border-border rounded-md px-3 py-2 text-center tracking-wide">
+                            Z = (D − ΣE) / √Σσ²
+                        </code>
+                        <p class="text-[11px] text-muted-foreground leading-relaxed">
+                            How many standard deviations your deadline (D) is from the total expected time. Mapped to a normal distribution for the final probability.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <Separator />
+
+            <!-- FAQ -->
+            <div class="space-y-3 pb-1">
+                <p class="font-mono text-[10px] tracking-widest uppercase text-muted-foreground">FAQ</p>
+
+                <div class="space-y-1">
+                    <p class="text-xs font-medium">What if I only have one estimate?</p>
+                    <p class="text-xs text-muted-foreground leading-relaxed">
+                        Set O, M, and P to the same value. Variance becomes zero, indicating full confidence in that estimate.
+                    </p>
+                </div>
+
+                <div class="space-y-1">
+                    <p class="text-xs font-medium">What does a negative Z-score mean?</p>
+                    <p class="text-xs text-muted-foreground leading-relaxed">
+                        Your target is shorter than the expected total — probability drops below 50%, meaning the project is likely to overrun.
+                    </p>
+                </div>
+
+                <div class="space-y-1">
+                    <p class="text-xs font-medium">How do I export the results?</p>
+                    <p class="text-xs text-muted-foreground leading-relaxed">
+                        Use the <span class="font-medium text-foreground">Export</span> button in the Task Breakdown section to download an Excel file of all tasks and computed values.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Fixed Footer -->
+        <div class="px-5 py-4 border-t border-border shrink-0">
+            <Button class="w-full font-mono text-xs border-primary/50 hover:bg-primary/10" @click="showInfoDialog = false">
+                Got it
+            </Button>
+        </div>
+
+    </DialogContent>
+</Dialog>
         </div>
     </div>
 </template>
@@ -362,6 +538,7 @@ import { Separator } from '@/components/ui/separator'
 import { NumberField, NumberFieldContent, NumberFieldInput } from '@/components/ui/number-field'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { HoverCard, HoverCardTrigger, HoverCardContent } from '@/components/ui/hover-card'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog'
 import { ChevronLeft, Download, X, RotateCcw, Info, Plus, AlertCircle, CheckCircle, HelpCircle, Star, Target, AlertTriangle, CalendarClock } from 'lucide-vue-next'
 import { calculateExpectedTime } from '@/utils/calculateExpectedTime'
 import { calculateStandardDeviation } from '@/utils/calculateStandardDeviation'
@@ -381,6 +558,7 @@ const newTaskForm = reactive<NewTask>({
 })
 const targetDuration = ref<number | null>(null)
 const showAlert = ref(false)
+const showInfoDialog = ref(false)
 const alertMessage = ref('')
 const alertType = ref<'destructive' | 'default'>('destructive')
 let alertTimeout: ReturnType<typeof setTimeout> | null = null
