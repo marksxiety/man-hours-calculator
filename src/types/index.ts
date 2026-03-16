@@ -1,8 +1,8 @@
 export interface NewTask {
     taskName: string
-    optimistic: number
-    mostLikely: number
-    pessimistic: number
+    optimistic: number | null
+    mostLikely: number | null
+    pessimistic: number | null
 }
 
 export interface Analysis {
