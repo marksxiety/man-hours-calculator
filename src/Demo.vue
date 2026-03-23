@@ -871,6 +871,10 @@ function goToHome(): void {
 }
 
 function exportToExcel(): void {
+    if (targetDuration.value === null) {
+        toast.error('Please add a Desired Completion Time (D) before exporting')
+        return
+    }
     const workbook = new ExcelJS.Workbook();
 
     // ── Sheet 1: Task Breakdown ──────────────────────────────────────────────
