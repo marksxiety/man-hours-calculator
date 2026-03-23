@@ -966,11 +966,6 @@ function exportToExcel(): void {
     };
     taskHeader.alignment = { horizontal: 'center' };
 
-    // Formula footnote
-    taskSheet.addRow([]);
-    const footnote = taskSheet.addRow(['te = (O + 4M + P) / 6   ·   sigma = (P - O) / 6   ·   variance = sigma * sigma']);
-    footnote.font = { italic: true, color: { argb: 'FF888888' }, size: 9 };
-
     // ── Sheet 2: PERT Analysis ───────────────────────────────────────────────
     const analysisSheet = workbook.addWorksheet('PERT Analysis');
 
