@@ -66,6 +66,30 @@
               <AlertTitle>{{ alertType === 'destructive' ? 'Missing Values' : 'Success' }}</AlertTitle>
               <AlertDescription>{{ alertMessage }}</AlertDescription>
             </Alert>
+            <div class="grid gap-2">
+              <div class="flex items-center justify-between">
+                <Label
+                  for="milestone"
+                  class="text-xs font-medium"
+                >Milestone</Label>
+                <div class="flex items-center gap-2">
+                  <Checkbox 
+                    id="retainMilestone" 
+                    v-model="retainMilestone" 
+                  />
+                  <Label
+                    for="retainMilestone"
+                    class="text-[10px] text-muted-foreground cursor-pointer"
+                  >Retain</Label>
+                </div>
+              </div>
+              <Input
+                id="milestone"
+                v-model="newTaskForm.milestone"
+                type="text"
+                placeholder="e.g. Planning"
+              />
+            </div>
 
             <div class="grid gap-2">
               <Label
@@ -396,6 +420,9 @@
               <thead class="bg-muted sticky top-0 z-10">
                 <tr class="text-xs font-semibold">
                   <th class="text-left text-muted-foreground px-4 py-2.5 border-b border-border">
+                    Milestone
+                  </th>
+                  <th class="text-left text-muted-foreground px-4 py-2.5 border-b border-border">
                     Task
                     Name
                   </th>
@@ -424,53 +451,66 @@
               <tbody class="divide-y divide-border/50">
                 <tr v-if="taskList.length === 0">
                   <td
-                    colspan="8"
+                    colspan="9"
                     class="py-16 text-center text-muted-foreground"
                   >
                     No tasks added yet. Start by adding a task above.
                   </td>
                 </tr>
-                <tr
-                  v-for="(task, index) in taskList"
-                  v-else
-                  :key="index"
-                  class="hover:bg-muted/20 transition-colors duration-150"
-                >
-                  <td class="px-4 py-3 font-medium min-w-[200px]">
-                    {{ task.taskName }}
-                  </td>
-                  <td class="px-4 py-3 text-center tabular-nums">
-                    {{ task.optimistic?.toFixed(1) ?? ''
-                    }}
-                  </td>
-                  <td class="px-4 py-3 text-center tabular-nums">
-                    {{ task.mostLikely?.toFixed(1) ?? ''
-                    }}
-                  </td>
-                  <td class="px-4 py-3 text-center tabular-nums">
-                    {{ task.pessimistic?.toFixed(1) ?? ''
-                    }}
-                  </td>
-                  <td class="px-4 py-3 text-center font-bold tabular-nums text-primary">
-                    {{
-                      task.expectedTime.toFixed(2) }}
-                  </td>
-                  <td class="px-4 py-3 text-center tabular-nums">
-                    {{ task.standardDeviation.toFixed(3)
-                    }}
-                  </td>
-                  <td class="px-4 py-3 text-center tabular-nums">
-                    {{ task.variance.toFixed(3) }}
-                  </td>
-                  <td class="px-4 py-3 text-right">
-                    <button
-                      class="h-8 w-8 inline-flex items-center justify-center rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
-                      @click="removeTask(index)"
+                <template v-else>
+                  <template
+                    v-for="(group, groupIndex) in groupedTasks"
+                    :key="group.milestone"
+                  >
+                    <tr
+                      v-for="(task, taskIndex) in group.tasks"
+                      :key="`${groupIndex}-${taskIndex}`"
+                      class="hover:bg-muted/20 transition-colors duration-150"
                     >
-                      <X class="w-3.5 h-3.5" />
-                    </button>
-                  </td>
-                </tr>
+                      <td
+                        v-if="taskIndex === 0"
+                        :rowspan="group.tasks.length"
+                        class="px-4 py-3 font-medium bg-muted/30 align-top min-w-[150px]"
+                      >
+                        {{ group.milestone }}
+                      </td>
+                      <td class="px-4 py-3 font-medium min-w-[200px]">
+                        {{ task.taskName }}
+                      </td>
+                      <td class="px-4 py-3 text-center tabular-nums">
+                        {{ task.optimistic?.toFixed(1) ?? ''
+                        }}
+                      </td>
+                      <td class="px-4 py-3 text-center tabular-nums">
+                        {{ task.mostLikely?.toFixed(1) ?? ''
+                        }}
+                      </td>
+                      <td class="px-4 py-3 text-center tabular-nums">
+                        {{ task.pessimistic?.toFixed(1) ?? ''
+                        }}
+                      </td>
+                      <td class="px-4 py-3 text-center font-bold tabular-nums text-primary">
+                        {{
+                          task.expectedTime.toFixed(2) }}
+                      </td>
+                      <td class="px-4 py-3 text-center tabular-nums">
+                        {{ task.standardDeviation.toFixed(3)
+                        }}
+                      </td>
+                      <td class="px-4 py-3 text-center tabular-nums">
+                        {{ task.variance.toFixed(3) }}
+                      </td>
+                      <td class="px-4 py-3 text-right">
+                        <button
+                          class="h-8 w-8 inline-flex items-center justify-center rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                          @click="removeTask(taskList.indexOf(task))"
+                        >
+                          <X class="w-3.5 h-3.5" />
+                        </button>
+                      </td>
+                    </tr>
+                  </template>
+                </template>
               </tbody>
             </table>
           </div>
@@ -697,6 +737,7 @@ import { NumberField, NumberFieldContent, NumberFieldInput } from '@/components/
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { HoverCard, HoverCardTrigger, HoverCardContent } from '@/components/ui/hover-card'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
+import { Checkbox } from '@/components/ui/checkbox'
 import { ChevronLeft, Download, X, RotateCcw, Info, Plus, AlertCircle, CheckCircle, HelpCircle, Star, Target, AlertTriangle, CalendarClock } from 'lucide-vue-next'
 import { calculateExpectedTime } from '@/utils/calculateExpectedTime'
 import { calculateStandardDeviation } from '@/utils/calculateStandardDeviation'
@@ -710,6 +751,7 @@ const router = useRouter()
 const taskList = reactive<PERTTaskResult[]>([])
 const newTaskForm = reactive<NewTask>({
     taskName: '',
+    milestone: '',
     optimistic: null,
     mostLikely: null,
     pessimistic: null,
@@ -717,6 +759,7 @@ const newTaskForm = reactive<NewTask>({
 const targetDuration = ref<number | null>(null)
 const showAlert = ref(false)
 const showInfoDialog = ref(false)
+const retainMilestone = ref(false)
 const alertMessage = ref('')
 const alertType = ref<'destructive' | 'default'>('destructive')
 let alertTimeout: ReturnType<typeof setTimeout> | null = null
@@ -729,8 +772,30 @@ const pertAnalysis = computed<Analysis>(() => {
     return { totalExpectedTime, totalVariance, zScore, probability }
 })
 
+const groupedTasks = computed(() => {
+    const groups: { milestone: string; tasks: PERTTaskResult[] }[] = []
+    const milestoneMap = new Map<string, PERTTaskResult[]>()
+
+    taskList.forEach(task => {
+        const milestone = task.milestone || 'Uncategorized'
+        if (!milestoneMap.has(milestone)) {
+            milestoneMap.set(milestone, [])
+        }
+        milestoneMap.get(milestone)!.push(task)
+    })
+
+    milestoneMap.forEach((tasks, milestone) => {
+        groups.push({ milestone, tasks })
+    })
+
+    return groups
+})
+
 function resetTaskForm(): void {
     newTaskForm.taskName = ''
+    if (!retainMilestone.value) {
+        newTaskForm.milestone = ''
+    }
     newTaskForm.optimistic = null
     newTaskForm.mostLikely = null
     newTaskForm.pessimistic = null
@@ -743,6 +808,7 @@ function resetAll(): void {
 }
 
 function addTask(): void {
+  console.log('retain milestone', retainMilestone.value)
     if (newTaskForm.optimistic === null || newTaskForm.mostLikely === null || newTaskForm.pessimistic === null) {
         const missingFields = []
         if (newTaskForm.optimistic === null) missingFields.push('Optimistic (O)')
@@ -766,6 +832,7 @@ function addTask(): void {
     const variance = calculateVariance(standardDeviation)
     taskList.push({
         taskName: newTaskForm.taskName,
+        milestone: newTaskForm.milestone,
         optimistic: newTaskForm.optimistic,
         mostLikely: newTaskForm.mostLikely,
         pessimistic: newTaskForm.pessimistic,
@@ -800,6 +867,7 @@ function exportToExcel(): void {
     const taskSheet = workbook.addWorksheet('Task Breakdown');
 
     taskSheet.columns = [
+        { header: 'Milestone', key: 'milestone', width: 25 },
         { header: 'Task Name', key: 'taskName', width: 30 },
         { header: 'Optimistic (O)', key: 'optimistic', width: 16 },
         { header: 'Most Likely (M)', key: 'mostLikely', width: 16 },
@@ -811,6 +879,7 @@ function exportToExcel(): void {
 
     taskList.forEach((task) => {
         taskSheet.addRow({
+            milestone: task.milestone || 'Uncategorized',
             taskName: task.taskName,
             optimistic: task.optimistic,
             mostLikely: task.mostLikely,
