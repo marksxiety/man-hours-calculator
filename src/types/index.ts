@@ -1,6 +1,7 @@
 export interface NewTask {
     taskName: string
     milestone: string
+    description: string
     optimistic: number | null
     mostLikely: number | null
     pessimistic: number | null
