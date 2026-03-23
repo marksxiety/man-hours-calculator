@@ -499,17 +499,41 @@
                           </HoverCardContent>
                         </HoverCard>
                       </td>
-                      <td class="px-4 py-3 text-center tabular-nums">
-                        {{ task.optimistic?.toFixed(1) ?? ''
-                        }}
+                      <td class="px-4 py-3 text-center min-w-24">
+                        <NumberField
+                          :model-value="task.optimistic"
+                          :min="0"
+                          :format-options="task.optimistic !== null ? { minimumFractionDigits: 1 } : undefined"
+                          @update:model-value="updateTask(taskList.indexOf(task), 'optimistic', $event)"
+                        >
+                          <NumberFieldContent>
+                            <NumberFieldInput class="bg-background text-center tabular-nums w-20" />
+                          </NumberFieldContent>
+                        </NumberField>
                       </td>
-                      <td class="px-4 py-3 text-center tabular-nums">
-                        {{ task.mostLikely?.toFixed(1) ?? ''
-                        }}
+                      <td class="px-4 py-3 text-center min-w-24">
+                        <NumberField
+                          :model-value="task.mostLikely"
+                          :min="0"
+                          :format-options="task.mostLikely !== null ? { minimumFractionDigits: 1 } : undefined"
+                          @update:model-value="updateTask(taskList.indexOf(task), 'mostLikely', $event)"
+                        >
+                          <NumberFieldContent>
+                            <NumberFieldInput class="bg-background text-center tabular-nums w-20" />
+                          </NumberFieldContent>
+                        </NumberField>
                       </td>
-                      <td class="px-4 py-3 text-center tabular-nums">
-                        {{ task.pessimistic?.toFixed(1) ?? ''
-                        }}
+                      <td class="px-4 py-3 text-center min-w-24">
+                        <NumberField
+                          :model-value="task.pessimistic"
+                          :min="0"
+                          :format-options="task.pessimistic !== null ? { minimumFractionDigits: 1 } : undefined"
+                          @update:model-value="updateTask(taskList.indexOf(task), 'pessimistic', $event)"
+                        >
+                          <NumberFieldContent>
+                            <NumberFieldInput class="bg-background text-center tabular-nums w-20" />
+                          </NumberFieldContent>
+                        </NumberField>
                       </td>
                       <td class="px-4 py-3 text-center font-bold tabular-nums text-primary">
                         {{
@@ -864,6 +888,18 @@ function addTask(): void {
 
 function removeTask(index: number): void {
     taskList.splice(index, 1)
+}
+
+function updateTask(index: number, field: 'optimistic' | 'mostLikely' | 'pessimistic', value: number | null): void {
+    const task = taskList[index]
+    if (task) {
+        task[field] = value
+        if (task.optimistic !== null && task.mostLikely !== null && task.pessimistic !== null) {
+            task.expectedTime = calculateExpectedTime(task)
+            task.standardDeviation = calculateStandardDeviation(task)
+            task.variance = calculateVariance(task.standardDeviation)
+        }
+    }
 }
 
 function goToHome(): void {
