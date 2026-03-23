@@ -493,7 +493,7 @@
                             side="top"
                             align="start"
                           >
-                            <p class="text-xs leading-relaxed whitespace-pre-wrap break-words">
+                            <p class="text-xs leading-relaxed whitespace-pre-wrap wrap-break-word">
                               {{ task.description }}
                             </p>
                           </HoverCardContent>
