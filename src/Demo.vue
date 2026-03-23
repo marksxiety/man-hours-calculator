@@ -470,11 +470,11 @@
                       <td
                         v-if="taskIndex === 0"
                         :rowspan="group.tasks.length"
-                        class="px-4 py-3 font-medium bg-muted/30 align-top min-w-[150px]"
+                        class="px-4 py-3 font-medium bg-muted/30 align-top min-w-37.5"
                       >
                         {{ group.milestone }}
                       </td>
-                      <td class="px-4 py-3 font-medium min-w-[200px]">
+                      <td class="px-4 py-3 font-medium min-w-50">
                         {{ task.taskName }}
                       </td>
                       <td class="px-4 py-3 text-center tabular-nums">
@@ -541,7 +541,7 @@
               </p>
 
               <div class="flex gap-3">
-                <div class="flex-shrink-0 w-6 h-6 rounded-full bg-muted flex items-center justify-center mt-0.5">
+                <div class="shrink-0 w-6 h-6 rounded-full bg-muted flex items-center justify-center mt-0.5">
                   <span class="font-mono text-[10px] font-semibold text-primary">1</span>
                 </div>
                 <div class="space-y-0.5">
@@ -557,7 +557,7 @@
               </div>
 
               <div class="flex gap-3">
-                <div class="flex-shrink-0 w-6 h-6 rounded-full bg-muted flex items-center justify-center mt-0.5">
+                <div class="shrink-0 w-6 h-6 rounded-full bg-muted flex items-center justify-center mt-0.5">
                   <span class="font-mono text-[10px] font-semibold text-primary">2</span>
                 </div>
                 <div class="space-y-0.5">
@@ -571,7 +571,7 @@
               </div>
 
               <div class="flex gap-3">
-                <div class="flex-shrink-0 w-6 h-6 rounded-full bg-muted flex items-center justify-center mt-0.5">
+                <div class="shrink-0 w-6 h-6 rounded-full bg-muted flex items-center justify-center mt-0.5">
                   <span class="font-mono text-[10px] font-semibold text-primary">3</span>
                 </div>
                 <div class="space-y-0.5">
@@ -586,7 +586,7 @@
               </div>
 
               <div class="flex gap-3">
-                <div class="flex-shrink-0 w-6 h-6 rounded-full bg-muted flex items-center justify-center mt-0.5">
+                <div class="shrink-0 w-6 h-6 rounded-full bg-muted flex items-center justify-center mt-0.5">
                   <span class="font-mono text-[10px] font-semibold text-primary">4</span>
                 </div>
                 <div class="space-y-0.5">
