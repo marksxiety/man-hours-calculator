@@ -568,8 +568,8 @@
           <!-- Fixed Header -->
           <DialogHeader class="px-5 pt-5 pb-4 border-b border-border shrink-0">
             <DialogTitle class="flex items-center gap-2 text-sm">
-              <div class="w-7 h-7 rounded-md bg-muted flex items-center justify-center shrink-0">
-                <Info class="w-3.5 h-3.5 text-muted-foreground" />
+              <div class="w-7 h-7 rounded-md bg-muted text-primary flex items-center justify-center shrink-0">
+                <Info class="w-3.5 h-3.5" />
               </div>
               How to Use the Estimator
             </DialogTitle>
@@ -758,7 +758,7 @@
           <!-- Fixed Footer -->
           <div class="px-5 py-4 border-t border-border shrink-0">
             <Button
-              class="w-full font-mono text-xs border-primary/50 hover:bg-primary/10"
+              class="w-full font-mono text-xs border-primary/50 hover:bg-primary/50"
               @click="showInfoDialog = false"
             >
               Got it
