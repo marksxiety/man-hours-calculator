@@ -88,6 +88,19 @@
               />
             </div>
 
+            <div class="grid gap-2">
+              <Label
+                for="description"
+                class="text-xs font-medium"
+              >Description (Optional)</Label>
+              <Textarea
+                id="description"
+                v-model="newTaskForm.description"
+                placeholder="Add additional details about this task..."
+                class="resize-none min-h-16 max-h-24"
+              />
+            </div>
+
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <!-- Optimistic -->
               <div class="grid gap-2">
@@ -410,6 +423,9 @@
                     Task
                     Name
                   </th>
+                  <th class="text-left text-muted-foreground px-4 py-2.5 border-b border-border">
+                    Description
+                  </th>
                   <th class="text-center text-muted-foreground px-4 py-2.5 border-b border-border">
                     O
                   </th>
@@ -435,7 +451,7 @@
               <tbody class="divide-y divide-border/50">
                 <tr v-if="taskList.length === 0">
                   <td
-                    colspan="9"
+                    colspan="10"
                     class="py-16 text-center text-muted-foreground"
                   >
                     No tasks added yet. Start by adding a task above.
@@ -460,6 +476,28 @@
                       </td>
                       <td class="px-4 py-3 font-medium min-w-50">
                         {{ task.taskName }}
+                      </td>
+                      <td class="px-4 py-3 max-w-48 min-w-48">
+                        <HoverCard
+                          :open-delay="100"
+                          :close-delay="50"
+                        >
+                          <HoverCardTrigger as-child>
+                            <div class="truncate text-muted-foreground text-xs">
+                              {{ task.description || '-' }}
+                            </div>
+                          </HoverCardTrigger>
+                          <HoverCardContent
+                            v-if="task.description && isTextTruncated(task.description)"
+                            class="w-72 max-w-72 max-h-48 overflow-auto p-4"
+                            side="top"
+                            align="start"
+                          >
+                            <p class="text-xs leading-relaxed whitespace-pre-wrap break-words">
+                              {{ task.description }}
+                            </p>
+                          </HoverCardContent>
+                        </HoverCard>
                       </td>
                       <td class="px-4 py-3 text-center tabular-nums">
                         {{ task.optimistic?.toFixed(1) ?? ''
@@ -721,6 +759,7 @@ import { NumberField, NumberFieldContent, NumberFieldInput } from '@/components/
 import { HoverCard, HoverCardTrigger, HoverCardContent } from '@/components/ui/hover-card'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
 import { Checkbox } from '@/components/ui/checkbox'
+import { Textarea } from '@/components/ui/textarea'
 import { ChevronLeft, Download, X, RotateCcw, Info, Plus, HelpCircle, Star, Target, AlertTriangle, CalendarClock } from 'lucide-vue-next'
 import { calculateExpectedTime } from '@/utils/calculateExpectedTime'
 import { calculateStandardDeviation } from '@/utils/calculateStandardDeviation'
@@ -736,6 +775,7 @@ const taskList = reactive<PERTTaskResult[]>([])
 const newTaskForm = reactive<NewTask>({
     taskName: '',
     milestone: '',
+    description: '',
     optimistic: null,
     mostLikely: null,
     pessimistic: null,
@@ -743,6 +783,9 @@ const newTaskForm = reactive<NewTask>({
 const targetDuration = ref<number | null>(null)
 const showInfoDialog = ref(false)
 const retainMilestone = ref(false)
+function isTextTruncated(text: string): boolean {
+    return text.length > 40
+}
 
 const pertAnalysis = computed<Analysis>(() => {
     const totalExpectedTime = calculateTotalExpectedTime(taskList)
@@ -773,6 +816,7 @@ const groupedTasks = computed(() => {
 
 function resetTaskForm(): void {
     newTaskForm.taskName = ''
+    newTaskForm.description = ''
     if (!retainMilestone.value) {
         newTaskForm.milestone = ''
     }
@@ -805,6 +849,7 @@ function addTask(): void {
     taskList.push({
         taskName: newTaskForm.taskName,
         milestone: newTaskForm.milestone,
+        description: newTaskForm.description,
         optimistic: newTaskForm.optimistic,
         mostLikely: newTaskForm.mostLikely,
         pessimistic: newTaskForm.pessimistic,
@@ -834,6 +879,7 @@ function exportToExcel(): void {
     taskSheet.columns = [
         { header: 'Milestone', key: 'milestone', width: 25 },
         { header: 'Task Name', key: 'taskName', width: 30 },
+        { header: 'Description', key: 'description', width: 50 },
         { header: 'Optimistic (O)', key: 'optimistic', width: 16 },
         { header: 'Most Likely (M)', key: 'mostLikely', width: 16 },
         { header: 'Pessimistic (P)', key: 'pessimistic', width: 16 },
@@ -846,6 +892,7 @@ function exportToExcel(): void {
         taskSheet.addRow({
             milestone: task.milestone || 'Uncategorized',
             taskName: task.taskName,
+            description: task.description || '',
             optimistic: task.optimistic,
             mostLikely: task.mostLikely,
             pessimistic: task.pessimistic,
