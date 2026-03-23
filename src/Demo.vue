@@ -50,22 +50,6 @@
           </div>
 
           <div class="space-y-4">
-            <Alert
-              v-if="showAlert"
-              :variant="alertType"
-              class="transition-all duration-300"
-            >
-              <AlertCircle
-                v-if="alertType === 'destructive'"
-                class="w-4 h-4"
-              />
-              <CheckCircle
-                v-else
-                class="w-4 h-4 text-green-500"
-              />
-              <AlertTitle>{{ alertType === 'destructive' ? 'Missing Values' : 'Success' }}</AlertTitle>
-              <AlertDescription>{{ alertMessage }}</AlertDescription>
-            </Alert>
             <div class="grid gap-2">
               <div class="flex items-center justify-between">
                 <Label
@@ -734,17 +718,17 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { NumberField, NumberFieldContent, NumberFieldInput } from '@/components/ui/number-field'
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { HoverCard, HoverCardTrigger, HoverCardContent } from '@/components/ui/hover-card'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
 import { Checkbox } from '@/components/ui/checkbox'
-import { ChevronLeft, Download, X, RotateCcw, Info, Plus, AlertCircle, CheckCircle, HelpCircle, Star, Target, AlertTriangle, CalendarClock } from 'lucide-vue-next'
+import { ChevronLeft, Download, X, RotateCcw, Info, Plus, HelpCircle, Star, Target, AlertTriangle, CalendarClock } from 'lucide-vue-next'
 import { calculateExpectedTime } from '@/utils/calculateExpectedTime'
 import { calculateStandardDeviation } from '@/utils/calculateStandardDeviation'
 import { calculateVariance } from '@/utils/calculateVariance'
 import { calculateTotalExpectedTime, calculateTotalVariance } from '@/utils/calculateTotals'
 import { calculateZScore } from '@/utils/calculateZScore'
 import { calculateProbability } from '@/utils/calculateProbability'
+import { toast } from 'vue-sonner'
 
 const router = useRouter()
 
@@ -757,12 +741,8 @@ const newTaskForm = reactive<NewTask>({
     pessimistic: null,
 })
 const targetDuration = ref<number | null>(null)
-const showAlert = ref(false)
 const showInfoDialog = ref(false)
 const retainMilestone = ref(false)
-const alertMessage = ref('')
-const alertType = ref<'destructive' | 'default'>('destructive')
-let alertTimeout: ReturnType<typeof setTimeout> | null = null
 
 const pertAnalysis = computed<Analysis>(() => {
     const totalExpectedTime = calculateTotalExpectedTime(taskList)
@@ -815,15 +795,7 @@ function addTask(): void {
         if (newTaskForm.mostLikely === null) missingFields.push('Most Likely (M)')
         if (newTaskForm.pessimistic === null) missingFields.push('Pessimistic (P)')
 
-        alertMessage.value = `Please fill in all fields: ${missingFields.join(', ')}`
-        alertType.value = 'destructive'
-        showAlert.value = true
-
-        if (alertTimeout) clearTimeout(alertTimeout)
-        alertTimeout = setTimeout(() => {
-            showAlert.value = false
-        }, 4000)
-
+        toast.error(`Please fill in all fields: ${missingFields.join(', ')}`)
         return
     }
 
@@ -842,14 +814,7 @@ function addTask(): void {
     })
     resetTaskForm()
 
-    alertMessage.value = 'Task added successfully!'
-    alertType.value = 'default'
-    showAlert.value = true
-
-    if (alertTimeout) clearTimeout(alertTimeout)
-    alertTimeout = setTimeout(() => {
-        showAlert.value = false
-    }, 4000)
+    toast.success('Task added successfully!')
 }
 
 function removeTask(index: number): void {
