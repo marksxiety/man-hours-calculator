@@ -29,19 +29,21 @@
           <ArrowRight class="w-4 h-4 transition-transform duration-150 group-hover:translate-x-1" />
         </Button>
 
-        <a
+        <Button
+          variant="secondary"
+          size="icon"
+          as="a"
           href="https://github.com/marksxiety/man-hours-calculator"
           target="_blank"
           rel="noopener noreferrer"
-          class="inline-flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors duration-150 group"
+          class="border border-transparent hover:border-primary"
         >
           <Icon
             icon="mdi:github"
             width="24"
             height="24"
           />
-          <span class="font-mono tracking-wide">View on GitHub</span>
-        </a>
+        </Button>
       </div>
     </section>
 
