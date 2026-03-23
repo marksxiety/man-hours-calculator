@@ -1,5 +1,5 @@
 <template>
-<Toaster position="top-right" />
+  <Toaster position="top-right" />
   <main class="relative h-screen bg-background text-foreground overflow-hidden">
     <div
       class="grid-bg"
