@@ -1,4 +1,5 @@
 <template>
+<Toaster position="top-right" />
   <main class="relative h-screen bg-background text-foreground overflow-hidden">
     <div
       class="grid-bg"
@@ -34,6 +35,8 @@ import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Sun, Moon, Monitor } from 'lucide-vue-next'
 import { useAppearance } from '@/composables/useAppearance'
+import 'vue-sonner/style.css'
+import { Toaster } from '@/components/ui/sonner'
 
 const themeOrder = ['light', 'dark', 'system'] as const
 
