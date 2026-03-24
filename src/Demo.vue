@@ -57,9 +57,9 @@
                   class="text-xs font-medium"
                 >Milestone</Label>
                 <div class="flex items-center gap-2">
-                  <Checkbox 
-                    id="retainMilestone" 
-                    v-model="retainMilestone" 
+                  <Checkbox
+                    id="retainMilestone"
+                    v-model="retainMilestone"
                   />
                   <Label
                     for="retainMilestone"
@@ -125,9 +125,7 @@
                       align="start"
                     >
                       <div class="flex flex-col gap-2">
-                        <div
-                          class="w-7 h-7 rounded-md bg-muted flex items-center justify-center"
-                        >
+                        <div class="w-7 h-7 rounded-md bg-muted flex items-center justify-center">
                           <Star class="w-3.5 h-3.5 text-muted-foreground" />
                         </div>
                         <p class="text-xs font-medium leading-none">
@@ -175,9 +173,7 @@
                       align="start"
                     >
                       <div class="flex flex-col gap-2">
-                        <div
-                          class="w-7 h-7 rounded-md bg-muted flex items-center justify-center"
-                        >
+                        <div class="w-7 h-7 rounded-md bg-muted flex items-center justify-center">
                           <Target class="w-3.5 h-3.5 text-muted-foreground" />
                         </div>
                         <p class="text-xs font-medium leading-none">
@@ -225,9 +221,7 @@
                       align="start"
                     >
                       <div class="flex flex-col gap-2">
-                        <div
-                          class="w-7 h-7 rounded-md bg-muted flex items-center justify-center"
-                        >
+                        <div class="w-7 h-7 rounded-md bg-muted flex items-center justify-center">
                           <AlertTriangle class="w-3.5 h-3.5 text-muted-foreground" />
                         </div>
                         <p class="text-xs font-medium leading-none">
@@ -564,7 +558,7 @@
       </div>
       <!-- Info Dialog -->
       <Dialog v-model:open="showInfoDialog">
-        <DialogContent class="flex flex-col gap-0 p-0 max-w-md w-[calc(100vw-2rem)] max-h-[90dvh] rounded-xl overflow-hidden">
+        <DialogContent class="flex flex-col gap-0 p-0 max-w-md w-[calc(100vw-2rem)] rounded-xl overflow-hidden">
           <!-- Fixed Header -->
           <DialogHeader class="px-5 pt-5 pb-4 border-b border-border shrink-0">
             <DialogTitle class="flex items-center gap-2 text-sm">
@@ -579,186 +573,212 @@
           </DialogHeader>
 
           <!-- Scrollable Body -->
-          <div class="overflow-y-auto flex-1 px-5 py-4 space-y-5">
-            <!-- Steps -->
-            <div class="space-y-4">
-              <p class="font-mono text-[10px] tracking-widest uppercase text-muted-foreground">
-                Steps
-              </p>
+          <ScrollArea class="h-[60dvh]">
+            <div class="px-5 py-4 space-y-5">
+              <!-- Steps -->
+              <div class="space-y-4">
+                <p class="font-mono text-[10px] tracking-widest uppercase text-muted-foreground">
+                  Steps
+                </p>
 
-              <div class="flex gap-3">
-                <div class="shrink-0 w-6 h-6 rounded-full bg-muted flex items-center justify-center mt-0.5">
-                  <span class="font-mono text-[10px] font-semibold text-primary">1</span>
+                <div class="flex gap-3">
+                  <div class="shrink-0 w-6 h-6 rounded-full bg-muted flex items-center justify-center mt-0.5">
+                    <span class="font-mono text-[10px] font-semibold text-primary">1</span>
+                  </div>
+                  <div class="space-y-0.5">
+                    <p class="text-sm font-medium">
+                      Enter three-point estimates per task
+                    </p>
+                    <p class="text-xs text-muted-foreground leading-relaxed">
+                      For each task, provide an <span class="font-medium text-foreground">Optimistic (O)</span>
+                      best-case,
+                      <span class="font-medium text-foreground">Most Likely (M)</span> realistic, and
+                      <span class="font-medium text-foreground">Pessimistic (P)</span> worst-case hour estimate.
+                    </p>
+                  </div>
                 </div>
-                <div class="space-y-0.5">
-                  <p class="text-sm font-medium">
-                    Enter three-point estimates per task
-                  </p>
-                  <p class="text-xs text-muted-foreground leading-relaxed">
-                    For each task, provide an <span class="font-medium text-foreground">Optimistic (O)</span> best-case,
-                    <span class="font-medium text-foreground">Most Likely (M)</span> realistic, and
-                    <span class="font-medium text-foreground">Pessimistic (P)</span> worst-case hour estimate.
-                  </p>
+
+                <div class="flex gap-3">
+                  <div class="shrink-0 w-6 h-6 rounded-full bg-muted flex items-center justify-center mt-0.5">
+                    <span class="font-mono text-[10px] font-semibold text-primary">2</span>
+                  </div>
+                  <div class="space-y-0.5">
+                    <p class="text-sm font-medium">
+                      Expected time is auto-calculated
+                    </p>
+                    <p class="text-xs text-muted-foreground leading-relaxed">
+                      Once a task is added, the PERT formula runs automatically — no manual calculation needed.
+                    </p>
+                  </div>
+                </div>
+
+                <div class="flex gap-3">
+                  <div class="shrink-0 w-6 h-6 rounded-full bg-muted flex items-center justify-center mt-0.5">
+                    <span class="font-mono text-[10px] font-semibold text-primary">3</span>
+                  </div>
+                  <div class="space-y-0.5">
+                    <p class="text-sm font-medium">
+                      Set a desired completion time
+                    </p>
+                    <p class="text-xs text-muted-foreground leading-relaxed">
+                      Enter your target deadline in hours under <span class="font-medium text-foreground">Desired
+                        Completion
+                        Time (D)</span>.
+                      The tool calculates a Z-score and maps it to an on-time probability.
+                    </p>
+                  </div>
+                </div>
+
+                <div class="flex gap-3">
+                  <div class="shrink-0 w-6 h-6 rounded-full bg-muted flex items-center justify-center mt-0.5">
+                    <span class="font-mono text-[10px] font-semibold text-primary">4</span>
+                  </div>
+                  <div class="space-y-0.5">
+                    <p class="text-sm font-medium">
+                      Interpret the probability
+                    </p>
+                    <p class="text-xs text-muted-foreground leading-relaxed">
+                      Aim for <span class="font-medium text-foreground">≥ 80%</span> for reliable delivery.
+                      Below 50% signals the deadline is too aggressive.
+                    </p>
+                  </div>
                 </div>
               </div>
 
-              <div class="flex gap-3">
-                <div class="shrink-0 w-6 h-6 rounded-full bg-muted flex items-center justify-center mt-0.5">
-                  <span class="font-mono text-[10px] font-semibold text-primary">2</span>
-                </div>
-                <div class="space-y-0.5">
-                  <p class="text-sm font-medium">
-                    Expected time is auto-calculated
-                  </p>
-                  <p class="text-xs text-muted-foreground leading-relaxed">
-                    Once a task is added, the PERT formula runs automatically — no manual calculation needed.
-                  </p>
+              <Separator />
+
+              <!-- Formulas -->
+              <div class="space-y-3">
+                <p class="font-mono text-[10px] tracking-widest uppercase text-muted-foreground">
+                  Formulas
+                </p>
+
+                <div class="space-y-2.5">
+                  <div class="rounded-lg border border-primary/50 bg-muted/40 p-3 space-y-1.5">
+                    <div class="flex items-center justify-between gap-2">
+                      <p class="text-xs font-medium">
+                        Expected Duration
+                      </p>
+                      <span
+                        class="font-mono text-[10px] tracking-widest uppercase text-muted-foreground bg-muted px-1.5 py-0.5 rounded"
+                      >E</span>
+                    </div>
+                    <code
+                      class="block font-mono text-xs bg-background border border-border rounded-md px-3 py-2 text-center tracking-wide"
+                    >
+                      E = (O + 4M + P) / 6
+                    </code>
+                    <p class="text-[11px] text-muted-foreground leading-relaxed">
+                      Weighted average that emphasises the most likely estimate 4×.
+                    </p>
+                  </div>
+
+                  <div class="rounded-lg border border-primary/50 bg-muted/40 p-3 space-y-1.5">
+                    <div class="flex items-center justify-between gap-2">
+                      <p class="text-xs font-medium">
+                        Variance
+                      </p>
+                      <span
+                        class="font-mono text-[10px] tracking-widest uppercase text-muted-foreground bg-muted px-1.5 py-0.5 rounded"
+                      >σ²</span>
+                    </div>
+                    <code
+                      class="block font-mono text-xs bg-background border border-border rounded-md px-3 py-2 text-center tracking-wide"
+                    >
+                      σ² = ((P − O) / 6)²
+                    </code>
+                    <p class="text-[11px] text-muted-foreground leading-relaxed">
+                      Measures uncertainty. Higher variance means a wider spread between best and worst case.
+                    </p>
+                  </div>
+
+                  <div class="rounded-lg border border-primary/50 bg-muted/40 p-3 space-y-1.5">
+                    <div class="flex items-center justify-between gap-2">
+                      <p class="text-xs font-medium">
+                        Standard Deviation
+                      </p>
+                      <span
+                        class="font-mono text-[10px] tracking-widest uppercase text-muted-foreground bg-muted px-1.5 py-0.5 rounded"
+                      >σ</span>
+                    </div>
+                    <code
+                      class="block font-mono text-xs bg-background border border-border rounded-md px-3 py-2 text-center tracking-wide"
+                    >
+                      σ = (P − O) / 6
+                    </code>
+                    <p class="text-[11px] text-muted-foreground leading-relaxed">
+                      Square root of variance. Used to compute the Z-score for probability lookup.
+                    </p>
+                  </div>
+
+                  <div class="rounded-lg border border-primary/50 bg-muted/40 p-3 space-y-1.5">
+                    <div class="flex items-center justify-between gap-2">
+                      <p class="text-xs font-medium">
+                        Z-Score
+                      </p>
+                      <span
+                        class="font-mono text-[10px] tracking-widest uppercase text-muted-foreground bg-muted px-1.5 py-0.5 rounded"
+                      >Z</span>
+                    </div>
+                    <code
+                      class="block font-mono text-xs bg-background border border-border rounded-md px-3 py-2 text-center tracking-wide"
+                    >
+                      Z = (D − ΣE) / √Σσ²
+                    </code>
+                    <p class="text-[11px] text-muted-foreground leading-relaxed">
+                      How many standard deviations your deadline (D) is from the total expected time. Mapped to a normal
+                      distribution for the final probability.
+                    </p>
+                  </div>
                 </div>
               </div>
 
-              <div class="flex gap-3">
-                <div class="shrink-0 w-6 h-6 rounded-full bg-muted flex items-center justify-center mt-0.5">
-                  <span class="font-mono text-[10px] font-semibold text-primary">3</span>
-                </div>
-                <div class="space-y-0.5">
-                  <p class="text-sm font-medium">
-                    Set a desired completion time
-                  </p>
-                  <p class="text-xs text-muted-foreground leading-relaxed">
-                    Enter your target deadline in hours under <span class="font-medium text-foreground">Desired Completion Time (D)</span>.
-                    The tool calculates a Z-score and maps it to an on-time probability.
-                  </p>
-                </div>
-              </div>
+              <Separator />
 
-              <div class="flex gap-3">
-                <div class="shrink-0 w-6 h-6 rounded-full bg-muted flex items-center justify-center mt-0.5">
-                  <span class="font-mono text-[10px] font-semibold text-primary">4</span>
-                </div>
-                <div class="space-y-0.5">
-                  <p class="text-sm font-medium">
-                    Interpret the probability
+              <!-- FAQ -->
+              <div class="space-y-3 pb-1">
+                <p class="font-mono text-[10px] tracking-widest uppercase text-muted-foreground">
+                  FAQ
+                </p>
+
+                <div class="space-y-1">
+                  <p class="text-xs font-medium">
+                    What if I only have one estimate?
                   </p>
                   <p class="text-xs text-muted-foreground leading-relaxed">
-                    Aim for <span class="font-medium text-foreground">≥ 80%</span> for reliable delivery.
-                    Below 50% signals the deadline is too aggressive.
+                    Set O, M, and P to the same value. Variance becomes zero, indicating full confidence in that
+                    estimate.
+                  </p>
+                </div>
+
+                <div class="space-y-1">
+                  <p class="text-xs font-medium">
+                    What does a negative Z-score mean?
+                  </p>
+                  <p class="text-xs text-muted-foreground leading-relaxed">
+                    Your target is shorter than the expected total — probability drops below 50%, meaning the project is
+                    likely to overrun.
+                  </p>
+                </div>
+
+                <div class="space-y-1">
+                  <p class="text-xs font-medium">
+                    How do I export the results?
+                  </p>
+                  <p class="text-xs text-muted-foreground leading-relaxed">
+                    Use the <span class="font-medium text-foreground">Export</span> button in the Task Breakdown section
+                    to
+                    download an Excel file of all tasks and computed values.
                   </p>
                 </div>
               </div>
             </div>
-
-            <Separator />
-
-            <!-- Formulas -->
-            <div class="space-y-3">
-              <p class="font-mono text-[10px] tracking-widest uppercase text-muted-foreground">
-                Formulas
-              </p>
-
-              <div class="space-y-2.5">
-                <div class="rounded-lg border border-primary/50 bg-muted/40 p-3 space-y-1.5">
-                  <div class="flex items-center justify-between gap-2">
-                    <p class="text-xs font-medium">
-                      Expected Duration
-                    </p>
-                    <span class="font-mono text-[10px] tracking-widest uppercase text-muted-foreground bg-muted px-1.5 py-0.5 rounded">E</span>
-                  </div>
-                  <code class="block font-mono text-xs bg-background border border-border rounded-md px-3 py-2 text-center tracking-wide">
-                    E = (O + 4M + P) / 6
-                  </code>
-                  <p class="text-[11px] text-muted-foreground leading-relaxed">
-                    Weighted average that emphasises the most likely estimate 4×.
-                  </p>
-                </div>
-
-                <div class="rounded-lg border border-primary/50 bg-muted/40 p-3 space-y-1.5">
-                  <div class="flex items-center justify-between gap-2">
-                    <p class="text-xs font-medium">
-                      Variance
-                    </p>
-                    <span class="font-mono text-[10px] tracking-widest uppercase text-muted-foreground bg-muted px-1.5 py-0.5 rounded">σ²</span>
-                  </div>
-                  <code class="block font-mono text-xs bg-background border border-border rounded-md px-3 py-2 text-center tracking-wide">
-                    σ² = ((P − O) / 6)²
-                  </code>
-                  <p class="text-[11px] text-muted-foreground leading-relaxed">
-                    Measures uncertainty. Higher variance means a wider spread between best and worst case.
-                  </p>
-                </div>
-
-                <div class="rounded-lg border border-primary/50 bg-muted/40 p-3 space-y-1.5">
-                  <div class="flex items-center justify-between gap-2">
-                    <p class="text-xs font-medium">
-                      Standard Deviation
-                    </p>
-                    <span class="font-mono text-[10px] tracking-widest uppercase text-muted-foreground bg-muted px-1.5 py-0.5 rounded">σ</span>
-                  </div>
-                  <code class="block font-mono text-xs bg-background border border-border rounded-md px-3 py-2 text-center tracking-wide">
-                    σ = (P − O) / 6
-                  </code>
-                  <p class="text-[11px] text-muted-foreground leading-relaxed">
-                    Square root of variance. Used to compute the Z-score for probability lookup.
-                  </p>
-                </div>
-
-                <div class="rounded-lg border border-primary/50 bg-muted/40 p-3 space-y-1.5">
-                  <div class="flex items-center justify-between gap-2">
-                    <p class="text-xs font-medium">
-                      Z-Score
-                    </p>
-                    <span class="font-mono text-[10px] tracking-widest uppercase text-muted-foreground bg-muted px-1.5 py-0.5 rounded">Z</span>
-                  </div>
-                  <code class="block font-mono text-xs bg-background border border-border rounded-md px-3 py-2 text-center tracking-wide">
-                    Z = (D − ΣE) / √Σσ²
-                  </code>
-                  <p class="text-[11px] text-muted-foreground leading-relaxed">
-                    How many standard deviations your deadline (D) is from the total expected time. Mapped to a normal distribution for the final probability.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <Separator />
-
-            <!-- FAQ -->
-            <div class="space-y-3 pb-1">
-              <p class="font-mono text-[10px] tracking-widest uppercase text-muted-foreground">
-                FAQ
-              </p>
-
-              <div class="space-y-1">
-                <p class="text-xs font-medium">
-                  What if I only have one estimate?
-                </p>
-                <p class="text-xs text-muted-foreground leading-relaxed">
-                  Set O, M, and P to the same value. Variance becomes zero, indicating full confidence in that estimate.
-                </p>
-              </div>
-
-              <div class="space-y-1">
-                <p class="text-xs font-medium">
-                  What does a negative Z-score mean?
-                </p>
-                <p class="text-xs text-muted-foreground leading-relaxed">
-                  Your target is shorter than the expected total — probability drops below 50%, meaning the project is likely to overrun.
-                </p>
-              </div>
-
-              <div class="space-y-1">
-                <p class="text-xs font-medium">
-                  How do I export the results?
-                </p>
-                <p class="text-xs text-muted-foreground leading-relaxed">
-                  Use the <span class="font-medium text-foreground">Export</span> button in the Task Breakdown section to download an Excel file of all tasks and computed values.
-                </p>
-              </div>
-            </div>
-          </div>
+          </ScrollArea>
 
           <!-- Fixed Footer -->
           <div class="px-5 py-4 border-t border-border shrink-0">
             <Button
-              class="w-full font-mono text-xs border-primary/50 hover:bg-primary/50"
+              class="w-full font-mono text-xs"
               @click="showInfoDialog = false"
             >
               Got it
@@ -784,6 +804,7 @@ import { HoverCard, HoverCardTrigger, HoverCardContent } from '@/components/ui/h
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Textarea } from '@/components/ui/textarea'
+import { ScrollArea } from '@/components/ui/scroll-area'
 import { ChevronLeft, Download, X, RotateCcw, Info, Plus, HelpCircle, Star, Target, AlertTriangle, CalendarClock } from 'lucide-vue-next'
 import { calculateExpectedTime } from '@/utils/calculateExpectedTime'
 import { calculateStandardDeviation } from '@/utils/calculateStandardDeviation'
@@ -797,237 +818,237 @@ const router = useRouter()
 
 const taskList = reactive<PERTTaskResult[]>([])
 const newTaskForm = reactive<NewTask>({
-    taskName: '',
-    milestone: '',
-    description: '',
-    optimistic: null,
-    mostLikely: null,
-    pessimistic: null,
+  taskName: '',
+  milestone: '',
+  description: '',
+  optimistic: null,
+  mostLikely: null,
+  pessimistic: null,
 })
 const targetDuration = ref<number | null>(null)
 const showInfoDialog = ref(false)
 const retainMilestone = ref(false)
 function isTextTruncated(text: string): boolean {
-    return text.length > 40
+  return text.length > 40
 }
 
 const pertAnalysis = computed<Analysis>(() => {
-    const totalExpectedTime = calculateTotalExpectedTime(taskList)
-    const totalVariance = calculateTotalVariance(taskList)
-    const zScore = taskList.length === 0 || targetDuration.value === null ? 0 : calculateZScore(targetDuration.value, totalExpectedTime, totalVariance)
-    const probability = taskList.length === 0 ? 0 : calculateProbability(zScore) * 100
-    return { totalExpectedTime, totalVariance, zScore, probability }
+  const totalExpectedTime = calculateTotalExpectedTime(taskList)
+  const totalVariance = calculateTotalVariance(taskList)
+  const zScore = taskList.length === 0 || targetDuration.value === null ? 0 : calculateZScore(targetDuration.value, totalExpectedTime, totalVariance)
+  const probability = taskList.length === 0 ? 0 : calculateProbability(zScore) * 100
+  return { totalExpectedTime, totalVariance, zScore, probability }
 })
 
 const groupedTasks = computed(() => {
-    const groups: { milestone: string; tasks: PERTTaskResult[] }[] = []
-    const milestoneMap = new Map<string, PERTTaskResult[]>()
+  const groups: { milestone: string; tasks: PERTTaskResult[] }[] = []
+  const milestoneMap = new Map<string, PERTTaskResult[]>()
 
-    taskList.forEach(task => {
-        const milestone = task.milestone || 'Uncategorized'
-        if (!milestoneMap.has(milestone)) {
-            milestoneMap.set(milestone, [])
-        }
-        milestoneMap.get(milestone)!.push(task)
-    })
+  taskList.forEach(task => {
+    const milestone = task.milestone || 'Uncategorized'
+    if (!milestoneMap.has(milestone)) {
+      milestoneMap.set(milestone, [])
+    }
+    milestoneMap.get(milestone)!.push(task)
+  })
 
-    milestoneMap.forEach((tasks, milestone) => {
-        groups.push({ milestone, tasks })
-    })
+  milestoneMap.forEach((tasks, milestone) => {
+    groups.push({ milestone, tasks })
+  })
 
-    return groups
+  return groups
 })
 
 function resetTaskForm(): void {
-    newTaskForm.taskName = ''
-    newTaskForm.description = ''
-    if (!retainMilestone.value) {
-        newTaskForm.milestone = ''
-    }
-    newTaskForm.optimistic = null
-    newTaskForm.mostLikely = null
-    newTaskForm.pessimistic = null
+  newTaskForm.taskName = ''
+  newTaskForm.description = ''
+  if (!retainMilestone.value) {
+    newTaskForm.milestone = ''
+  }
+  newTaskForm.optimistic = null
+  newTaskForm.mostLikely = null
+  newTaskForm.pessimistic = null
 }
 
 function resetAll(): void {
-    resetTaskForm()
-    targetDuration.value = null
-    taskList.length = 0
+  resetTaskForm()
+  targetDuration.value = null
+  taskList.length = 0
 }
 
 function addTask(): void {
   console.log('retain milestone', retainMilestone.value)
-    if (newTaskForm.optimistic === null || newTaskForm.mostLikely === null || newTaskForm.pessimistic === null) {
-        const missingFields = []
-        if (newTaskForm.optimistic === null) missingFields.push('Optimistic (O)')
-        if (newTaskForm.mostLikely === null) missingFields.push('Most Likely (M)')
-        if (newTaskForm.pessimistic === null) missingFields.push('Pessimistic (P)')
+  if (newTaskForm.optimistic === null || newTaskForm.mostLikely === null || newTaskForm.pessimistic === null) {
+    const missingFields = []
+    if (newTaskForm.optimistic === null) missingFields.push('Optimistic (O)')
+    if (newTaskForm.mostLikely === null) missingFields.push('Most Likely (M)')
+    if (newTaskForm.pessimistic === null) missingFields.push('Pessimistic (P)')
 
-        toast.error(`Please fill in all fields: ${missingFields.join(', ')}`)
-        return
-    }
+    toast.error(`Please fill in all fields: ${missingFields.join(', ')}`)
+    return
+  }
 
-    const expectedTime = calculateExpectedTime(newTaskForm)
-    const standardDeviation = calculateStandardDeviation(newTaskForm)
-    const variance = calculateVariance(standardDeviation)
-    taskList.push({
-        taskName: newTaskForm.taskName,
-        milestone: newTaskForm.milestone,
-        description: newTaskForm.description,
-        optimistic: newTaskForm.optimistic,
-        mostLikely: newTaskForm.mostLikely,
-        pessimistic: newTaskForm.pessimistic,
-        expectedTime,
-        standardDeviation,
-        variance,
-    })
-    resetTaskForm()
+  const expectedTime = calculateExpectedTime(newTaskForm)
+  const standardDeviation = calculateStandardDeviation(newTaskForm)
+  const variance = calculateVariance(standardDeviation)
+  taskList.push({
+    taskName: newTaskForm.taskName,
+    milestone: newTaskForm.milestone,
+    description: newTaskForm.description,
+    optimistic: newTaskForm.optimistic,
+    mostLikely: newTaskForm.mostLikely,
+    pessimistic: newTaskForm.pessimistic,
+    expectedTime,
+    standardDeviation,
+    variance,
+  })
+  resetTaskForm()
 
-    toast.success('Task added successfully!')
+  toast.success('Task added successfully!')
 }
 
 function removeTask(index: number): void {
-    taskList.splice(index, 1)
+  taskList.splice(index, 1)
 }
 
 function updateTask(index: number, field: 'optimistic' | 'mostLikely' | 'pessimistic', value: number | null): void {
-    const task = taskList[index]
-    if (task) {
-        task[field] = value
-        if (task.optimistic !== null && task.mostLikely !== null && task.pessimistic !== null) {
-            task.expectedTime = calculateExpectedTime(task)
-            task.standardDeviation = calculateStandardDeviation(task)
-            task.variance = calculateVariance(task.standardDeviation)
-        }
+  const task = taskList[index]
+  if (task) {
+    task[field] = value
+    if (task.optimistic !== null && task.mostLikely !== null && task.pessimistic !== null) {
+      task.expectedTime = calculateExpectedTime(task)
+      task.standardDeviation = calculateStandardDeviation(task)
+      task.variance = calculateVariance(task.standardDeviation)
     }
+  }
 }
 
 function goToHome(): void {
-    router.push('/')
+  router.push('/')
 }
 
 function exportToExcel(): void {
-    if (targetDuration.value === null) {
-        toast.error('Please add a Desired Completion Time (D) before exporting')
-        return
-    }
-    const workbook = new ExcelJS.Workbook();
+  if (targetDuration.value === null) {
+    toast.error('Please add a Desired Completion Time (D) before exporting')
+    return
+  }
+  const workbook = new ExcelJS.Workbook();
 
-    // ── Sheet 1: Task Breakdown ──────────────────────────────────────────────
-    const taskSheet = workbook.addWorksheet('Task Breakdown');
+  // ── Sheet 1: Task Breakdown ──────────────────────────────────────────────
+  const taskSheet = workbook.addWorksheet('Task Breakdown');
 
-    taskSheet.columns = [
-        { header: 'Milestone', key: 'milestone', width: 25 },
-        { header: 'Task Name', key: 'taskName', width: 30 },
-        { header: 'Description', key: 'description', width: 50 },
-        { header: 'Optimistic (O)', key: 'optimistic', width: 16 },
-        { header: 'Most Likely (M)', key: 'mostLikely', width: 16 },
-        { header: 'Pessimistic (P)', key: 'pessimistic', width: 16 },
-        { header: 'Expected', key: 'expectedTime', width: 16 },
-        { header: 'Std Dev', key: 'standardDeviation', width: 16 },
-        { header: 'Variance', key: 'variance', width: 16 },
-    ];
+  taskSheet.columns = [
+    { header: 'Milestone', key: 'milestone', width: 25 },
+    { header: 'Task Name', key: 'taskName', width: 30 },
+    { header: 'Description', key: 'description', width: 50 },
+    { header: 'Optimistic (O)', key: 'optimistic', width: 16 },
+    { header: 'Most Likely (M)', key: 'mostLikely', width: 16 },
+    { header: 'Pessimistic (P)', key: 'pessimistic', width: 16 },
+    { header: 'Expected', key: 'expectedTime', width: 16 },
+    { header: 'Std Dev', key: 'standardDeviation', width: 16 },
+    { header: 'Variance', key: 'variance', width: 16 },
+  ];
 
-    taskList.forEach((task) => {
-        taskSheet.addRow({
-            milestone: task.milestone || 'Uncategorized',
-            taskName: task.taskName,
-            description: task.description || '',
-            optimistic: task.optimistic,
-            mostLikely: task.mostLikely,
-            pessimistic: task.pessimistic,
-            expectedTime: parseFloat(task.expectedTime.toFixed(2)),
-            standardDeviation: parseFloat(task.standardDeviation.toFixed(3)),
-            variance: parseFloat(task.variance.toFixed(3)),
-        });
+  taskList.forEach((task) => {
+    taskSheet.addRow({
+      milestone: task.milestone || 'Uncategorized',
+      taskName: task.taskName,
+      description: task.description || '',
+      optimistic: task.optimistic,
+      mostLikely: task.mostLikely,
+      pessimistic: task.pessimistic,
+      expectedTime: parseFloat(task.expectedTime.toFixed(2)),
+      standardDeviation: parseFloat(task.standardDeviation.toFixed(3)),
+      variance: parseFloat(task.variance.toFixed(3)),
     });
+  });
 
-    // Totals row
-    taskSheet.addRow([]);
-    const totalRow = taskSheet.addRow({
-        taskName: 'TOTALS',
-        expectedTime: parseFloat(pertAnalysis.value.totalExpectedTime.toFixed(2)),
-        variance: parseFloat(pertAnalysis.value.totalVariance.toFixed(3)),
+  // Totals row
+  taskSheet.addRow([]);
+  const totalRow = taskSheet.addRow({
+    taskName: 'TOTALS',
+    expectedTime: parseFloat(pertAnalysis.value.totalExpectedTime.toFixed(2)),
+    variance: parseFloat(pertAnalysis.value.totalVariance.toFixed(3)),
+  });
+  totalRow.font = { bold: true };
+  totalRow.fill = {
+    type: 'pattern',
+    pattern: 'solid',
+    fgColor: { argb: 'FFF0F0F0' },
+  };
+
+  // Style header row
+  const taskHeader = taskSheet.getRow(1);
+  taskHeader.font = { bold: true };
+  taskHeader.fill = {
+    type: 'pattern',
+    pattern: 'solid',
+    fgColor: { argb: 'FFE0E0E0' },
+  };
+  taskHeader.alignment = { horizontal: 'center' };
+
+  // ── Sheet 2: PERT Analysis ───────────────────────────────────────────────
+  const analysisSheet = workbook.addWorksheet('PERT Analysis');
+
+  analysisSheet.columns = [
+    { header: 'Metric', key: 'metric', width: 35 },
+    { header: 'Value', key: 'value', width: 20 },
+  ];
+
+  const analysisHeader = analysisSheet.getRow(1);
+  analysisHeader.font = { bold: true };
+  analysisHeader.fill = {
+    type: 'pattern',
+    pattern: 'solid',
+    fgColor: { argb: 'FFE0E0E0' },
+  };
+
+  const { totalExpectedTime, totalVariance, zScore, probability } = pertAnalysis.value;
+
+  const analysisRows = [
+    { metric: 'Desired Completion Time (D)', value: targetDuration.value },
+    { metric: 'Total Expected Time', value: parseFloat(totalExpectedTime.toFixed(2)) },
+    { metric: 'Total Variance', value: parseFloat(totalVariance.toFixed(3)) },
+    { metric: 'Standard Deviation', value: parseFloat(Math.sqrt(totalVariance).toFixed(3)) },
+    { metric: 'Z-Score', value: parseFloat(zScore.toFixed(3)) },
+    { metric: 'On-Time Probability (%)', value: parseFloat(probability.toFixed(1)) },
+  ];
+
+  analysisRows.forEach((row) => analysisSheet.addRow(row));
+
+  // Highlight probability row
+  const probabilityRow = analysisSheet.getRow(analysisSheet.rowCount);
+  probabilityRow.font = { bold: true };
+  probabilityRow.fill = {
+    type: 'pattern',
+    pattern: 'solid',
+    fgColor: { argb: 'FFE8F5E9' },
+  };
+
+  const now = new Date();
+  const pad = (n: number) => String(n).padStart(2, '0');
+
+  const YY = String(now.getFullYear()).slice(2);
+  const MM = pad(now.getMonth() + 1);
+  const DD = pad(now.getDate());
+  const HH = pad(now.getHours());
+  const SS = pad(now.getSeconds());
+
+  const timestamp = `${YY}-${MM}-${DD}_${HH}-${SS}`;
+
+  // ── Export ───────────────────────────────────────────────────────────────
+  workbook.xlsx.writeBuffer().then((buffer) => {
+    const blob = new Blob([buffer], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     });
-    totalRow.font = { bold: true };
-    totalRow.fill = {
-        type: 'pattern',
-        pattern: 'solid',
-        fgColor: { argb: 'FFF0F0F0' },
-    };
-
-    // Style header row
-    const taskHeader = taskSheet.getRow(1);
-    taskHeader.font = { bold: true };
-    taskHeader.fill = {
-        type: 'pattern',
-        pattern: 'solid',
-        fgColor: { argb: 'FFE0E0E0' },
-    };
-    taskHeader.alignment = { horizontal: 'center' };
-
-    // ── Sheet 2: PERT Analysis ───────────────────────────────────────────────
-    const analysisSheet = workbook.addWorksheet('PERT Analysis');
-
-    analysisSheet.columns = [
-        { header: 'Metric', key: 'metric', width: 35 },
-        { header: 'Value', key: 'value', width: 20 },
-    ];
-
-    const analysisHeader = analysisSheet.getRow(1);
-    analysisHeader.font = { bold: true };
-    analysisHeader.fill = {
-        type: 'pattern',
-        pattern: 'solid',
-        fgColor: { argb: 'FFE0E0E0' },
-    };
-
-    const { totalExpectedTime, totalVariance, zScore, probability } = pertAnalysis.value;
-
-    const analysisRows = [
-        { metric: 'Desired Completion Time (D)', value: targetDuration.value },
-        { metric: 'Total Expected Time', value: parseFloat(totalExpectedTime.toFixed(2)) },
-        { metric: 'Total Variance', value: parseFloat(totalVariance.toFixed(3)) },
-        { metric: 'Standard Deviation', value: parseFloat(Math.sqrt(totalVariance).toFixed(3)) },
-        { metric: 'Z-Score', value: parseFloat(zScore.toFixed(3)) },
-        { metric: 'On-Time Probability (%)', value: parseFloat(probability.toFixed(1)) },
-    ];
-
-    analysisRows.forEach((row) => analysisSheet.addRow(row));
-
-    // Highlight probability row
-    const probabilityRow = analysisSheet.getRow(analysisSheet.rowCount);
-    probabilityRow.font = { bold: true };
-    probabilityRow.fill = {
-        type: 'pattern',
-        pattern: 'solid',
-        fgColor: { argb: 'FFE8F5E9' },
-    };
-
-    const now = new Date();
-    const pad = (n: number) => String(n).padStart(2, '0');
-
-    const YY = String(now.getFullYear()).slice(2);
-    const MM = pad(now.getMonth() + 1);
-    const DD = pad(now.getDate());
-    const HH = pad(now.getHours());
-    const SS = pad(now.getSeconds());
-
-    const timestamp = `${YY}-${MM}-${DD}_${HH}-${SS}`;
-
-    // ── Export ───────────────────────────────────────────────────────────────
-    workbook.xlsx.writeBuffer().then((buffer) => {
-        const blob = new Blob([buffer], {
-            type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = `ManHoursEstimation_${timestamp}.xlsx`;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-    });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `ManHoursEstimation_${timestamp}.xlsx`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  });
 }
 </script>
