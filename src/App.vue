@@ -1,5 +1,13 @@
 <template>
-  <Toaster position="top-right" />
+  <Toaster
+    position="top-right"
+    class="z-999999"
+    :toast-options="{
+      style: {
+        zIndex: 999999
+      }
+    }"
+  />
   <main class="relative h-screen bg-background text-foreground overflow-hidden">
     <div
       class="grid-bg"
