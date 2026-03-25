@@ -5,145 +5,72 @@
 ![Lint](https://github.com/marksxiety/man-hours-calculator/actions/workflows/lints.yml/badge.svg)
 ![MIT License](https://img.shields.io/badge/License-MIT-yellow.svg)
 
-### A Data-Driven Framework for Software Project Quoting
-
-This system replaces "gut-feeling" guesses with **Program Evaluation and Review Technique (PERT)**. It is designed to bridge the gap between developer technical uncertainty and business requirements for fixed-timeline accuracy.
+The Man-Hours Calculator is a data-driven framework designed to bridge the gap between technical uncertainty and business requirements. By replacing "gut-feeling" guesses with the Program Evaluation and Review Technique (PERT), it provides a disciplined way to account for the inherent risks in software development.
 
 ---
 
 ## The PERT Methodology
 
-The core of this system is the **three-point estimation technique**. Instead of providing a single number, developers provide three distinct data points for every task:
+The core of this system is the three-point estimation technique. Instead of providing a single number, developers provide three distinct data points for every task:
 
-1. **Optimistic (O):** The "perfect world" scenario — everything goes right, no blockers, no surprises.
-2. **Most Likely (M):** The most realistic, most frequent outcome under normal conditions.
-3. **Pessimistic (P):** The "worst-case" scenario — unexpected bugs, blockers, or dependencies cause delays.
+1. Optimistic (O): The "perfect world" scenario—no blockers or surprises.
+2. Most Likely (M): The most realistic, frequent outcome under normal conditions.
+3. Pessimistic (P): The "worst-case" scenario—unexpected bugs or hidden dependencies.
 
-The system calculates **Expected Duration (E)** using a weighted average that deliberately leans toward the most likely estimate, while still accounting for outliers:
+### The Weighted Average (Expected Duration)
+The system calculates Expected Duration (E) using a weighted average that deliberately leans toward the most likely estimate while still accounting for outliers:
 
-$$
-E = \frac{O + 4M + P}{6}
-$$
+$$E = \frac{O + 4M + P}{6}$$
 
-> **Why weighted?** The `4M` weight reflects real-world behavior: outcomes cluster around what's *most likely*. Pure averages treat all three scenarios equally, which overestimates uncertainty. PERT's weighting keeps the estimate grounded while still acknowledging the tails.
-
----
-
-## Understanding the Statistical Terms
-
-These terms appear throughout the app — here's what each one actually tells you and why it matters for your estimates.
-
-### Standard Deviation (`σ` — "sigma")
-
-A measure of *spread* — how far apart your best-case and worst-case guesses are.
-
-```
-σ = (P - O) / 6
-```
-
-If your optimistic estimate is 2 hours and your pessimistic estimate is 8 hours, the standard deviation is `(8 - 2) / 6 = 1 hour`. That 1 hour represents the typical margin of uncertainty for this task.
-
-**A small σ signals confidence.** Your best and worst cases are close together — you know this task well. **A large σ is a warning sign** that the task is unpredictable, poorly scoped, or has hidden dependencies worth surfacing before committing to a deadline.
-
-Think of it like a weather forecast: "22–24°C tomorrow" is a tight, confident range. "10–35°C" means even the forecast model doesn't trust itself — and you shouldn't either.
+The "4M" weight reflects real-world behavior: outcomes cluster around what is most likely. Pure averages treat all scenarios equally, which often overestimates uncertainty. This formula keeps the estimate grounded while acknowledging the "tails" of risk.
 
 ---
 
-### Variance (`σ²`)
+## Features and Interface
 
-Variance is standard deviation *squared* — and it's the key to understanding uncertainty at the project level, not just the task level.
-
-You can't simply add standard deviations across tasks — the math doesn't work that way. But variances *can* be added directly. That's the core reason this metric exists.
-
-For example, if two tasks each have σ = 2h, their variances are both 4. The combined project variance is 4 + 4 = **8**, which gives a combined standard deviation of √8 ≈ **2.83h** — not 4h. Adding σ directly would overstate your uncertainty.
-
-**Higher variance means lower confidence** — not just in a single task, but in the project as a whole. As variance accumulates across tasks, the realistic delivery window widens. A project full of high-variance tasks is one where a fixed deadline is a gamble, not a commitment.
+* Real-Time Computation: All calculations update instantly as you type, including task-level duration, standard deviation, and project-level variance.
+* Probability Analysis: Calculates the statistical chance of finishing by a target deadline based on accumulated project variance.
+* Developer Feedback Loop: Allows developers to self-correct unrealistic estimates by seeing the mathematical impact of their inputs immediately.
+* Modern Tech Stack: Built with Vue 3, TypeScript, Vite, and TailwindCSS for a high-performance experience.
 
 ---
 
-### Expected Duration (E)
+## Understanding the Math
 
-The single number the system uses for planning — derived from your three-point input, not a simple average of the three.
+### Standard Deviation (σ)
+A measure of "spread"—how far apart your best and worst-case guesses are.
+Formula: $$\sigma = \frac{P - O}{6}$$
+* Small σ: Signals high confidence; the task is well-understood.
+* Large σ: Acts as a warning sign; the task is unpredictable or poorly scoped.
 
-It gives four times as much weight to the Most Likely estimate, because that's your most informed data point:
+### Variance (σ²)
+Variance is the key to project-level uncertainty. While you cannot add standard deviations together, variances can be summed to find the total project risk. Higher cumulative variance means a wider, less predictable delivery window.
 
-If O = 2h, M = 5h, P = 14h:
-- Simple average = (2 + 5 + 14) / 3 = **7 hours**
-- PERT expected = (2 + 4×5 + 14) / 6 = **6 hours**
-
-The PERT formula anchors the estimate around what you actually believe will happen, while still factoring in the extremes.
-
----
-
-### Confidence Intervals & Completion Probability
-
-Given a target deadline, the app calculates the *probability* that the project will finish in time — using the project's total expected duration and accumulated variance.
-
+### Confidence Intervals
 | Range | Interpretation |
 |---|---|
 | E ± 1σ | ~68% chance of finishing within this window |
 | E ± 2σ | ~95% chance of finishing within this window |
 | E ± 3σ | ~99.7% chance of finishing within this window |
 
-> **Rule of thumb:** If your target deadline falls within `E + 1σ`, you're in good shape. If it falls below `E`, you're already cutting it close. If it falls below `O`, the estimate needs revisiting.
+---
+
+## Glossary of Terms
+
+* PERT: Program Evaluation and Review Technique—a statistical tool used in project management.
+* Estimation Debt: The accumulated cost of optimistic guesses that ignore technical reality.
+* Sigma (σ): A statistical term for Standard Deviation; used here to represent task-level risk.
+* Expected Duration (E): The final number used for planning, derived from the weighted PERT formula.
 
 ---
 
-## Features
+## Documentation Links
 
-### Developer Entry Interface
-
-- **Transparent Entry:** Developers see task descriptions, input fields for `[O]`, `[M]`, and `[P]`, and all PERT calculations in real-time.
-- **Real-Time Computation:** All calculations update instantly as developers type:
-  - Task-level: `expected_duration`, `standard_deviation`, `variance`
-  - Project-level: Total expected hours, total variance
-  - Probability analysis: Completion probability based on target
-- **Immediate Feedback:** Developers can self-correct unrealistic estimates with live calculations visible.
-
----
-
-## Tech Stack
-
-- **Frontend Framework:** Vue 3 with TypeScript
-- **Build Tool:** Vite
-- **Styling:** TailwindCSS
-- **UI Components:** Reka UI (Shadcn Vue)
-- **Icons:** Lucide Vue Next
-
----
-
-## How It Works
-
-1. **Define Tasks:** Break down your project into manageable tasks.
-2. **Input Estimates:** For each task, provide three-point estimates:
-   - **Optimistic (O):** Best case — no friction, everything works.
-   - **Most Likely (M):** Realistic, most common outcome.
-   - **Pessimistic (P):** Worst case — expect the unexpected.
-3. **Automatic Calculation:** The system computes:
-   - **Expected Duration:** `E = (O + 4M + P) / 6` — your weighted "best single number."
-   - **Standard Deviation:** `σ = (P - O) / 6` — how uncertain this task is.
-   - **Variance:** `σ²` — uncertainty in a form that can be summed across tasks.
-4. **Analyze Results:** Review project-level statistics and confidence intervals.
-5. **Make Informed Decisions:** Use data-driven insights for project planning and quoting.
+* [Getting Started](./docs/getting-started.md) — Setup and installation.
+* [Usage Guide](./docs/usage.md) — How to use the app effectively.
+* [Testing Guide](./docs/tests.md) — Unit testing and build verification.
 
 ---
 
 ## Project Goal
-
-To eliminate **"Estimation Debt"** — the accumulated cost of guesses that were too optimistic — by applying a disciplined, mathematical approach to quoting that accounts for the inherent uncertainty of software development, while providing full transparency and real-time feedback to developers.
-
----
-
-## Glossary
-
-| Term | Short Definition |
-|---|---|
-| **PERT** | Program Evaluation and Review Technique — a three-point estimation method. |
-| **Optimistic (O)** | Best-case duration estimate. |
-| **Most Likely (M)** | Most realistic duration estimate. |
-| **Pessimistic (P)** | Worst-case duration estimate. |
-| **Expected Duration (E)** | Weighted average of O, M, P. The number you plan with. |
-| **Standard Deviation (σ)** | How spread out your estimates are. Measures uncertainty per task. |
-| **Variance (σ²)** | σ squared. Used to aggregate uncertainty across multiple tasks. |
-| **Confidence Interval** | A range within which the actual outcome is likely to fall. |
-| **Completion Probability** | The statistical chance of finishing before a target deadline. |
+To eliminate "Estimation Debt" by applying a mathematical approach to quoting that accounts for uncertainty while providing full transparency to both developers and stakeholders.
