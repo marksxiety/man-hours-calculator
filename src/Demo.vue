@@ -143,6 +143,7 @@
                 <NumberField
                   v-model="newTaskForm.optimistic"
                   :min="0"
+                  :step="0.1"
                   :format-options="newTaskForm.optimistic !== null ? { minimumFractionDigits: 1 } : undefined"
                 >
                   <NumberFieldContent>
@@ -191,6 +192,7 @@
                 <NumberField
                   v-model="newTaskForm.mostLikely"
                   :min="0"
+                  :step="0.1"
                   :format-options="newTaskForm.mostLikely !== null ? { minimumFractionDigits: 1 } : undefined"
                 >
                   <NumberFieldContent>
@@ -239,6 +241,7 @@
                 <NumberField
                   v-model="newTaskForm.pessimistic"
                   :min="0"
+                  :step="0.1"
                   :format-options="newTaskForm.pessimistic !== null ? { minimumFractionDigits: 1 } : undefined"
                 >
                   <NumberFieldContent>
@@ -316,6 +319,7 @@
               <NumberField
                 :model-value="projectStore.targetDuration"
                 :min="0"
+                :step="0.1"
                 :format-options="projectStore.targetDuration !== null ? { minimumFractionDigits: 1 } : undefined"
                 @update:model-value="projectStore.setTargetDuration($event)"
               >
@@ -499,6 +503,7 @@
                         <NumberField
                           :model-value="task.optimistic"
                           :min="0"
+                          :step="0.1"
                           :format-options="task.optimistic !== null ? { minimumFractionDigits: 1 } : undefined"
                           @update:model-value="projectStore.updateTask(projectStore.taskList.indexOf(task), 'optimistic', $event)"
                         >
@@ -511,6 +516,7 @@
                         <NumberField
                           :model-value="task.mostLikely"
                           :min="0"
+                          :step="0.1"
                           :format-options="task.mostLikely !== null ? { minimumFractionDigits: 1 } : undefined"
                           @update:model-value="projectStore.updateTask(projectStore.taskList.indexOf(task), 'mostLikely', $event)"
                         >
@@ -523,6 +529,7 @@
                         <NumberField
                           :model-value="task.pessimistic"
                           :min="0"
+                          :step="0.1"
                           :format-options="task.pessimistic !== null ? { minimumFractionDigits: 1 } : undefined"
                           @update:model-value="projectStore.updateTask(projectStore.taskList.indexOf(task), 'pessimistic', $event)"
                         >
