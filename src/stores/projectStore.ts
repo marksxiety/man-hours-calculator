@@ -83,6 +83,19 @@ export const useProjectStore = defineStore('project', () => {
     }
   }
 
+  function editTask(index: number, updates: Partial<Pick<PERTTaskResult, 'taskName' | 'milestone' | 'description' | 'optimistic' | 'mostLikely' | 'pessimistic'>>): void {
+    const task = taskList.value[index]
+    if (task) {
+      Object.assign(task, updates)
+      if (task.optimistic !== null && task.mostLikely !== null && task.pessimistic !== null) {
+        task.expectedTime = calculateExpectedTime(task)
+        task.standardDeviation = calculateStandardDeviation(task)
+        task.variance = calculateVariance(task.standardDeviation)
+      }
+      saveToStorage()
+    }
+  }
+
   function resetTaskForm(): void {
     retainMilestone.value = false
   }
@@ -140,6 +153,7 @@ export const useProjectStore = defineStore('project', () => {
     addTask,
     removeTask,
     updateTask,
+    editTask,
     resetTaskForm,
     resetAll,
     setTargetDuration,
