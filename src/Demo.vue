@@ -1010,16 +1010,22 @@ function openEditDialog(index: number): void {
 }
 
 function saveEditTask(): void {
+  console.log('task eddit', editTaskForm)
   if (!editTaskForm.taskName.trim()) {
     toast.error('Task name is required')
     return
   }
 
-  if (editTaskForm.optimistic === null || editTaskForm.mostLikely === null || editTaskForm.pessimistic === null) {
+  if (!editTaskForm.milestone.trim()) {
+    toast.error('Milestone is required')
+    return
+  }
+
+  if (editTaskForm.optimistic == null || editTaskForm.mostLikely == null || editTaskForm.pessimistic == null) {
     const missingFields = []
-    if (editTaskForm.optimistic === null) missingFields.push('Optimistic (O)')
-    if (editTaskForm.mostLikely === null) missingFields.push('Most Likely (M)')
-    if (editTaskForm.pessimistic === null) missingFields.push('Pessimistic (P)')
+    if (editTaskForm.optimistic == null) missingFields.push('Optimistic (O)')
+    if (editTaskForm.mostLikely == null) missingFields.push('Most Likely (M)')
+    if (editTaskForm.pessimistic == null) missingFields.push('Pessimistic (P)')
 
     toast.error(`Please fill in all estimate fields: ${missingFields.join(', ')}`)
     return
