@@ -59,7 +59,8 @@
                 <div class="flex items-center gap-2">
                   <Checkbox
                     id="retainMilestone"
-                    v-model="retainMilestone"
+                    :checked="projectStore.retainMilestone"
+                    @update:checked="projectStore.toggleRetainMilestone()"
                   />
                   <Label
                     for="retainMilestone"
@@ -313,9 +314,10 @@
                 </HoverCard>
               </div>
               <NumberField
-                v-model="targetDuration"
+                :model-value="projectStore.targetDuration"
                 :min="0"
-                :format-options="targetDuration !== null ? { minimumFractionDigits: 1 } : undefined"
+                :format-options="projectStore.targetDuration !== null ? { minimumFractionDigits: 1 } : undefined"
+                @update:model-value="projectStore.setTargetDuration($event)"
               >
                 <NumberFieldContent>
                   <NumberFieldInput class="bg-background" />
@@ -329,7 +331,7 @@
                   Total Expected
                 </div>
                 <div class="text-xl font-bold tabular-nums mt-1">
-                  {{ pertAnalysis.totalExpectedTime.toFixed(2) }}
+                  {{ projectStore.pertAnalysis.totalExpectedTime.toFixed(2) }}
                 </div>
                 <div class="mt-1 text-[10px] leading-tight text-muted-foreground">
                   Sum of expected durations
@@ -341,7 +343,7 @@
                   Total Variance
                 </div>
                 <div class="text-xl font-bold tabular-nums mt-1">
-                  {{ pertAnalysis.totalVariance.toFixed(3) }}
+                  {{ projectStore.pertAnalysis.totalVariance.toFixed(3) }}
                 </div>
                 <div class="mt-1 text-[10px] leading-tight text-muted-foreground">
                   Higher = less confident
@@ -353,7 +355,7 @@
                   Z-Score
                 </div>
                 <div class="text-xl font-bold tabular-nums mt-1">
-                  {{ pertAnalysis.zScore.toFixed(3) }}
+                  {{ projectStore.pertAnalysis.zScore.toFixed(3) }}
                 </div>
                 <div class="mt-1 text-[10px] leading-tight text-muted-foreground">
                   (Target - Expected) / Std Dev
@@ -365,7 +367,7 @@
                   On-Time Probability
                 </div>
                 <div class="text-2xl font-black tabular-nums text-primary mt-1">
-                  {{ pertAnalysis.probability.toFixed(1) }}%
+                  {{ projectStore.pertAnalysis.probability.toFixed(1) }}%
                 </div>
                 <div class="mt-1 text-[10px] leading-tight text-primary/70 italic">
                   Based on Z-score lookup
@@ -389,7 +391,7 @@
               variant="outline"
               size="sm"
               class="gap-2 font-mono"
-              :disabled="taskList.length === 0"
+              :disabled="projectStore.taskList.length === 0"
               @click="exportToExcel()"
             >
               <Download class="w-3.5 h-3.5" />
@@ -398,7 +400,7 @@
             <Button
               size="sm"
               class="gap-2 font-mono"
-              @click="resetAll()"
+              @click="projectStore.resetAll()"
             >
               <RotateCcw class="w-3.5 h-3.5" />
               Reset
@@ -443,7 +445,7 @@
                 </tr>
               </thead>
               <tbody class="divide-y divide-border/50">
-                <tr v-if="taskList.length === 0">
+                <tr v-if="projectStore.taskList.length === 0">
                   <td
                     colspan="10"
                     class="py-16 text-center text-muted-foreground"
@@ -453,7 +455,7 @@
                 </tr>
                 <template v-else>
                   <template
-                    v-for="(group, groupIndex) in groupedTasks"
+                    v-for="(group, groupIndex) in projectStore.groupedTasks"
                     :key="group.milestone"
                   >
                     <tr
@@ -498,7 +500,7 @@
                           :model-value="task.optimistic"
                           :min="0"
                           :format-options="task.optimistic !== null ? { minimumFractionDigits: 1 } : undefined"
-                          @update:model-value="updateTask(taskList.indexOf(task), 'optimistic', $event)"
+                          @update:model-value="projectStore.updateTask(projectStore.taskList.indexOf(task), 'optimistic', $event)"
                         >
                           <NumberFieldContent>
                             <NumberFieldInput class="bg-background text-center tabular-nums w-20" />
@@ -510,7 +512,7 @@
                           :model-value="task.mostLikely"
                           :min="0"
                           :format-options="task.mostLikely !== null ? { minimumFractionDigits: 1 } : undefined"
-                          @update:model-value="updateTask(taskList.indexOf(task), 'mostLikely', $event)"
+                          @update:model-value="projectStore.updateTask(projectStore.taskList.indexOf(task), 'mostLikely', $event)"
                         >
                           <NumberFieldContent>
                             <NumberFieldInput class="bg-background text-center tabular-nums w-20" />
@@ -522,7 +524,7 @@
                           :model-value="task.pessimistic"
                           :min="0"
                           :format-options="task.pessimistic !== null ? { minimumFractionDigits: 1 } : undefined"
-                          @update:model-value="updateTask(taskList.indexOf(task), 'pessimistic', $event)"
+                          @update:model-value="projectStore.updateTask(projectStore.taskList.indexOf(task), 'pessimistic', $event)"
                         >
                           <NumberFieldContent>
                             <NumberFieldInput class="bg-background text-center tabular-nums w-20" />
@@ -543,7 +545,7 @@
                       <td class="px-4 py-3 text-right">
                         <button
                           class="h-8 w-8 inline-flex items-center justify-center rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
-                          @click="removeTask(taskList.indexOf(task))"
+                          @click="projectStore.removeTask(projectStore.taskList.indexOf(task))"
                         >
                           <X class="w-3.5 h-3.5" />
                         </button>
@@ -790,10 +792,10 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref, reactive, computed } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import ExcelJS from 'exceljs';
 import { useRouter } from 'vue-router'
-import type { NewTask, Analysis, PERTTaskResult } from '@/types'
+import type { NewTask } from '@/types'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -806,17 +808,12 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Textarea } from '@/components/ui/textarea'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { ChevronLeft, Download, X, RotateCcw, Info, Plus, HelpCircle, Star, Target, AlertTriangle, CalendarClock } from 'lucide-vue-next'
-import { calculateExpectedTime } from '@/utils/calculateExpectedTime'
-import { calculateStandardDeviation } from '@/utils/calculateStandardDeviation'
-import { calculateVariance } from '@/utils/calculateVariance'
-import { calculateTotalExpectedTime, calculateTotalVariance } from '@/utils/calculateTotals'
-import { calculateZScore } from '@/utils/calculateZScore'
-import { calculateProbability } from '@/utils/calculateProbability'
+import { useProjectStore } from '@/stores/projectStore'
 import { toast } from 'vue-sonner'
 
 const router = useRouter()
-
-const taskList = reactive<PERTTaskResult[]>([])
+const projectStore = useProjectStore()
+const showInfoDialog = ref(false)
 const newTaskForm = reactive<NewTask>({
   taskName: '',
   milestone: '',
@@ -825,44 +822,15 @@ const newTaskForm = reactive<NewTask>({
   mostLikely: null,
   pessimistic: null,
 })
-const targetDuration = ref<number | null>(null)
-const showInfoDialog = ref(false)
-const retainMilestone = ref(false)
+
 function isTextTruncated(text: string): boolean {
   return text.length > 40
 }
 
-const pertAnalysis = computed<Analysis>(() => {
-  const totalExpectedTime = calculateTotalExpectedTime(taskList)
-  const totalVariance = calculateTotalVariance(taskList)
-  const zScore = taskList.length === 0 || targetDuration.value === null ? 0 : calculateZScore(targetDuration.value, totalExpectedTime, totalVariance)
-  const probability = taskList.length === 0 ? 0 : calculateProbability(zScore) * 100
-  return { totalExpectedTime, totalVariance, zScore, probability }
-})
-
-const groupedTasks = computed(() => {
-  const groups: { milestone: string; tasks: PERTTaskResult[] }[] = []
-  const milestoneMap = new Map<string, PERTTaskResult[]>()
-
-  taskList.forEach(task => {
-    const milestone = task.milestone || 'Uncategorized'
-    if (!milestoneMap.has(milestone)) {
-      milestoneMap.set(milestone, [])
-    }
-    milestoneMap.get(milestone)!.push(task)
-  })
-
-  milestoneMap.forEach((tasks, milestone) => {
-    groups.push({ milestone, tasks })
-  })
-
-  return groups
-})
-
 function resetTaskForm(): void {
   newTaskForm.taskName = ''
   newTaskForm.description = ''
-  if (!retainMilestone.value) {
+  if (!projectStore.retainMilestone) {
     newTaskForm.milestone = ''
   }
   newTaskForm.optimistic = null
@@ -870,15 +838,8 @@ function resetTaskForm(): void {
   newTaskForm.pessimistic = null
 }
 
-function resetAll(): void {
-  resetTaskForm()
-  targetDuration.value = null
-  taskList.length = 0
-}
-
 function addTask(): void {
-  console.log('retain milestone', retainMilestone.value)
-  if (newTaskForm.optimistic === null || newTaskForm.mostLikely === null || newTaskForm.pessimistic === null) {
+  if (!projectStore.addTask(newTaskForm)) {
     const missingFields = []
     if (newTaskForm.optimistic === null) missingFields.push('Optimistic (O)')
     if (newTaskForm.mostLikely === null) missingFields.push('Most Likely (M)')
@@ -887,40 +848,8 @@ function addTask(): void {
     toast.error(`Please fill in all fields: ${missingFields.join(', ')}`)
     return
   }
-
-  const expectedTime = calculateExpectedTime(newTaskForm)
-  const standardDeviation = calculateStandardDeviation(newTaskForm)
-  const variance = calculateVariance(standardDeviation)
-  taskList.push({
-    taskName: newTaskForm.taskName,
-    milestone: newTaskForm.milestone,
-    description: newTaskForm.description,
-    optimistic: newTaskForm.optimistic,
-    mostLikely: newTaskForm.mostLikely,
-    pessimistic: newTaskForm.pessimistic,
-    expectedTime,
-    standardDeviation,
-    variance,
-  })
   resetTaskForm()
-
   toast.success('Task added successfully!')
-}
-
-function removeTask(index: number): void {
-  taskList.splice(index, 1)
-}
-
-function updateTask(index: number, field: 'optimistic' | 'mostLikely' | 'pessimistic', value: number | null): void {
-  const task = taskList[index]
-  if (task) {
-    task[field] = value
-    if (task.optimistic !== null && task.mostLikely !== null && task.pessimistic !== null) {
-      task.expectedTime = calculateExpectedTime(task)
-      task.standardDeviation = calculateStandardDeviation(task)
-      task.variance = calculateVariance(task.standardDeviation)
-    }
-  }
 }
 
 function goToHome(): void {
@@ -928,7 +857,7 @@ function goToHome(): void {
 }
 
 function exportToExcel(): void {
-  if (targetDuration.value === null) {
+  if (projectStore.targetDuration === null) {
     toast.error('Please add a Desired Completion Time (D) before exporting')
     return
   }
@@ -949,7 +878,7 @@ function exportToExcel(): void {
     { header: 'Variance', key: 'variance', width: 16 },
   ];
 
-  taskList.forEach((task) => {
+  projectStore.taskList.forEach((task) => {
     taskSheet.addRow({
       milestone: task.milestone || 'Uncategorized',
       taskName: task.taskName,
@@ -967,8 +896,8 @@ function exportToExcel(): void {
   taskSheet.addRow([]);
   const totalRow = taskSheet.addRow({
     taskName: 'TOTALS',
-    expectedTime: parseFloat(pertAnalysis.value.totalExpectedTime.toFixed(2)),
-    variance: parseFloat(pertAnalysis.value.totalVariance.toFixed(3)),
+    expectedTime: parseFloat(projectStore.pertAnalysis.totalExpectedTime.toFixed(2)),
+    variance: parseFloat(projectStore.pertAnalysis.totalVariance.toFixed(3)),
   });
   totalRow.font = { bold: true };
   totalRow.fill = {
@@ -1003,10 +932,10 @@ function exportToExcel(): void {
     fgColor: { argb: 'FFE0E0E0' },
   };
 
-  const { totalExpectedTime, totalVariance, zScore, probability } = pertAnalysis.value;
+  const { totalExpectedTime, totalVariance, zScore, probability } = projectStore.pertAnalysis;
 
   const analysisRows = [
-    { metric: 'Desired Completion Time (D)', value: targetDuration.value },
+    { metric: 'Desired Completion Time (D)', value: projectStore.targetDuration },
     { metric: 'Total Expected Time', value: parseFloat(totalExpectedTime.toFixed(2)) },
     { metric: 'Total Variance', value: parseFloat(totalVariance.toFixed(3)) },
     { metric: 'Standard Deviation', value: parseFloat(Math.sqrt(totalVariance).toFixed(3)) },
@@ -1051,4 +980,8 @@ function exportToExcel(): void {
     URL.revokeObjectURL(url);
   });
 }
+
+onMounted(() => {
+  projectStore.loadFromStorage()
+})
 </script>
