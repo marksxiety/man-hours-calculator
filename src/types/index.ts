@@ -1,21 +1,4 @@
-export interface NewTask {
-    taskName: string
-    milestone: string
-    description: string
-    optimistic: number | null
-    mostLikely: number | null
-    pessimistic: number | null
-}
-
-export interface Analysis {
-    totalExpectedTime: number
-    totalVariance: number
-    zScore: number
-    probability: number
-}
-
-export interface PERTTaskResult extends NewTask {
-    expectedTime: number; // tₑ = (O + 4M + P) / 6
-    standardDeviation: number; // σ  = (P - O) / 6
-    variance: number; // σ²
-}
+export type { NewTask, PERTTaskResult } from './task'
+export type { Analysis } from './analysis'
+export type { StoredState } from './state'
+export type { Appearance, ResolvedAppearance, Theme } from './ui'
