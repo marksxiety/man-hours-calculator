@@ -1,6 +1,6 @@
 # Changelog
 
-## [UNRELEASED]
+## [1.1.0] - 2026-03-26
 
 ### Features
 - Add delete confirmation dialog with option to disable warning
