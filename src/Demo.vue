@@ -380,196 +380,205 @@
             </div>
           </div>
         </div>
-      </div>
 
-      <Separator class="mb-6" />
+        <Separator class="mb-6" />
 
-      <!-- Task Breakdown -->
-      <div>
-        <div class="flex items-center justify-between mb-4">
-          <p class="font-mono text-xs tracking-widest uppercase text-muted-foreground">
-            Task Breakdown
-          </p>
-          <div class="flex gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              class="gap-2 font-mono"
-              :disabled="projectStore.taskList.length === 0"
-              @click="exportToExcel()"
-            >
-              <Download class="w-3.5 h-3.5" />
-              Export
-            </Button>
-            <Button
-              size="sm"
-              class="gap-2 font-mono"
-              @click="projectStore.resetAll()"
-            >
-              <RotateCcw class="w-3.5 h-3.5" />
-              Reset
-            </Button>
+        <!-- Task Breakdown -->
+        <div class="col-span-2">
+          <div class="flex items-center justify-between mb-4">
+            <p class="font-mono text-xs tracking-widest uppercase text-muted-foreground">
+              Task Breakdown
+            </p>
+            <div class="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                class="gap-2 font-mono"
+                :disabled="projectStore.taskList.length === 0"
+                @click="exportToExcel()"
+              >
+                <Download class="w-3.5 h-3.5" />
+                Export
+              </Button>
+              <Button
+                size="sm"
+                class="gap-2 font-mono"
+                @click="projectStore.resetAll()"
+              >
+                <RotateCcw class="w-3.5 h-3.5" />
+                Reset
+              </Button>
+            </div>
           </div>
-        </div>
-        <div class="rounded-xl border border-border bg-card shadow-sm overflow-hidden">
-          <div class="overflow-x-auto overflow-y-auto max-h-80">
-            <table class="w-full text-sm border-separate border-spacing-0">
-              <thead class="bg-muted sticky top-0 z-10">
-                <tr class="text-xs font-semibold">
-                  <th class="text-left text-muted-foreground px-4 py-2.5 border-b border-border">
-                    Milestone
-                  </th>
-                  <th class="text-left text-muted-foreground px-4 py-2.5 border-b border-border">
-                    Task
-                    Name
-                  </th>
-                  <th class="text-left text-muted-foreground px-4 py-2.5 border-b border-border">
-                    Description
-                  </th>
-                  <th class="text-center text-muted-foreground px-4 py-2.5 border-b border-border">
+          <div class="rounded-xl border border-border bg-card shadow-sm">
+            <div
+              v-if="projectStore.taskList.length === 0"
+              class="py-16 text-center text-muted-foreground text-sm"
+            >
+              No tasks added yet. Start by adding a task above.
+            </div>
+            <div v-else>
+              <div class="flex items-center gap-3 px-4 py-2.5 bg-muted/50 border-b border-border text-xs font-semibold text-muted-foreground">
+                <div class="w-4 shrink-0" />
+                <div class="w-32 shrink-0">
+                  Milestone
+                </div>
+                <div class="flex-1 min-w-0">
+                  Task / Description
+                </div>
+                <div class="flex items-center gap-2 shrink-0">
+                  <div class="w-16 text-center">
                     O
-                  </th>
-                  <th class="text-center text-muted-foreground px-4 py-2.5 border-b border-border">
+                  </div>
+                  <div class="w-16 text-center">
                     M
-                  </th>
-                  <th class="text-center text-muted-foreground px-4 py-2.5 border-b border-border">
+                  </div>
+                  <div class="w-16 text-center">
                     P
-                  </th>
-                  <th class="text-center text-primary px-4 py-2.5 border-b border-border">
+                  </div>
+                </div>
+                <div class="flex items-center gap-2 shrink-0 tabular-nums">
+                  <div class="w-16 text-center">
                     Expected
-                  </th>
-                  <th class="text-center text-muted-foreground px-4 py-2.5 border-b border-border">
-                    Std
-                    Dev
-                  </th>
-                  <th class="text-center text-muted-foreground px-4 py-2.5 border-b border-border">
+                  </div>
+                  <div class="w-16 text-center">
+                    Std Dev
+                  </div>
+                  <div class="w-16 text-center">
                     Variance
-                  </th>
-                  <th class="w-20 border-b border-border" />
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-border/50">
-                <tr v-if="projectStore.taskList.length === 0">
-                  <td
-                    colspan="10"
-                    class="py-16 text-center text-muted-foreground"
-                  >
-                    No tasks added yet. Start by adding a task above.
-                  </td>
-                </tr>
-                <template v-else>
-                  <template
-                    v-for="(group, groupIndex) in projectStore.groupedTasks"
-                    :key="group.milestone"
-                  >
-                    <tr
-                      v-for="(task, taskIndex) in group.tasks"
-                      :key="`${groupIndex}-${taskIndex}`"
-                      class="hover:bg-muted/20 transition-colors duration-150"
+                  </div>
+                </div>
+                <div class="w-20 shrink-0 text-center">
+                  Actions
+                </div>
+              </div>
+              <VueDraggable
+                v-model="projectStore.taskList"
+                class="divide-y divide-border/50"
+                handle=".drag-handle"
+                chosen-class="task-chosen"
+                drag-class="task-dragging"
+                ghost-class="task-ghost"
+              >
+                <div
+                  v-for="(task, index) in projectStore.taskList"
+                  :key="index"
+                  class="group flex items-center gap-3 px-4 py-3 transition-all duration-200 hover:bg-muted/30"
+                >
+                  <GripVertical
+                    class="w-4 h-4 text-muted-foreground cursor-grab active:cursor-grabbing shrink-0 drag-handle"
+                  />
+
+                  <div class="w-32 shrink-0">
+                    <p class="text-xs font-medium uppercase">
+                      {{ task.milestone || 'No Milestone' }}
+                    </p>
+                  </div>
+
+                  <div class="flex-1 min-w-0">
+                    <HoverCard
+                      :open-delay="100"
+                      :close-delay="50"
                     >
-                      <td
-                        v-if="taskIndex === 0"
-                        :rowspan="group.tasks.length"
-                        class="px-4 py-3 font-medium bg-muted/30 align-top min-w-37.5"
-                      >
-                        {{ group.milestone }}
-                      </td>
-                      <td class="px-4 py-3 font-medium min-w-50">
-                        {{ task.taskName }}
-                      </td>
-                      <td class="px-4 py-3 max-w-48 min-w-48">
-                        <HoverCard
-                          :open-delay="100"
-                          :close-delay="50"
-                        >
-                          <HoverCardTrigger as-child>
-                            <div class="truncate text-muted-foreground text-xs">
-                              {{ task.description || '-' }}
-                            </div>
-                          </HoverCardTrigger>
-                          <HoverCardContent
-                            v-if="task.description && isTextTruncated(task.description)"
-                            class="w-72 max-w-72 max-h-48 overflow-auto p-4"
-                            side="top"
-                            align="start"
-                          >
-                            <p class="text-xs leading-relaxed whitespace-pre-wrap wrap-break-word">
-                              {{ task.description }}
-                            </p>
-                          </HoverCardContent>
-                        </HoverCard>
-                      </td>
-                      <td class="px-4 py-3 text-center min-w-24">
-                        <NumberField
-                          :model-value="task.optimistic"
-                          :min="0"
-                          :step="0.1"
-                          :format-options="task.optimistic !== null ? { minimumFractionDigits: 1 } : undefined"
-                          @update:model-value="projectStore.updateTask(projectStore.taskList.indexOf(task), 'optimistic', $event)"
-                        >
-                          <NumberFieldContent>
-                            <NumberFieldInput class="bg-background text-center tabular-nums w-20" />
-                          </NumberFieldContent>
-                        </NumberField>
-                      </td>
-                      <td class="px-4 py-3 text-center min-w-24">
-                        <NumberField
-                          :model-value="task.mostLikely"
-                          :min="0"
-                          :step="0.1"
-                          :format-options="task.mostLikely !== null ? { minimumFractionDigits: 1 } : undefined"
-                          @update:model-value="projectStore.updateTask(projectStore.taskList.indexOf(task), 'mostLikely', $event)"
-                        >
-                          <NumberFieldContent>
-                            <NumberFieldInput class="bg-background text-center tabular-nums w-20" />
-                          </NumberFieldContent>
-                        </NumberField>
-                      </td>
-                      <td class="px-4 py-3 text-center min-w-24">
-                        <NumberField
-                          :model-value="task.pessimistic"
-                          :min="0"
-                          :step="0.1"
-                          :format-options="task.pessimistic !== null ? { minimumFractionDigits: 1 } : undefined"
-                          @update:model-value="projectStore.updateTask(projectStore.taskList.indexOf(task), 'pessimistic', $event)"
-                        >
-                          <NumberFieldContent>
-                            <NumberFieldInput class="bg-background text-center tabular-nums w-20" />
-                          </NumberFieldContent>
-                        </NumberField>
-                      </td>
-                      <td class="px-4 py-3 text-center font-bold tabular-nums text-primary">
-                        {{
-                          task.expectedTime.toFixed(2) }}
-                      </td>
-                      <td class="px-4 py-3 text-center tabular-nums">
-                        {{ task.standardDeviation.toFixed(3)
-                        }}
-                      </td>
-                      <td class="px-4 py-3 text-center tabular-nums">
-                        {{ task.variance.toFixed(3) }}
-                      </td>
-                      <td class="px-4 py-3 text-right">
-                        <div class="flex items-center justify-end gap-1">
-                          <button
-                            class="h-8 w-8 inline-flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-                            @click="openEditDialog(projectStore.taskList.indexOf(task))"
-                          >
-                            <Pencil class="w-3.5 h-3.5" />
-                          </button>
-                          <button
-                            class="h-8 w-8 inline-flex items-center justify-center rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
-                            @click="projectStore.removeTask(projectStore.taskList.indexOf(task))"
-                          >
-                            <X class="w-3.5 h-3.5" />
-                          </button>
+                      <HoverCardTrigger as-child>
+                        <div class="cursor-pointer space-y-1">
+                          <p class="text-sm font-medium truncate leading-tight">
+                            {{ task.taskName }}
+                          </p>
+                          <p class="text-xs text-muted-foreground truncate leading-snug">
+                            {{ task.description || 'No description' }}
+                          </p>
                         </div>
-                      </td>
-                    </tr>
-                  </template>
-                </template>
-              </tbody>
-            </table>
+                      </HoverCardTrigger>
+                      <HoverCardContent
+                        class="w-72 max-w-72 p-4"
+                        side="top"
+                        align="start"
+                      >
+                        <div class="space-y-2">
+                          <p class="text-sm font-semibold leading-tight">
+                            {{ task.taskName }}
+                          </p>
+                          <Separator />
+                          <p class="text-xs text-muted-foreground leading-relaxed whitespace-pre-wrap">
+                            {{ task.description || 'No description provided' }}
+                          </p>
+                        </div>
+                      </HoverCardContent>
+                    </HoverCard>
+                  </div>
+
+                  <div class="flex items-center gap-2 shrink-0">
+                    <div class="w-16">
+                      <NumberField
+                        :model-value="task.optimistic"
+                        :min="0"
+                        :step="0.1"
+                        :format-options="task.optimistic !== null ? { minimumFractionDigits: 1 } : undefined"
+                        @update:model-value="projectStore.updateTask(index, 'optimistic', $event)"
+                      >
+                        <NumberFieldContent>
+                          <NumberFieldInput class="bg-background text-center tabular-nums h-7 text-xs" />
+                        </NumberFieldContent>
+                      </NumberField>
+                    </div>
+                    <div class="w-16">
+                      <NumberField
+                        :model-value="task.mostLikely"
+                        :min="0"
+                        :step="0.1"
+                        :format-options="task.mostLikely !== null ? { minimumFractionDigits: 1 } : undefined"
+                        @update:model-value="projectStore.updateTask(index, 'mostLikely', $event)"
+                      >
+                        <NumberFieldContent>
+                          <NumberFieldInput class="bg-background text-center tabular-nums h-7 text-xs" />
+                        </NumberFieldContent>
+                      </NumberField>
+                    </div>
+                    <div class="w-16">
+                      <NumberField
+                        :model-value="task.pessimistic"
+                        :min="0"
+                        :step="0.1"
+                        :format-options="task.pessimistic !== null ? { minimumFractionDigits: 1 } : undefined"
+                        @update:model-value="projectStore.updateTask(index, 'pessimistic', $event)"
+                      >
+                        <NumberFieldContent>
+                          <NumberFieldInput class="bg-background text-center tabular-nums h-7 text-xs" />
+                        </NumberFieldContent>
+                      </NumberField>
+                    </div>
+                  </div>
+
+                  <div class="flex items-center gap-2 shrink-0 text-xs tabular-nums">
+                    <div class="w-16 text-center font-bold text-primary">
+                      {{ task.expectedTime.toFixed(2) }}
+                    </div>
+                    <div class="w-16 text-center">
+                      {{ task.standardDeviation.toFixed(3) }}
+                    </div>
+                    <div class="w-16 text-center">
+                      {{ task.variance.toFixed(3) }}
+                    </div>
+                  </div>
+
+                  <div class="flex items-center justify-center gap-1 shrink-0 w-20">
+                    <button
+                      class="h-7 w-7 inline-flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                      @click="openEditDialog(index)"
+                    >
+                      <Pencil class="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      class="h-7 w-7 inline-flex items-center justify-center rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                      @click="projectStore.removeTask(index)"
+                    >
+                      <X class="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+              </VueDraggable>
+            </div>
           </div>
         </div>
       </div>
@@ -939,7 +948,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, watch } from 'vue'
 import ExcelJS from 'exceljs';
 import { useRouter } from 'vue-router'
 import type { NewTask } from '@/types'
@@ -954,7 +963,8 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Checkbox } from '@/components/ui/checkbox'
 import { Textarea } from '@/components/ui/textarea'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { ChevronLeft, Download, X, RotateCcw, Info, Plus, HelpCircle, Star, Target, AlertTriangle, CalendarClock, Pencil } from 'lucide-vue-next'
+import { ChevronLeft, Download, X, RotateCcw, Info, Plus, HelpCircle, Star, Target, AlertTriangle, CalendarClock, Pencil, GripVertical } from 'lucide-vue-next'
+import { VueDraggable } from 'vue-draggable-plus'
 import { useProjectStore } from '@/stores/projectStore'
 import { toast } from 'vue-sonner'
 
@@ -979,10 +989,6 @@ const newTaskForm = reactive<NewTask>({
   mostLikely: null,
   pessimistic: null,
 })
-
-function isTextTruncated(text: string): boolean {
-  return text.length > 40
-}
 
 function resetTaskForm(): void {
   newTaskForm.taskName = ''
@@ -1192,4 +1198,27 @@ function exportToExcel(): void {
 onMounted(() => {
   projectStore.loadFromStorage()
 })
+
+watch(() => projectStore.taskList, () => {
+  projectStore.saveToStorage()
+}, { deep: true })
 </script>
+
+<style>
+.task-chosen {
+  outline: 2px solid hsl(var(--primary)) !important;
+  outline-offset: -2px !important;
+  background-color: hsl(var(--primary) / 0.08) !important;
+}
+
+.task-dragging {
+  box-shadow: 0 8px 24px hsl(var(--primary) / 0.2) !important;
+  opacity: 1 !important;
+  transform: scale(1.02) !important;
+}
+
+.task-ghost {
+  opacity: 0.3 !important;
+  background-color: transparent !important;
+}
+</style>
