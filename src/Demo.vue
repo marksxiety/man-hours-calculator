@@ -980,7 +980,7 @@
               <Checkbox
                 id="dontShowDeleteWarning"
                 :model-value="!projectStore.deleteWarning"
-                @update:model-value="projectStore.toggleDeleteWarning(!$value)"
+                @update:model-value="projectStore.deleteWarning = !$event"
               />
               <Label
                 for="dontShowDeleteWarning"
