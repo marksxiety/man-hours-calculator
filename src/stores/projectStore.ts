@@ -158,6 +158,7 @@ export const useProjectStore = defineStore('project', () => {
     resetAll,
     setTargetDuration,
     toggleRetainMilestone,
+    saveToStorage,
     loadFromStorage,
   }
 })
