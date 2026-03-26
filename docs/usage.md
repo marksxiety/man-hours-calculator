@@ -22,8 +22,9 @@ The main screen displays a form where you can enter task details.
 
 | Field | Description | Required |
 |-------|-------------|----------|
+| **Milestone** | The project milestone this task belongs to (e.g., "Planning") | No |
+| **Retain Milestone** | Checkbox to keep the milestone value for the next task | No |
 | **Task Name** | A concise name for the task (e.g., "User Authentication") | Yes |
-| **Milestone** | The project milestone this task belongs to (e.g., "Phase 1") | No |
 | **Description** | Detailed description of what needs to be done | No |
 | **Optimistic (O)** | Best-case estimate in hours | Yes |
 | **Most Likely (M)** | Most realistic estimate in hours | Yes |
@@ -62,7 +63,7 @@ For each task, provide three time estimates:
 
 As you type, the system automatically calculates:
 
-- **Expected Time (tₑ):** The weighted average `(O + 4M + P) / 6`
+- **Expected Time (E):** The weighted average `(O + 4M + P) / 6`
 - **Standard Deviation (σ):** Uncertainty measure `(P - O) / 6`
 - **Variance (σ²):** Aggregated uncertainty `σ²`
 
@@ -70,7 +71,7 @@ These values update instantly, allowing you to adjust your estimates if the calc
 
 ### Step 5: Add the Task
 
-Click the **"Add Task"** button. The task will appear in the task list below.
+Click the **"Add Task"** button. The task will appear in the task list below. If you enabled "Retain Milestone", the milestone value will be preserved for the next task.
 
 ---
 
@@ -86,30 +87,43 @@ All added tasks are displayed in a table with:
 ### Editing Estimates
 
 You can update any task's estimates directly in the table:
-- Click on an estimate field to edit it
+- Click on an estimate field (O, M, P) to edit it
 - The recalculations happen automatically
 - Changes are saved to local storage
 
+### Editing Task Details
+
+To edit task name, milestone, or description:
+1. Click the pencil icon next to any task
+2. Modify the fields in the edit dialog
+3. Click "Save Changes"
+
+### Reordering Tasks
+
+Tasks can be reordered by dragging them using the grip handle (drag icon) on the left side of each row.
+
 ### Deleting Tasks
 
-Click the delete button (trash icon) next to any task to remove it.
+Click the delete (X) button next to any task to remove it. You can choose to suppress the confirmation dialog for faster workflow.
 
 ---
 
-## Setting Target Duration
+## Setting Desired Completion Time
 
-### Why Set a Target?
+### Why Set a Desired Completion Time?
 
-The target duration represents your project deadline or client commitment. Setting it allows the system to:
+The desired completion time represents your project deadline or client commitment. Setting it allows the system to:
 
 1. Calculate the **Z-Score** — how many standard deviations your target is from the expected duration
-2. Compute **Completion Probability** — the statistical chance of finishing on time
+2. Compute **On-Time Probability** — the statistical chance of finishing on time
 
-### How to Set Your Target
+### How to Set Your Desired Completion Time
 
-1. Find the "Target Duration" section in the UI
+1. Find the "Desired Completion Time (D)" field in the Analysis section
 2. Enter your deadline in hours
 3. The probability analysis updates automatically
+
+> **Note:** You must set a Desired Completion Time (D) before you can export results to Excel.
 
 ### Interpreting the Results
 
@@ -120,6 +134,11 @@ The target duration represents your project deadline or client commitment. Setti
 | **50-75%** | Moderate confidence — some risk |
 | **25-50%** | Low confidence — significant risk |
 | **0-25%** | Very low confidence — deadline is unrealistic |
+
+**Z-Score Interpretation:**
+- **Positive Z**: Your desired time is above the expected duration (good)
+- **Zero Z**: Your desired time equals the expected duration (50% probability)
+- **Negative Z**: Your desired time is below the expected duration (high risk)
 
 ---
 
@@ -148,9 +167,9 @@ The statistical likelihood of finishing before your target deadline.
 
 ---
 
-## Grouping by Milestones
+## Organizing by Milestones
 
-Tasks are automatically grouped by milestone (or "Uncategorized" if no milestone is specified). This helps you:
+Tasks can be labeled with milestones to help organize your project. Each task displays its associated milestone (or "—" if none is specified). Use the "Retain Milestone" checkbox to quickly add multiple tasks to the same milestone. This helps you:
 
 - See which phases have the most uncertainty
 - Identify high-risk milestones
@@ -162,14 +181,20 @@ Tasks are automatically grouped by milestone (or "Uncategorized" if no milestone
 
 ### Export to Excel
 
-Click the **"Export to Excel"** button to download a spreadsheet containing:
+Click the **"Export"** button to download a spreadsheet containing:
 
 - All task details and estimates
 - Calculated PERT values
 - Project-level summary statistics
-- Completion probability analysis
+- On-Time probability analysis
 
-The Excel file is formatted for presentation and can be shared with stakeholders.
+The Excel file includes two worksheets:
+1. **Task Breakdown** — Individual task details
+2. **PERT Analysis** — Project-level metrics and probability
+
+**Note:** You must set a Desired Completion Time (D) before exporting, as it's required for the probability calculations in the export.
+
+The file is formatted for presentation and can be shared with stakeholders.
 
 ---
 
