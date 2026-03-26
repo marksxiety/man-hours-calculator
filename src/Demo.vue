@@ -544,7 +544,7 @@
                       </button>
                       <button
                         class="h-7 w-7 inline-flex items-center justify-center rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
-                        @click="projectStore.removeTask(index)"
+                        @click="openDeleteDialog(index)"
                       >
                         <X class="w-3.5 h-3.5" />
                       </button>
@@ -660,7 +660,7 @@
                         </button>
                         <button
                           class="h-7 w-7 inline-flex items-center justify-center rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
-                          @click="projectStore.removeTask(index)"
+                          @click="openDeleteDialog(index)"
                         >
                           <X class="w-3.5 h-3.5" />
                         </button>
@@ -957,6 +957,57 @@
           </div>
         </DialogContent>
       </Dialog>
+
+      <!-- Delete Confirmation Dialog -->
+      <Dialog v-model:open="showDeleteDialog">
+        <DialogContent class="flex flex-col gap-0 p-0 max-w-md w-[calc(100vw-2rem)] rounded-xl overflow-hidden">
+          <DialogHeader class="px-5 pt-5 pb-4 border-b border-border shrink-0">
+            <DialogTitle class="flex items-center gap-2 text-sm text-destructive">
+              <div class="w-7 h-7 rounded-md bg-destructive/10 text-destructive flex items-center justify-center shrink-0">
+                <AlertTriangle class="w-3.5 h-3.5" />
+              </div>
+              Delete Task
+            </DialogTitle>
+            <DialogDescription class="text-xs mt-1">
+              This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <div class="px-5 py-4 space-y-4">
+            <p class="text-sm">
+              Are you sure you want to delete this task?
+            </p>
+            <div class="flex items-center gap-3 pt-2">
+              <Checkbox
+                id="dontShowDeleteWarning"
+                :model-value="!projectStore.deleteWarning"
+                @update:model-value="projectStore.toggleDeleteWarning(!$value)"
+              />
+              <Label
+                for="dontShowDeleteWarning"
+                class="text-xs text-muted-foreground cursor-pointer"
+              >
+                Don't show this warning again
+              </Label>
+            </div>
+          </div>
+          <div class="px-5 py-4 border-t border-border shrink-0 flex gap-2">
+            <Button
+              variant="outline"
+              class="flex-1 font-mono text-xs"
+              @click="showDeleteDialog = false"
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              class="flex-1 font-mono text-xs"
+              @click="confirmDeleteTask()"
+            >
+              Delete
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   </div>
 </template>
@@ -987,6 +1038,8 @@ const projectStore = useProjectStore()
 const showInfoDialog = ref(false)
 const showEditDialog = ref(false)
 const editingTaskIndex = ref<number | null>(null)
+const showDeleteDialog = ref(false)
+const deleteTaskIndex = ref<number | null>(null)
 
 const editTaskForm = reactive({
   taskName: '',
@@ -1052,6 +1105,25 @@ function saveEditTask(): void {
     showEditDialog.value = false
     editingTaskIndex.value = null
     toast.success('Task updated successfully!')
+  }
+}
+
+function confirmDeleteTask(): void {
+  if (deleteTaskIndex.value !== null) {
+    projectStore.removeTask(deleteTaskIndex.value)
+    showDeleteDialog.value = false
+    deleteTaskIndex.value = null
+    toast.success('Task deleted successfully!')
+  }
+}
+
+function openDeleteDialog(index: number): void {
+  if (projectStore.deleteWarning) {
+    deleteTaskIndex.value = index
+    showDeleteDialog.value = true
+  } else {
+    projectStore.removeTask(index)
+    toast.success('Task deleted successfully!')
   }
 }
 
