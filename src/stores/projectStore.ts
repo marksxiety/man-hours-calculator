@@ -14,6 +14,7 @@ export const useProjectStore = defineStore('project', () => {
   const taskList = ref<PERTTaskResult[]>([])
   const targetDuration = ref<number | null>(null)
   const retainMilestone = ref(false)
+  const deleteWarning = ref(true)
 
   const pertAnalysis = computed<Analysis>(() => {
     const totalExpectedTime = calculateTotalExpectedTime(taskList.value)
@@ -117,12 +118,22 @@ export const useProjectStore = defineStore('project', () => {
     saveToStorage()
   }
 
+  function toggleDeleteWarning(value?: boolean): void {
+    if (value !== undefined) {
+      deleteWarning.value = !value
+    } else {
+      deleteWarning.value = !deleteWarning.value
+    }
+    saveToStorage()
+  }
+
   function saveToStorage(): void {
     try {
       const state: StoredState = {
         tasks: taskList.value,
         targetDuration: targetDuration.value,
         retainMilestone: retainMilestone.value,
+        deleteWarning: deleteWarning.value,
       }
       localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
     } catch (error) {
@@ -138,6 +149,7 @@ export const useProjectStore = defineStore('project', () => {
         taskList.value = state.tasks || []
         targetDuration.value = state.targetDuration
         retainMilestone.value = state.retainMilestone ?? false
+        deleteWarning.value = state.deleteWarning ?? true
       }
     } catch (error) {
       console.error('Failed to load from localStorage:', error)
@@ -148,6 +160,7 @@ export const useProjectStore = defineStore('project', () => {
     taskList,
     targetDuration,
     retainMilestone,
+    deleteWarning,
     pertAnalysis,
     groupedTasks,
     addTask,
@@ -158,6 +171,7 @@ export const useProjectStore = defineStore('project', () => {
     resetAll,
     setTargetDuration,
     toggleRetainMilestone,
+    toggleDeleteWarning,
     saveToStorage,
     loadFromStorage,
   }
