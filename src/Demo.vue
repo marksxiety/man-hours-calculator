@@ -746,6 +746,19 @@
                     </p>
                   </div>
                 </div>
+                <div class="flex gap-3">
+                  <div class="shrink-0 w-6 h-6 rounded-full bg-muted flex items-center justify-center mt-0.5">
+                    <span class="font-mono text-[10px] font-semibold text-primary">5</span>
+                  </div>
+                  <div class="space-y-0.5">
+                    <p class="text-sm font-medium">
+                      Manage your tasks
+                    </p>
+                    <p class="text-xs text-muted-foreground leading-relaxed">
+                      Edit estimates directly in the table, reorder tasks by dragging, or use the pencil/X icons for detailed edits. Use the <span class="font-medium text-foreground">Retain Milestone</span> checkbox to quickly add multiple tasks to the same milestone.
+                    </p>
+                  </div>
+                </div>
               </div>
               <Separator />
               <div class="space-y-3">
@@ -821,7 +834,7 @@
                     What does a negative Z-score mean?
                   </p>
                   <p class="text-xs text-muted-foreground leading-relaxed">
-                    Your target is shorter than the expected total — probability drops below 50%, meaning the project is likely to overrun.
+                    Your desired time is shorter than the expected total — probability drops below 50%, meaning the project is likely to overrun.
                   </p>
                 </div>
                 <div class="space-y-1">
@@ -829,7 +842,23 @@
                     How do I export the results?
                   </p>
                   <p class="text-xs text-muted-foreground leading-relaxed">
-                    Use the <span class="font-medium text-foreground">Export</span> button in the Task Breakdown section to download an Excel file of all tasks and computed values.
+                    Use the <span class="font-medium text-foreground">Export</span> button in the Task Breakdown section to download an Excel file. Note that you must set a Desired Completion Time (D) before exporting.
+                  </p>
+                </div>
+                <div class="space-y-1">
+                  <p class="text-xs font-medium">
+                    What does "Retain Milestone" do?
+                  </p>
+                  <p class="text-xs text-muted-foreground leading-relaxed">
+                    When checked, the milestone value is preserved for the next task you add. This is useful when adding multiple tasks to the same milestone.
+                  </p>
+                </div>
+                <div class="space-y-1">
+                  <p class="text-xs font-medium">
+                    Can I edit estimates directly?
+                  </p>
+                  <p class="text-xs text-muted-foreground leading-relaxed">
+                    Yes! Click on any O, M, or P value in the task table to edit it directly. The PERT calculations update automatically.
                   </p>
                 </div>
               </div>
