@@ -4,4 +4,5 @@ export interface StoredState {
     tasks: PERTTaskResult[]
     targetDuration: number | null
     retainMilestone: boolean
+    deleteWarning: boolean
 }
