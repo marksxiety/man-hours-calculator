@@ -57,8 +57,8 @@
                 <div class="flex items-center gap-2">
                   <Checkbox
                     id="retainMilestone"
-                    :checked="projectStore.retainMilestone"
-                    @update:checked="projectStore.retainMilestone = $event"
+                    :model-value="projectStore.retainMilestone"
+                    @update:model-value="projectStore.retainMilestone = !!$event"
                   />
                   <Label
                     for="retainMilestone"
@@ -1008,8 +1008,8 @@
             <div class="flex items-center gap-3 pt-2">
               <Checkbox
                 id="dontShowDeleteWarning"
-                :checked="!projectStore.deleteWarning"
-                @update:checked="projectStore.deleteWarning = !$event"
+                :model-value="!projectStore.deleteWarning"
+                @update:model-value="projectStore.deleteWarning = !$event"
               />
               <Label
                 for="dontShowDeleteWarning"
