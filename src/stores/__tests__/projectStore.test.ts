@@ -105,7 +105,7 @@ describe('Project Store', () => {
 
     store.addTask(newTask)
     store.setTargetDuration(100)
-    store.toggleRetainMilestone()
+    store.retainMilestone = true
 
     expect(store.taskList).toHaveLength(1)
     expect(store.targetDuration).toBe(100)
