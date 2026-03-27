@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.1.1] - 2026-03-28
+
+### Fixes
+- Fix Checkbox components not persisting state due to mismatched bindings between component (`model-value`) and consumers (`checked`)
+- Align all Checkbox usages to use `model-value`/`update:model-value` with proper type coercion
+- Replace toggle functions with Vue `watch` to auto-persist `retainMilestone` and `deleteWarning` state changes to localStorage
+
+### Refactoring
+- Remove `toggleRetainMilestone` and `toggleDeleteWarning` functions in favor of direct state assignment with reactive `watch`
+
+### Tests
+- Update project store tests to use direct assignment instead of removed toggle function
+
+---
+
 ## [1.1.0] - 2026-03-26
 
 ### Features

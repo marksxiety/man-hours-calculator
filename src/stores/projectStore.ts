@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import type { NewTask, Analysis, PERTTaskResult, StoredState } from '@/types'
 import { calculateExpectedTime } from '@/utils/calculateExpectedTime'
 import { calculateStandardDeviation } from '@/utils/calculateStandardDeviation'
@@ -113,19 +113,9 @@ export const useProjectStore = defineStore('project', () => {
     saveToStorage()
   }
 
-  function toggleRetainMilestone(): void {
-    retainMilestone.value = !retainMilestone.value
+  watch([retainMilestone, deleteWarning], () => {
     saveToStorage()
-  }
-
-  function toggleDeleteWarning(value?: boolean): void {
-    if (value !== undefined) {
-      deleteWarning.value = !value
-    } else {
-      deleteWarning.value = !deleteWarning.value
-    }
-    saveToStorage()
-  }
+  })
 
   function saveToStorage(): void {
     try {
@@ -170,8 +160,6 @@ export const useProjectStore = defineStore('project', () => {
     resetTaskForm,
     resetAll,
     setTargetDuration,
-    toggleRetainMilestone,
-    toggleDeleteWarning,
     saveToStorage,
     loadFromStorage,
   }
