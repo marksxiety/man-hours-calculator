@@ -51,6 +51,7 @@ export const useProjectListStore = defineStore('projectList', () => {
         targetDuration: null,
         retainMilestone: false,
         deleteWarning: true,
+        resetWarning: true,
       },
       pinned: false,
     }
