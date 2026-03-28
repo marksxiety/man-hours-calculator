@@ -55,100 +55,215 @@
         </Button>
       </div>
 
-      <div
-        v-else
-        class="grid grid-cols-1 sm:grid-cols-2 gap-4"
-      >
-        <div
-          v-for="project in sortedProjects"
-          :key="project.id"
-          class="group rounded-xl border border-border bg-card p-5 shadow-sm transition-all duration-200 hover:border-primary/30 hover:shadow-md cursor-pointer"
-          :class="{ 'border-primary/40 bg-primary/5': project.pinned }"
-          @click="openProject(project.id)"
-        >
-          <div class="flex items-start justify-between gap-3 mb-3">
-            <div class="min-w-0 flex-1">
-              <h3 class="text-sm font-semibold truncate leading-tight">
-                {{ project.name }}
-              </h3>
-              <p class="text-[10px] text-muted-foreground font-mono mt-1">
-                {{ formatDate(project.updatedAt) }}
+      <template v-else>
+        <div v-if="pinnedProjects.length > 0">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <p class="font-mono text-xs tracking-widest uppercase text-muted-foreground mb-1">
+                Pinned
               </p>
             </div>
-            <div class="flex items-center gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
-              <button
-                class="h-7 w-7 inline-flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-                :title="project.pinned ? 'Unpin' : 'Pin'"
-                @click.stop="projectListStore.togglePin(project.id)"
-              >
-                <PinOff v-if="project.pinned" class="w-3.5 h-3.5" />
-                <Pin v-else class="w-3.5 h-3.5" />
-              </button>
-              <button
-                class="h-7 w-7 inline-flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-                @click.stop="openRenameDialog(project)"
-              >
-                <Pencil class="w-3.5 h-3.5" />
-              </button>
-              <button
-                class="h-7 w-7 inline-flex items-center justify-center rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
-                @click.stop="openDeleteDialog(project)"
-              >
-                <X class="w-3.5 h-3.5" />
-              </button>
-            </div>
           </div>
 
-          <div class="flex items-center gap-4">
-            <div class="flex items-baseline gap-1.5">
-              <span class="text-lg font-bold tabular-nums text-primary">
-                {{ getTotalExpected(project) }}
-              </span>
-              <span class="text-[10px] text-muted-foreground">hrs</span>
+          <VueDraggable
+            v-model="pinnedProjects"
+            class="grid grid-cols-1 sm:grid-cols-2 gap-4"
+            handle=".drag-handle"
+            chosen-class="project-chosen"
+            drag-class="project-dragging"
+            ghost-class="project-ghost"
+            @update:model-value="onPinnedReorder"
+          >
+            <div
+              v-for="project in pinnedProjects"
+              :key="project.id"
+              class="group rounded-xl border border-primary/40 bg-primary/5 p-5 shadow-sm transition-all duration-200 hover:border-primary/50 hover:shadow-md cursor-pointer"
+              @click="openProject(project.id)"
+            >
+              <div class="flex items-start justify-between gap-3 mb-3">
+                <div class="flex items-start gap-2 min-w-0 flex-1">
+                  <GripVertical
+                    class="w-4 h-4 mt-0.5 text-muted-foreground cursor-grab active:cursor-grabbing shrink-0 drag-handle"
+                  />
+                  <div class="min-w-0 flex-1">
+                    <h3 class="text-sm font-semibold truncate leading-tight">
+                      {{ project.name }}
+                    </h3>
+                    <p class="text-[10px] text-muted-foreground font-mono mt-1">
+                      {{ formatDate(project.updatedAt) }}
+                    </p>
+                  </div>
+                </div>
+                <div class="flex items-center gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <button
+                    class="h-7 w-7 inline-flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                    title="Unpin"
+                    @click.stop="handleTogglePin(project.id)"
+                  >
+                    <PinOff class="w-3.5 h-3.5" />
+                  </button>
+                  <button
+                    class="h-7 w-7 inline-flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                    @click.stop="openRenameDialog(project)"
+                  >
+                    <Pencil class="w-3.5 h-3.5" />
+                  </button>
+                  <button
+                    class="h-7 w-7 inline-flex items-center justify-center rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                    @click.stop="openDeleteDialog(project)"
+                  >
+                    <X class="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-4 pl-6">
+                <div class="flex items-baseline gap-1.5">
+                  <span class="text-lg font-bold tabular-nums text-primary">
+                    {{ getTotalExpected(project) }}
+                  </span>
+                  <span class="text-[10px] text-muted-foreground">hrs</span>
+                </div>
+                <div class="h-4 w-px bg-border/60" />
+                <div class="flex items-baseline gap-1.5">
+                  <span class="text-sm font-medium tabular-nums">
+                    {{ project.state.tasks.length }}
+                  </span>
+                  <span class="text-[10px] text-muted-foreground">tasks</span>
+                </div>
+              </div>
+
+              <div class="mt-3 flex items-center gap-2 pl-6">
+                <Badge
+                  variant="secondary"
+                  class="font-mono text-[10px] gap-1"
+                >
+                  <Pin class="w-2.5 h-2.5" />
+                  Pinned
+                </Badge>
+                <Badge
+                  v-if="project.state.tasks.length > 0"
+                  variant="secondary"
+                  class="font-mono text-[10px]"
+                >
+                  {{ (calculateProbability(
+                    project.state.tasks.length === 0 || project.state.targetDuration === null
+                      ? 0
+                      : calculateZScore(
+                        project.state.targetDuration,
+                        calculateTotalExpectedTime(project.state.tasks),
+                        calculateTotalVariance(project.state.tasks)
+                      )
+                  ) * 100).toFixed(1) }}% probability
+                </Badge>
+                <Badge
+                  v-if="project.state.targetDuration !== null"
+                  variant="outline"
+                  class="font-mono text-[10px]"
+                >
+                  D: {{ project.state.targetDuration }}h
+                </Badge>
+              </div>
             </div>
-            <div class="h-4 w-px bg-border/60" />
-            <div class="flex items-baseline gap-1.5">
-              <span class="text-sm font-medium tabular-nums">
-                {{ project.state.tasks.length }}
-              </span>
-              <span class="text-[10px] text-muted-foreground">tasks</span>
-            </div>
+          </VueDraggable>
+        </div>
+
+        <div
+          v-if="unpinnedProjects.length > 0"
+          class="mt-4"
+        >
+          <div
+            v-if="pinnedProjects.length > 0"
+            class="flex items-center justify-between mb-4"
+          >
+            <p class="font-mono text-xs tracking-widest uppercase text-muted-foreground">
+              Other Projects
+            </p>
           </div>
 
-          <div class="mt-3 flex items-center gap-2">
-            <Badge
-              v-if="project.pinned"
-              variant="secondary"
-              class="font-mono text-[10px] gap-1"
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div
+              v-for="project in unpinnedProjects"
+              :key="project.id"
+              class="group rounded-xl border border-border bg-card p-5 shadow-sm transition-all duration-200 hover:border-primary/30 hover:shadow-md cursor-pointer"
+              @click="openProject(project.id)"
             >
-              <Pin class="w-2.5 h-2.5" />
-              Pinned
-            </Badge>
-            <Badge
-              v-if="project.state.tasks.length > 0"
-              variant="secondary"
-              class="font-mono text-[10px]"
-            >
-              {{ (calculateProbability(
-                project.state.tasks.length === 0 || project.state.targetDuration === null
-                  ? 0
-                  : calculateZScore(
-                    project.state.targetDuration,
-                    calculateTotalExpectedTime(project.state.tasks),
-                    calculateTotalVariance(project.state.tasks)
-                  )
-              ) * 100).toFixed(1) }}% probability
-            </Badge>
-            <Badge
-              v-if="project.state.targetDuration !== null"
-              variant="outline"
-              class="font-mono text-[10px]"
-            >
-              D: {{ project.state.targetDuration }}h
-            </Badge>
+              <div class="flex items-start justify-between gap-3 mb-3">
+                <div class="min-w-0 flex-1">
+                  <h3 class="text-sm font-semibold truncate leading-tight">
+                    {{ project.name }}
+                  </h3>
+                  <p class="text-[10px] text-muted-foreground font-mono mt-1">
+                    {{ formatDate(project.updatedAt) }}
+                  </p>
+                </div>
+                <div class="flex items-center gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <button
+                    class="h-7 w-7 inline-flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                    title="Pin"
+                    @click.stop="handleTogglePin(project.id)"
+                  >
+                    <Pin class="w-3.5 h-3.5" />
+                  </button>
+                  <button
+                    class="h-7 w-7 inline-flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                    @click.stop="openRenameDialog(project)"
+                  >
+                    <Pencil class="w-3.5 h-3.5" />
+                  </button>
+                  <button
+                    class="h-7 w-7 inline-flex items-center justify-center rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                    @click.stop="openDeleteDialog(project)"
+                  >
+                    <X class="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </div>
+
+              <div class="flex items-center gap-4">
+                <div class="flex items-baseline gap-1.5">
+                  <span class="text-lg font-bold tabular-nums text-primary">
+                    {{ getTotalExpected(project) }}
+                  </span>
+                  <span class="text-[10px] text-muted-foreground">hrs</span>
+                </div>
+                <div class="h-4 w-px bg-border/60" />
+                <div class="flex items-baseline gap-1.5">
+                  <span class="text-sm font-medium tabular-nums">
+                    {{ project.state.tasks.length }}
+                  </span>
+                  <span class="text-[10px] text-muted-foreground">tasks</span>
+                </div>
+              </div>
+
+              <div class="mt-3 flex items-center gap-2">
+                <Badge
+                  v-if="project.state.tasks.length > 0"
+                  variant="secondary"
+                  class="font-mono text-[10px]"
+                >
+                  {{ (calculateProbability(
+                    project.state.tasks.length === 0 || project.state.targetDuration === null
+                      ? 0
+                      : calculateZScore(
+                        project.state.targetDuration,
+                        calculateTotalExpectedTime(project.state.tasks),
+                        calculateTotalVariance(project.state.tasks)
+                      )
+                  ) * 100).toFixed(1) }}% probability
+                </Badge>
+                <Badge
+                  v-if="project.state.targetDuration !== null"
+                  variant="outline"
+                  class="font-mono text-[10px]"
+                >
+                  D: {{ project.state.targetDuration }}h
+                </Badge>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
+      </template>
 
       <Dialog v-model:open="showRenameDialog">
         <DialogContent class="flex flex-col gap-0 p-0 max-w-md w-[calc(100vw-2rem)] rounded-xl overflow-hidden">
@@ -194,7 +309,9 @@
         <DialogContent class="flex flex-col gap-0 p-0 max-w-md w-[calc(100vw-2rem)] rounded-xl overflow-hidden">
           <DialogHeader class="px-5 pt-5 pb-4 border-b border-border shrink-0">
             <DialogTitle class="flex items-center gap-2 text-sm text-destructive">
-              <div class="w-7 h-7 rounded-md bg-destructive/10 text-destructive flex items-center justify-center shrink-0">
+              <div
+                class="w-7 h-7 rounded-md bg-destructive/10 text-destructive flex items-center justify-center shrink-0"
+              >
                 <AlertTriangle class="w-3.5 h-3.5" />
               </div>
               Delete Project
@@ -205,7 +322,9 @@
           </DialogHeader>
           <div class="px-5 py-4">
             <p class="text-sm">
-              Are you sure you want to delete <strong class="text-foreground">{{ deleteTarget?.name }}</strong>? All tasks and estimates will be lost.
+              Are you sure you want to delete <strong class="text-foreground">{{ deleteTarget?.name }}</strong>? All
+              tasks and
+              estimates will be lost.
             </p>
           </div>
           <div class="px-5 py-4 border-t border-border shrink-0 flex gap-2">
@@ -238,7 +357,8 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
-import { ChevronLeft, Plus, FolderOpen, Pencil, X, AlertTriangle, Pin, PinOff } from 'lucide-vue-next'
+import { ChevronLeft, Plus, FolderOpen, Pencil, X, AlertTriangle, Pin, PinOff, GripVertical } from 'lucide-vue-next'
+import { VueDraggable } from 'vue-draggable-plus'
 import { useProjectListStore } from '@/stores/projectListStore'
 import { calculateTotalExpectedTime, calculateTotalVariance } from '@/utils/calculateTotals'
 import { calculateZScore } from '@/utils/calculateZScore'
@@ -255,12 +375,26 @@ const deleteTarget = ref<Project | null>(null)
 
 const renameForm = ref({ name: '' })
 
-const sortedProjects = computed(() =>
-  [...projectListStore.projects].sort((a, b) => {
-    if (a.pinned !== b.pinned) return a.pinned ? -1 : 1
-    return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
-  })
+const pinnedProjects = computed(() =>
+  [...projectListStore.projects].filter(p => p.pinned)
 )
+
+const unpinnedProjects = computed(() =>
+  [...projectListStore.projects]
+    .filter(p => !p.pinned)
+    .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
+)
+
+function onPinnedReorder(newOrder: Project[]): void {
+  projectListStore.reorderPinnedProjects(newOrder)
+}
+
+function handleTogglePin(id: string): void {
+  const result = projectListStore.togglePin(id)
+  if (!result) {
+    toast.error('Maximum of 6 pinned projects reached')
+  }
+}
 
 function formatDate(isoString: string): string {
   const date = new Date(isoString)
@@ -322,3 +456,22 @@ onMounted(() => {
   projectListStore.loadProjects()
 })
 </script>
+
+<style>
+.project-chosen {
+  outline: 2px solid hsl(var(--primary)) !important;
+  outline-offset: -2px !important;
+  background-color: hsl(var(--primary) / 0.08) !important;
+}
+
+.project-dragging {
+  box-shadow: 0 8px 24px hsl(var(--primary) / 0.2) !important;
+  opacity: 1 !important;
+  transform: scale(1.01) !important;
+}
+
+.project-ghost {
+  opacity: 0.3 !important;
+  background-color: transparent !important;
+}
+</style>
