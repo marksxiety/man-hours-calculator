@@ -400,7 +400,8 @@
               <Button
                 size="sm"
                 class="gap-1.5 font-mono text-xs"
-                @click="projectStore.resetAll()"
+                :disabled="projectStore.taskList.length === 0"
+                @click="openResetDialog()"
               >
                 <RotateCcw class="w-3.5 h-3.5" />
                 <span class="hidden xs:inline">Reset</span>
@@ -1179,6 +1180,59 @@
           </div>
         </DialogContent>
       </Dialog>
+
+      <!-- Reset Confirmation Dialog -->
+      <Dialog v-model:open="showResetDialog">
+        <DialogContent class="flex flex-col gap-0 p-0 max-w-md w-[calc(100vw-2rem)] rounded-xl overflow-hidden">
+          <DialogHeader class="px-5 pt-5 pb-4 border-b border-border shrink-0">
+            <DialogTitle class="flex items-center gap-2 text-sm text-destructive">
+              <div
+                class="w-7 h-7 rounded-md bg-destructive/10 text-destructive flex items-center justify-center shrink-0"
+              >
+                <AlertTriangle class="w-3.5 h-3.5" />
+              </div>
+              Reset All Tasks
+            </DialogTitle>
+            <DialogDescription class="text-xs mt-1">
+              This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <div class="px-5 py-4 space-y-4">
+            <p class="text-sm">
+              Are you sure you want to reset all tasks? All data will be permanently cleared.
+            </p>
+            <div class="flex items-center gap-3 pt-2">
+              <Checkbox
+                id="dontShowResetWarning"
+                :model-value="!projectStore.resetWarning"
+                @update:model-value="projectStore.resetWarning = !$event"
+              />
+              <Label
+                for="dontShowResetWarning"
+                class="text-xs text-muted-foreground cursor-pointer"
+              >
+                Don't show this warning again
+              </Label>
+            </div>
+          </div>
+          <div class="px-5 py-4 border-t border-border shrink-0 flex gap-2">
+            <Button
+              variant="outline"
+              class="flex-1 font-mono text-xs"
+              @click="showResetDialog = false"
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              class="flex-1 font-mono text-xs"
+              @click="confirmReset()"
+            >
+              Reset
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   </div>
 </template>
@@ -1215,6 +1269,7 @@ const showEditDialog = ref(false)
 const showSaveDialog = ref(false)
 const editingTaskIndex = ref<number | null>(null)
 const showDeleteDialog = ref(false)
+const showResetDialog = ref(false)
 const deleteTaskIndex = ref<number | null>(null)
 
 const currentProjectId = ref<string | null>(null)
@@ -1317,6 +1372,21 @@ function openDeleteDialog(index: number): void {
     projectStore.removeTask(index)
     toast.success('Task deleted successfully!')
   }
+}
+
+function openResetDialog(): void {
+  if (projectStore.resetWarning) {
+    showResetDialog.value = true
+  } else {
+    projectStore.resetAll()
+    toast.success('All tasks reset successfully!')
+  }
+}
+
+function confirmReset(): void {
+  projectStore.resetAll()
+  showResetDialog.value = false
+  toast.success('All tasks reset successfully!')
 }
 
 function addTask(): void {
