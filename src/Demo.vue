@@ -27,6 +27,13 @@
             <Button
               variant="outline"
               size="icon"
+              @click="createNewProject()"
+            >
+              <FilePlus2 class="w-4 h-4" />
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
               @click="showSaveDialog = true"
             >
               <Save class="w-4 h-4" />
@@ -1114,7 +1121,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Checkbox } from '@/components/ui/checkbox'
 import { Textarea } from '@/components/ui/textarea'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { ChevronLeft, Download, X, RotateCcw, Info, Plus, HelpCircle, Star, Target, AlertTriangle, CalendarClock, Pencil, GripVertical, Save } from 'lucide-vue-next'
+import { ChevronLeft, Download, X, RotateCcw, Info, Plus, HelpCircle, Star, Target, AlertTriangle, CalendarClock, Pencil, GripVertical, Save, FilePlus2 } from 'lucide-vue-next'
 import { VueDraggable } from 'vue-draggable-plus'
 import { useProjectStore } from '@/stores/projectStore'
 import { useProjectListStore } from '@/stores/projectListStore'
@@ -1138,13 +1145,8 @@ const isNewProject = computed(() => !currentProjectId.value)
 const saveForm = reactive({ name: '' })
 
 function generateDefaultName(): string {
-  const now = new Date()
-  const MM = String(now.getMonth() + 1).padStart(2, '0')
-  const DD = String(now.getDate()).padStart(2, '0')
-  const YY = String(now.getFullYear()).slice(2)
-  const HH = String(now.getHours()).padStart(2, '0')
-  const mm = String(now.getMinutes()).padStart(2, '0')
-  return `${MM}-${DD}-${YY} ${HH}:${mm}`
+  const count = projectListStore.projects.length + 1
+  return `New Project [${count}]`
 }
 
 const currentProjectName = computed(() => {
@@ -1254,6 +1256,10 @@ function addTask(): void {
 
 function goToProjects(): void {
   router.push('/projects')
+}
+
+function createNewProject(): void {
+  router.push('/demo/new')
 }
 
 function confirmSave(): void {
@@ -1379,12 +1385,18 @@ onMounted(() => {
 })
 
 watch(() => projectStore.taskList, () => {
+  if (projectStore.taskList.length === 0) return
   if (currentProjectId.value) {
     projectListStore.updateProject(currentProjectId.value, { state: projectStore.exportState() })
+  } else {
+    const id = projectListStore.createProject(saveForm.name, projectStore.exportState())
+    currentProjectId.value = id
+    router.replace(`/demo/${id}`)
   }
 }, { deep: true })
 
 watch(() => projectStore.targetDuration, () => {
+  if (projectStore.taskList.length === 0) return
   if (currentProjectId.value) {
     projectListStore.updateProject(currentProjectId.value, { state: projectStore.exportState() })
   }
