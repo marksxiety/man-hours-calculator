@@ -15,21 +15,30 @@
               variant="ghost"
               size="icon"
               class="-ml-2"
-              @click="goToHome()"
+              @click="goToProjects()"
             >
               <ChevronLeft class="w-4 h-4" />
             </Button>
-            <h1 class="text-2xl sm:text-3xl font-bold tracking-tight">
-              Man Hours Estimator
+            <h1 class="text-2xl sm:text-3xl font-bold tracking-tight truncate max-w-[200px] sm:max-w-none">
+              {{ currentProjectName }}
             </h1>
           </div>
-          <Button
-            variant="outline"
-            size="icon"
-            @click="showInfoDialog = true"
-          >
-            <Info class="w-4 h-4" />
-          </Button>
+          <div class="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="icon"
+              @click="showSaveDialog = true"
+            >
+              <Save class="w-4 h-4" />
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              @click="showInfoDialog = true"
+            >
+              <Info class="w-4 h-4" />
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -674,6 +683,54 @@
         </div>
       </div>
 
+      <!-- Save Project Dialog -->
+      <Dialog v-model:open="showSaveDialog">
+        <DialogContent class="flex flex-col gap-0 p-0 max-w-md w-[calc(100vw-2rem)] rounded-xl overflow-hidden">
+          <DialogHeader class="px-5 pt-5 pb-4 border-b border-border shrink-0">
+            <DialogTitle class="flex items-center gap-2 text-sm">
+              <div class="w-7 h-7 rounded-md bg-muted text-primary flex items-center justify-center shrink-0">
+                <Save class="w-3.5 h-3.5" />
+              </div>
+              Save Project
+            </DialogTitle>
+            <DialogDescription class="text-xs mt-1">
+              {{ isNewProject ? 'Save this project with a name.' : 'Update the project name or save changes.' }}
+            </DialogDescription>
+          </DialogHeader>
+          <div class="px-5 py-4">
+            <div class="grid gap-2">
+              <Label
+                for="projectName"
+                class="text-xs font-medium"
+              >Project Name</Label>
+              <Input
+                id="projectName"
+                v-model="saveForm.name"
+                type="text"
+                placeholder="Enter project name"
+                @keyup.enter="confirmSave()"
+              />
+            </div>
+          </div>
+          <div class="px-5 py-4 border-t border-border shrink-0 flex gap-2">
+            <Button
+              variant="outline"
+              class="flex-1 font-mono text-xs"
+              @click="showSaveDialog = false"
+            >
+              Cancel
+            </Button>
+            <Button
+              class="flex-1 font-mono text-xs"
+              :disabled="!saveForm.name.trim()"
+              @click="confirmSave()"
+            >
+              Save
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       <!-- Info Dialog (unchanged) -->
       <Dialog v-model:open="showInfoDialog">
         <DialogContent class="flex flex-col gap-0 p-0 max-w-md w-[calc(100vw-2rem)] rounded-xl overflow-hidden">
@@ -1042,9 +1099,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, watch } from 'vue'
+import { ref, reactive, computed, onMounted, watch } from 'vue'
 import ExcelJS from 'exceljs';
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import type { NewTask } from '@/types'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -1057,18 +1114,44 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Checkbox } from '@/components/ui/checkbox'
 import { Textarea } from '@/components/ui/textarea'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { ChevronLeft, Download, X, RotateCcw, Info, Plus, HelpCircle, Star, Target, AlertTriangle, CalendarClock, Pencil, GripVertical } from 'lucide-vue-next'
+import { ChevronLeft, Download, X, RotateCcw, Info, Plus, HelpCircle, Star, Target, AlertTriangle, CalendarClock, Pencil, GripVertical, Save } from 'lucide-vue-next'
 import { VueDraggable } from 'vue-draggable-plus'
 import { useProjectStore } from '@/stores/projectStore'
+import { useProjectListStore } from '@/stores/projectListStore'
 import { toast } from 'vue-sonner'
 
 const router = useRouter()
+const route = useRoute()
 const projectStore = useProjectStore()
+const projectListStore = useProjectListStore()
+
 const showInfoDialog = ref(false)
 const showEditDialog = ref(false)
+const showSaveDialog = ref(false)
 const editingTaskIndex = ref<number | null>(null)
 const showDeleteDialog = ref(false)
 const deleteTaskIndex = ref<number | null>(null)
+
+const currentProjectId = ref<string | null>(null)
+const isNewProject = computed(() => !currentProjectId.value)
+
+const saveForm = reactive({ name: '' })
+
+function generateDefaultName(): string {
+  const now = new Date()
+  const MM = String(now.getMonth() + 1).padStart(2, '0')
+  const DD = String(now.getDate()).padStart(2, '0')
+  const YY = String(now.getFullYear()).slice(2)
+  const HH = String(now.getHours()).padStart(2, '0')
+  const mm = String(now.getMinutes()).padStart(2, '0')
+  return `${MM}-${DD}-${YY} ${HH}:${mm}`
+}
+
+const currentProjectName = computed(() => {
+  if (isNewProject.value) return saveForm.name || generateDefaultName()
+  const project = projectListStore.getProjectById(currentProjectId.value!)
+  return project?.name ?? 'Man Hours Estimator'
+})
 
 const editTaskForm = reactive({
   taskName: '',
@@ -1169,8 +1252,25 @@ function addTask(): void {
   toast.success('Task added successfully!')
 }
 
-function goToHome(): void {
-  router.push('/')
+function goToProjects(): void {
+  router.push('/projects')
+}
+
+function confirmSave(): void {
+  if (!saveForm.name.trim()) return
+  const name = saveForm.name.trim()
+  const state = projectStore.exportState()
+
+  if (isNewProject.value) {
+    const id = projectListStore.createProject(name, state)
+    currentProjectId.value = id
+    router.replace(`/demo/${id}`)
+    toast.success('Project saved successfully!')
+  } else {
+    projectListStore.updateProject(currentProjectId.value!, { name, state })
+    toast.success('Project updated successfully!')
+  }
+  showSaveDialog.value = false
 }
 
 function exportToExcel(): void {
@@ -1259,12 +1359,36 @@ function exportToExcel(): void {
 }
 
 onMounted(() => {
-  projectStore.loadFromStorage()
+  projectListStore.loadProjects()
+  const id = route.params.id as string
+
+  if (id === 'new') {
+    currentProjectId.value = null
+    saveForm.name = generateDefaultName()
+    projectStore.resetAll()
+  } else {
+    const project = projectListStore.getProjectById(id)
+    if (project) {
+      currentProjectId.value = id
+      saveForm.name = project.name
+      projectStore.loadFromProject(project.state)
+    } else {
+      router.replace('/projects')
+    }
+  }
 })
 
 watch(() => projectStore.taskList, () => {
-  projectStore.saveToStorage()
+  if (currentProjectId.value) {
+    projectListStore.updateProject(currentProjectId.value, { state: projectStore.exportState() })
+  }
 }, { deep: true })
+
+watch(() => projectStore.targetDuration, () => {
+  if (currentProjectId.value) {
+    projectListStore.updateProject(currentProjectId.value, { state: projectStore.exportState() })
+  }
+})
 </script>
 
 <style>
