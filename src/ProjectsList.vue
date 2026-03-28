@@ -23,6 +23,7 @@
             </h1>
           </div>
           <Button
+            v-if="projectListStore.projects.length > 0"
             class="gap-2 font-mono"
             @click="createNewProject()"
           >
@@ -243,16 +244,6 @@ const sortedProjects = computed(() =>
   )
 )
 
-function generateDefaultName(): string {
-  const now = new Date()
-  const MM = String(now.getMonth() + 1).padStart(2, '0')
-  const DD = String(now.getDate()).padStart(2, '0')
-  const YY = String(now.getFullYear()).slice(2)
-  const HH = String(now.getHours()).padStart(2, '0')
-  const mm = String(now.getMinutes()).padStart(2, '0')
-  return `${MM}-${DD}-${YY} ${HH}:${mm}`
-}
-
 function formatDate(isoString: string): string {
   const date = new Date(isoString)
   const MM = String(date.getMonth() + 1).padStart(2, '0')
@@ -273,9 +264,7 @@ function goToHome(): void {
 }
 
 function createNewProject(): void {
-  const name = generateDefaultName()
-  const id = projectListStore.createProject(name)
-  router.push(`/demo/${id}`)
+  router.push('/demo/new')
 }
 
 function openProject(id: string): void {
@@ -313,10 +302,5 @@ function confirmDelete(): void {
 
 onMounted(() => {
   projectListStore.loadProjects()
-  if (projectListStore.getProjectCount() === 0) {
-    router.replace('/demo/new')
-  } else if (projectListStore.getProjectCount() === 1) {
-    router.replace(`/demo/${projectListStore.projects[0].id}`)
-  }
 })
 </script>
