@@ -13,6 +13,7 @@ export const useProjectStore = defineStore('project', () => {
   const targetDuration = ref<number | null>(null)
   const retainMilestone = ref(false)
   const deleteWarning = ref(true)
+  const resetWarning = ref(true)
 
   const pertAnalysis = computed<Analysis>(() => {
     const totalExpectedTime = calculateTotalExpectedTime(taskList.value)
@@ -46,6 +47,7 @@ export const useProjectStore = defineStore('project', () => {
     targetDuration.value = state.targetDuration ?? null
     retainMilestone.value = state.retainMilestone ?? false
     deleteWarning.value = state.deleteWarning ?? true
+    resetWarning.value = state.resetWarning ?? true
   }
 
   function exportState(): StoredState {
@@ -54,6 +56,7 @@ export const useProjectStore = defineStore('project', () => {
       targetDuration: targetDuration.value,
       retainMilestone: retainMilestone.value,
       deleteWarning: deleteWarning.value,
+      resetWarning: resetWarning.value,
     }
   }
 
@@ -126,6 +129,7 @@ export const useProjectStore = defineStore('project', () => {
     targetDuration,
     retainMilestone,
     deleteWarning,
+    resetWarning,
     pertAnalysis,
     groupedTasks,
     loadFromProject,
