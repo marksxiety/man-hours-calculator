@@ -5,4 +5,5 @@ export interface StoredState {
     targetDuration: number | null
     retainMilestone: boolean
     deleteWarning: boolean
+    resetWarning: boolean
 }
