@@ -48,6 +48,7 @@ export const useProjectListStore = defineStore('projectList', () => {
         retainMilestone: false,
         deleteWarning: true,
       },
+      pinned: false,
     }
     projects.value.push(project)
     saveProjects()
@@ -60,6 +61,14 @@ export const useProjectListStore = defineStore('projectList', () => {
       if (updates.name !== undefined) project.name = updates.name
       if (updates.state !== undefined) project.state = updates.state
       project.updatedAt = new Date().toISOString()
+      saveProjects()
+    }
+  }
+
+  function togglePin(id: string): void {
+    const project = projects.value.find(p => p.id === id)
+    if (project) {
+      project.pinned = !project.pinned
       saveProjects()
     }
   }
@@ -80,6 +89,7 @@ export const useProjectListStore = defineStore('projectList', () => {
     getProjectCount,
     createProject,
     updateProject,
+    togglePin,
     deleteProject,
   }
 })
