@@ -28,7 +28,7 @@
             <Button
               variant="outline"
               size="icon"
-              title="Save"
+              title="Rename"
               @click="showSaveDialog = true"
             >
               <Save class="w-4 h-4" />
