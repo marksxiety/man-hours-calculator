@@ -63,6 +63,7 @@
           v-for="project in sortedProjects"
           :key="project.id"
           class="group rounded-xl border border-border bg-card p-5 shadow-sm transition-all duration-200 hover:border-primary/30 hover:shadow-md cursor-pointer"
+          :class="{ 'border-primary/40 bg-primary/5': project.pinned }"
           @click="openProject(project.id)"
         >
           <div class="flex items-start justify-between gap-3 mb-3">
@@ -75,6 +76,14 @@
               </p>
             </div>
             <div class="flex items-center gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+              <button
+                class="h-7 w-7 inline-flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                :title="project.pinned ? 'Unpin' : 'Pin'"
+                @click.stop="projectListStore.togglePin(project.id)"
+              >
+                <PinOff v-if="project.pinned" class="w-3.5 h-3.5" />
+                <Pin v-else class="w-3.5 h-3.5" />
+              </button>
               <button
                 class="h-7 w-7 inline-flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
                 @click.stop="openRenameDialog(project)"
@@ -107,6 +116,14 @@
           </div>
 
           <div class="mt-3 flex items-center gap-2">
+            <Badge
+              v-if="project.pinned"
+              variant="secondary"
+              class="font-mono text-[10px] gap-1"
+            >
+              <Pin class="w-2.5 h-2.5" />
+              Pinned
+            </Badge>
             <Badge
               v-if="project.state.tasks.length > 0"
               variant="secondary"
@@ -221,7 +238,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
-import { ChevronLeft, Plus, FolderOpen, Pencil, X, AlertTriangle } from 'lucide-vue-next'
+import { ChevronLeft, Plus, FolderOpen, Pencil, X, AlertTriangle, Pin, PinOff } from 'lucide-vue-next'
 import { useProjectListStore } from '@/stores/projectListStore'
 import { calculateTotalExpectedTime, calculateTotalVariance } from '@/utils/calculateTotals'
 import { calculateZScore } from '@/utils/calculateZScore'
@@ -239,9 +256,10 @@ const deleteTarget = ref<Project | null>(null)
 const renameForm = ref({ name: '' })
 
 const sortedProjects = computed(() =>
-  [...projectListStore.projects].sort(
-    (a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
-  )
+  [...projectListStore.projects].sort((a, b) => {
+    if (a.pinned !== b.pinned) return a.pinned ? -1 : 1
+    return new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
+  })
 )
 
 function formatDate(isoString: string): string {
