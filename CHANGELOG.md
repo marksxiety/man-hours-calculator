@@ -1,5 +1,23 @@
 # Changelog
 
+## [1.2.0] - 2026-03-28
+
+### Features
+- Add multi-project support with project list store, save dialog, auto-save, and localStorage persistence
+- Add ProjectsList page with project cards, rename, and delete dialogs
+- Add /projects route and update /demo to accept project id parameter
+- Add pin/unpin with visual indicator, 6-project pin limit, and drag-and-drop reordering for pinned projects
+- Add reset confirmation dialog with option to disable warning
+- Redesign project cards with compact stats layout and title attributes on action buttons
+
+### Styling
+- Format template indentation and replace arbitrary max-width with Tailwind utility
+
+### Tests
+- Update projectStore tests to use exportState and loadFromProject
+
+---
+
 ## [1.1.1] - 2026-03-28
 
 ### Fixes
