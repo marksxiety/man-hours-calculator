@@ -65,12 +65,25 @@ export const useProjectListStore = defineStore('projectList', () => {
     }
   }
 
-  function togglePin(id: string): void {
+  function togglePin(id: string): boolean {
     const project = projects.value.find(p => p.id === id)
     if (project) {
+      if (!project.pinned) {
+        const pinnedCount = projects.value.filter(p => p.pinned).length
+        if (pinnedCount >= 6) return false
+      }
       project.pinned = !project.pinned
       saveProjects()
+      return true
     }
+    return false
+  }
+
+  function reorderPinnedProjects(newOrder: Project[]): void {
+    const pinnedIds = new Set(newOrder.map(p => p.id))
+    const unpinned = projects.value.filter(p => !pinnedIds.has(p.id))
+    projects.value = [...newOrder, ...unpinned]
+    saveProjects()
   }
 
   function deleteProject(id: string): void {
@@ -90,6 +103,7 @@ export const useProjectListStore = defineStore('projectList', () => {
     createProject,
     updateProject,
     togglePin,
+    reorderPinnedProjects,
     deleteProject,
   }
 })
