@@ -1218,7 +1218,7 @@ const showDeleteDialog = ref(false)
 const deleteTaskIndex = ref<number | null>(null)
 
 const currentProjectId = ref<string | null>(null)
-const isNewProject = computed(() => !currentProjectId.value)
+const isNewProject = ref(false)
 
 const saveForm = reactive({ name: '' })
 
@@ -1342,9 +1342,12 @@ function confirmSave(): void {
   const state = projectStore.exportState()
 
   if (isNewProject.value) {
-    const id = projectListStore.createProject(name, state)
-    currentProjectId.value = id
-    router.replace(`/demo/${id}`)
+    if (projectListStore.hasProject(currentProjectId.value!)) {
+      projectListStore.updateProject(currentProjectId.value!, { name, state })
+    } else {
+      projectListStore.createProjectWithId(currentProjectId.value!, name, state)
+    }
+    isNewProject.value = false
     toast.success('Project saved successfully!')
   } else {
     projectListStore.updateProject(currentProjectId.value!, { name, state })
@@ -1442,37 +1445,39 @@ onMounted(() => {
   projectListStore.loadProjects()
   const id = route.params.id as string
 
-  if (id === 'new') {
-    currentProjectId.value = null
+  const project = projectListStore.getProjectById(id)
+  if (project) {
+    currentProjectId.value = id
+    isNewProject.value = false
+    saveForm.name = project.name
+    projectStore.loadFromProject(project.state)
+  } else {
+    currentProjectId.value = id
+    isNewProject.value = true
     saveForm.name = generateDefaultName()
     projectStore.resetAll()
-  } else {
-    const project = projectListStore.getProjectById(id)
-    if (project) {
-      currentProjectId.value = id
-      saveForm.name = project.name
-      projectStore.loadFromProject(project.state)
-    } else {
-      router.replace('/projects')
-    }
   }
 })
 
 watch(() => projectStore.taskList, () => {
-  if (projectStore.taskList.length === 0) return
-  if (currentProjectId.value) {
-    projectListStore.updateProject(currentProjectId.value, { state: projectStore.exportState() })
+  if (!currentProjectId.value || projectStore.taskList.length === 0) return
+  const state = projectStore.exportState()
+  if (projectListStore.hasProject(currentProjectId.value)) {
+    projectListStore.updateProject(currentProjectId.value, { state })
   } else {
-    const id = projectListStore.createProject(saveForm.name, projectStore.exportState())
-    currentProjectId.value = id
-    router.replace(`/demo/${id}`)
+    projectListStore.createProjectWithId(currentProjectId.value, saveForm.name, state)
+    isNewProject.value = false
   }
 }, { deep: true })
 
 watch(() => projectStore.targetDuration, () => {
-  if (projectStore.taskList.length === 0) return
-  if (currentProjectId.value) {
-    projectListStore.updateProject(currentProjectId.value, { state: projectStore.exportState() })
+  if (!currentProjectId.value || projectStore.taskList.length === 0) return
+  const state = projectStore.exportState()
+  if (projectListStore.hasProject(currentProjectId.value)) {
+    projectListStore.updateProject(currentProjectId.value, { state })
+  } else {
+    projectListStore.createProjectWithId(currentProjectId.value, saveForm.name, state)
+    isNewProject.value = false
   }
 })
 </script>
