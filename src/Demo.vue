@@ -15,21 +15,33 @@
               variant="ghost"
               size="icon"
               class="-ml-2"
-              @click="goToHome()"
+              title="Projects"
+              @click="goToProjects()"
             >
               <ChevronLeft class="w-4 h-4" />
             </Button>
-            <h1 class="text-2xl sm:text-3xl font-bold tracking-tight">
-              Man Hours Estimator
+            <h1 class="text-2xl sm:text-3xl font-bold tracking-tight truncate max-w-50 sm:max-w-none">
+              {{ currentProjectName }}
             </h1>
           </div>
-          <Button
-            variant="outline"
-            size="icon"
-            @click="showInfoDialog = true"
-          >
-            <Info class="w-4 h-4" />
-          </Button>
+          <div class="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="icon"
+              title="Rename"
+              @click="showSaveDialog = true"
+            >
+              <Save class="w-4 h-4" />
+            </Button>
+            <Button
+              variant="outline"
+              size="icon"
+              title="Info"
+              @click="showInfoDialog = true"
+            >
+              <Info class="w-4 h-4" />
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -110,7 +122,9 @@
                       :close-delay="50"
                     >
                       <HoverCardTrigger as-child>
-                        <button class="inline-flex items-center justify-center w-4 h-4 rounded-full border border-border text-muted-foreground hover:border-foreground/40 hover:bg-muted transition-colors">
+                        <button
+                          class="inline-flex items-center justify-center w-4 h-4 rounded-full border border-border text-muted-foreground hover:border-foreground/40 hover:bg-muted transition-colors"
+                        >
                           <HelpCircle class="w-2.5 h-2.5" />
                         </button>
                       </HoverCardTrigger>
@@ -155,7 +169,9 @@
                     :close-delay="50"
                   >
                     <HoverCardTrigger as-child>
-                      <button class="inline-flex items-center justify-center w-4 h-4 rounded-full border border-border text-muted-foreground hover:border-foreground/40 hover:bg-muted transition-colors">
+                      <button
+                        class="inline-flex items-center justify-center w-4 h-4 rounded-full border border-border text-muted-foreground hover:border-foreground/40 hover:bg-muted transition-colors"
+                      >
                         <HelpCircle class="w-2.5 h-2.5" />
                       </button>
                     </HoverCardTrigger>
@@ -199,7 +215,9 @@
                     :close-delay="50"
                   >
                     <HoverCardTrigger as-child>
-                      <button class="inline-flex items-center justify-center w-4 h-4 rounded-full border border-border text-muted-foreground hover:border-foreground/40 hover:bg-muted transition-colors">
+                      <button
+                        class="inline-flex items-center justify-center w-4 h-4 rounded-full border border-border text-muted-foreground hover:border-foreground/40 hover:bg-muted transition-colors"
+                      >
                         <HelpCircle class="w-2.5 h-2.5" />
                       </button>
                     </HoverCardTrigger>
@@ -274,7 +292,9 @@
                   :close-delay="50"
                 >
                   <HoverCardTrigger as-child>
-                    <button class="inline-flex items-center justify-center w-4 h-4 rounded-full border border-border text-muted-foreground hover:border-foreground/40 hover:bg-muted transition-colors">
+                    <button
+                      class="inline-flex items-center justify-center w-4 h-4 rounded-full border border-border text-muted-foreground hover:border-foreground/40 hover:bg-muted transition-colors"
+                    >
                       <HelpCircle class="w-2.5 h-2.5" />
                     </button>
                   </HoverCardTrigger>
@@ -380,7 +400,8 @@
               <Button
                 size="sm"
                 class="gap-1.5 font-mono text-xs"
-                @click="projectStore.resetAll()"
+                :disabled="projectStore.taskList.length === 0"
+                @click="openResetDialog()"
               >
                 <RotateCcw class="w-3.5 h-3.5" />
                 <span class="hidden xs:inline">Reset</span>
@@ -398,7 +419,9 @@
 
             <template v-else>
               <div class="hidden md:block">
-                <div class="flex items-center gap-3 px-4 py-2.5 bg-muted/50 border-b border-border text-xs font-semibold text-muted-foreground">
+                <div
+                  class="flex items-center gap-3 px-4 py-2.5 bg-muted/50 border-b border-border text-xs font-semibold text-muted-foreground"
+                >
                   <div class="w-4 shrink-0" />
                   <div class="w-28 shrink-0">
                     Milestone
@@ -446,7 +469,9 @@
                     :key="task.taskName + index"
                     class="group flex items-center gap-3 px-4 py-3 transition-all duration-200 hover:bg-muted/30"
                   >
-                    <GripVertical class="w-4 h-4 text-muted-foreground cursor-grab active:cursor-grabbing shrink-0 drag-handle" />
+                    <GripVertical
+                      class="w-4 h-4 text-muted-foreground cursor-grab active:cursor-grabbing shrink-0 drag-handle"
+                    />
 
                     <div class="w-28 shrink-0">
                       <p class="text-xs font-medium uppercase truncate">
@@ -496,7 +521,9 @@
                           :format-options="task.optimistic !== null ? { minimumFractionDigits: 1 } : undefined"
                           @update:model-value="projectStore.updateTask(index, 'optimistic', $event)"
                         >
-                          <NumberFieldContent><NumberFieldInput class="bg-background text-center tabular-nums h-7 text-xs px-1" /></NumberFieldContent>
+                          <NumberFieldContent>
+                            <NumberFieldInput class="bg-background text-center tabular-nums h-7 text-xs px-1" />
+                          </NumberFieldContent>
                         </NumberField>
                       </div>
                       <div class="w-14">
@@ -507,7 +534,9 @@
                           :format-options="task.mostLikely !== null ? { minimumFractionDigits: 1 } : undefined"
                           @update:model-value="projectStore.updateTask(index, 'mostLikely', $event)"
                         >
-                          <NumberFieldContent><NumberFieldInput class="bg-background text-center tabular-nums h-7 text-xs px-1" /></NumberFieldContent>
+                          <NumberFieldContent>
+                            <NumberFieldInput class="bg-background text-center tabular-nums h-7 text-xs px-1" />
+                          </NumberFieldContent>
                         </NumberField>
                       </div>
                       <div class="w-14">
@@ -518,7 +547,9 @@
                           :format-options="task.pessimistic !== null ? { minimumFractionDigits: 1 } : undefined"
                           @update:model-value="projectStore.updateTask(index, 'pessimistic', $event)"
                         >
-                          <NumberFieldContent><NumberFieldInput class="bg-background text-center tabular-nums h-7 text-xs px-1" /></NumberFieldContent>
+                          <NumberFieldContent>
+                            <NumberFieldInput class="bg-background text-center tabular-nums h-7 text-xs px-1" />
+                          </NumberFieldContent>
                         </NumberField>
                       </div>
                     </div>
@@ -568,7 +599,9 @@
                     class="px-4 py-3.5 transition-all duration-200 hover:bg-muted/20 active:bg-muted/30"
                   >
                     <div class="flex items-start gap-2.5">
-                      <GripVertical class="w-4 h-4 mt-0.5 text-muted-foreground/60 cursor-grab active:cursor-grabbing shrink-0 drag-handle-mobile" />
+                      <GripVertical
+                        class="w-4 h-4 mt-0.5 text-muted-foreground/60 cursor-grab active:cursor-grabbing shrink-0 drag-handle-mobile"
+                      />
                       <div class="flex-1 min-w-0">
                         <div class="space-y-1.5 pb-3">
                           <div class="flex items-center gap-2 flex-wrap">
@@ -594,7 +627,9 @@
 
                         <div class="grid grid-cols-3 gap-2 pb-3">
                           <div class="flex flex-col gap-0.5">
-                            <span class="font-mono text-[10px] uppercase text-muted-foreground font-semibold">Optimistic</span>
+                            <span
+                              class="font-mono text-[10px] uppercase text-muted-foreground font-semibold"
+                            >Optimistic</span>
                             <NumberField
                               :model-value="task.optimistic"
                               :min="0"
@@ -602,11 +637,14 @@
                               :format-options="task.optimistic !== null ? { minimumFractionDigits: 1 } : undefined"
                               @update:model-value="projectStore.updateTask(index, 'optimistic', $event)"
                             >
-                              <NumberFieldContent><NumberFieldInput class="bg-background text-center tabular-nums text-xs h-7" /></NumberFieldContent>
+                              <NumberFieldContent>
+                                <NumberFieldInput class="bg-background text-center tabular-nums text-xs h-7" />
+                              </NumberFieldContent>
                             </NumberField>
                           </div>
                           <div class="flex flex-col gap-0.5">
-                            <span class="font-mono text-[10px] uppercase text-muted-foreground font-semibold">Most Likely</span>
+                            <span class="font-mono text-[10px] uppercase text-muted-foreground font-semibold">Most
+                              Likely</span>
                             <NumberField
                               :model-value="task.mostLikely"
                               :min="0"
@@ -614,11 +652,15 @@
                               :format-options="task.mostLikely !== null ? { minimumFractionDigits: 1 } : undefined"
                               @update:model-value="projectStore.updateTask(index, 'mostLikely', $event)"
                             >
-                              <NumberFieldContent><NumberFieldInput class="bg-background text-center tabular-nums text-xs h-7" /></NumberFieldContent>
+                              <NumberFieldContent>
+                                <NumberFieldInput class="bg-background text-center tabular-nums text-xs h-7" />
+                              </NumberFieldContent>
                             </NumberField>
                           </div>
                           <div class="flex flex-col gap-0.5">
-                            <span class="font-mono text-[10px] uppercase text-muted-foreground font-semibold">Pessimistic</span>
+                            <span
+                              class="font-mono text-[10px] uppercase text-muted-foreground font-semibold"
+                            >Pessimistic</span>
                             <NumberField
                               :model-value="task.pessimistic"
                               :min="0"
@@ -626,7 +668,9 @@
                               :format-options="task.pessimistic !== null ? { minimumFractionDigits: 1 } : undefined"
                               @update:model-value="projectStore.updateTask(index, 'pessimistic', $event)"
                             >
-                              <NumberFieldContent><NumberFieldInput class="bg-background text-center tabular-nums text-xs h-7" /></NumberFieldContent>
+                              <NumberFieldContent>
+                                <NumberFieldInput class="bg-background text-center tabular-nums text-xs h-7" />
+                              </NumberFieldContent>
                             </NumberField>
                           </div>
                         </div>
@@ -636,18 +680,21 @@
                         <div class="flex items-center gap-3">
                           <div class="flex items-baseline gap-1">
                             <span class="font-mono text-[9px] uppercase text-muted-foreground">Expected</span>
-                            <span class="text-sm font-black tabular-nums text-primary">{{ task.expectedTime.toFixed(2) }}</span>
+                            <span class="text-sm font-black tabular-nums text-primary">{{ task.expectedTime.toFixed(2)
+                            }}</span>
                             <span class="text-[10px] text-muted-foreground">hrs</span>
                           </div>
                           <div class="h-3 w-px bg-border/60" />
                           <div class="flex items-baseline gap-1">
                             <span class="font-mono text-[9px] uppercase text-muted-foreground">Variance</span>
-                            <span class="text-xs tabular-nums text-muted-foreground">{{ task.variance.toFixed(3) }}</span>
+                            <span class="text-xs tabular-nums text-muted-foreground">{{ task.variance.toFixed(3)
+                            }}</span>
                           </div>
                           <div class="h-3 w-px bg-border/60" />
                           <div class="flex items-baseline gap-1">
                             <span class="font-mono text-[9px] uppercase text-muted-foreground">Std Dev</span>
-                            <span class="text-xs tabular-nums text-muted-foreground">{{ task.standardDeviation.toFixed(3) }}</span>
+                            <span class="text-xs tabular-nums text-muted-foreground">{{
+                              task.standardDeviation.toFixed(3) }}</span>
                           </div>
                         </div>
                       </div>
@@ -673,6 +720,54 @@
           </div>
         </div>
       </div>
+
+      <!-- Save Project Dialog -->
+      <Dialog v-model:open="showSaveDialog">
+        <DialogContent class="flex flex-col gap-0 p-0 max-w-md w-[calc(100vw-2rem)] rounded-xl overflow-hidden">
+          <DialogHeader class="px-5 pt-5 pb-4 border-b border-border shrink-0">
+            <DialogTitle class="flex items-center gap-2 text-sm">
+              <div class="w-7 h-7 rounded-md bg-muted text-primary flex items-center justify-center shrink-0">
+                <Save class="w-3.5 h-3.5" />
+              </div>
+              Save Project
+            </DialogTitle>
+            <DialogDescription class="text-xs mt-1">
+              {{ isNewProject ? 'Save this project with a name.' : 'Update the project name or save changes.' }}
+            </DialogDescription>
+          </DialogHeader>
+          <div class="px-5 py-4">
+            <div class="grid gap-2">
+              <Label
+                for="projectName"
+                class="text-xs font-medium"
+              >Project Name</Label>
+              <Input
+                id="projectName"
+                v-model="saveForm.name"
+                type="text"
+                placeholder="Enter project name"
+                @keyup.enter="confirmSave()"
+              />
+            </div>
+          </div>
+          <div class="px-5 py-4 border-t border-border shrink-0 flex gap-2">
+            <Button
+              variant="outline"
+              class="flex-1 font-mono text-xs"
+              @click="showSaveDialog = false"
+            >
+              Cancel
+            </Button>
+            <Button
+              class="flex-1 font-mono text-xs"
+              :disabled="!saveForm.name.trim()"
+              @click="confirmSave()"
+            >
+              Save
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       <!-- Info Dialog (unchanged) -->
       <Dialog v-model:open="showInfoDialog">
@@ -703,7 +798,11 @@
                       Enter three-point estimates per task
                     </p>
                     <p class="text-xs text-muted-foreground leading-relaxed">
-                      For each task, provide an <span class="font-medium text-foreground">Optimistic (O)</span> best-case, <span class="font-medium text-foreground">Most Likely (M)</span> realistic, and <span class="font-medium text-foreground">Pessimistic (P)</span> worst-case hour estimate.
+                      For each task, provide an <span class="font-medium text-foreground">Optimistic (O)</span>
+                      best-case,
+                      <span class="font-medium text-foreground">Most Likely (M)</span> realistic, and <span
+                        class="font-medium text-foreground"
+                      >Pessimistic (P)</span> worst-case hour estimate.
                     </p>
                   </div>
                 </div>
@@ -729,7 +828,9 @@
                       Set a desired completion time
                     </p>
                     <p class="text-xs text-muted-foreground leading-relaxed">
-                      Enter your target deadline in hours under <span class="font-medium text-foreground">Desired Completion Time (D)</span>. The tool calculates a Z-score and maps it to an on-time probability.
+                      Enter your target deadline in hours under <span class="font-medium text-foreground">Desired
+                        Completion
+                        Time (D)</span>. The tool calculates a Z-score and maps it to an on-time probability.
                     </p>
                   </div>
                 </div>
@@ -742,7 +843,9 @@
                       Interpret the probability
                     </p>
                     <p class="text-xs text-muted-foreground leading-relaxed">
-                      Aim for <span class="font-medium text-foreground">≥ 80%</span> for reliable delivery. Below 50% signals the deadline is too aggressive.
+                      Aim for <span class="font-medium text-foreground">≥ 80%</span> for reliable delivery. Below 50%
+                      signals
+                      the deadline is too aggressive.
                     </p>
                   </div>
                 </div>
@@ -755,7 +858,11 @@
                       Manage your tasks
                     </p>
                     <p class="text-xs text-muted-foreground leading-relaxed">
-                      Edit estimates directly in the table, reorder tasks by dragging, or use the pencil/X icons for detailed edits. Use the <span class="font-medium text-foreground">Retain Milestone</span> checkbox to quickly add multiple tasks to the same milestone.
+                      Edit estimates directly in the table, reorder tasks by dragging, or use the pencil/X icons for
+                      detailed
+                      edits. Use the <span class="font-medium text-foreground">Retain Milestone</span> checkbox to
+                      quickly add
+                      multiple tasks to the same milestone.
                     </p>
                   </div>
                 </div>
@@ -771,9 +878,14 @@
                       <p class="text-xs font-medium">
                         Expected Duration
                       </p>
-                      <span class="font-mono text-[10px] tracking-widest uppercase text-muted-foreground bg-muted px-1.5 py-0.5 rounded">E</span>
+                      <span
+                        class="font-mono text-[10px] tracking-widest uppercase text-muted-foreground bg-muted px-1.5 py-0.5 rounded"
+                      >E</span>
                     </div>
-                    <code class="block font-mono text-xs bg-background border border-border rounded-md px-3 py-2 text-center tracking-wide">E = (O + 4M + P) / 6</code>
+                    <code
+                      class="block font-mono text-xs bg-background border border-border rounded-md px-3 py-2 text-center tracking-wide"
+                    >E
+                      = (O + 4M + P) / 6</code>
                     <p class="text-[11px] text-muted-foreground leading-relaxed">
                       Weighted average that emphasises the most likely estimate 4×.
                     </p>
@@ -783,9 +895,14 @@
                       <p class="text-xs font-medium">
                         Variance
                       </p>
-                      <span class="font-mono text-[10px] tracking-widest uppercase text-muted-foreground bg-muted px-1.5 py-0.5 rounded">σ²</span>
+                      <span
+                        class="font-mono text-[10px] tracking-widest uppercase text-muted-foreground bg-muted px-1.5 py-0.5 rounded"
+                      >σ²</span>
                     </div>
-                    <code class="block font-mono text-xs bg-background border border-border rounded-md px-3 py-2 text-center tracking-wide">σ² = ((P − O) / 6)²</code>
+                    <code
+                      class="block font-mono text-xs bg-background border border-border rounded-md px-3 py-2 text-center tracking-wide"
+                    >σ²
+                      = ((P − O) / 6)²</code>
                     <p class="text-[11px] text-muted-foreground leading-relaxed">
                       Measures uncertainty. Higher variance means a wider spread between best and worst case.
                     </p>
@@ -795,9 +912,14 @@
                       <p class="text-xs font-medium">
                         Standard Deviation
                       </p>
-                      <span class="font-mono text-[10px] tracking-widest uppercase text-muted-foreground bg-muted px-1.5 py-0.5 rounded">σ</span>
+                      <span
+                        class="font-mono text-[10px] tracking-widest uppercase text-muted-foreground bg-muted px-1.5 py-0.5 rounded"
+                      >σ</span>
                     </div>
-                    <code class="block font-mono text-xs bg-background border border-border rounded-md px-3 py-2 text-center tracking-wide">σ = (P − O) / 6</code>
+                    <code
+                      class="block font-mono text-xs bg-background border border-border rounded-md px-3 py-2 text-center tracking-wide"
+                    >σ
+                      = (P − O) / 6</code>
                     <p class="text-[11px] text-muted-foreground leading-relaxed">
                       Square root of variance. Used to compute the Z-score for probability lookup.
                     </p>
@@ -807,9 +929,14 @@
                       <p class="text-xs font-medium">
                         Z-Score
                       </p>
-                      <span class="font-mono text-[10px] tracking-widest uppercase text-muted-foreground bg-muted px-1.5 py-0.5 rounded">Z</span>
+                      <span
+                        class="font-mono text-[10px] tracking-widest uppercase text-muted-foreground bg-muted px-1.5 py-0.5 rounded"
+                      >Z</span>
                     </div>
-                    <code class="block font-mono text-xs bg-background border border-border rounded-md px-3 py-2 text-center tracking-wide">Z = (D − ΣE) / √Σσ²</code>
+                    <code
+                      class="block font-mono text-xs bg-background border border-border rounded-md px-3 py-2 text-center tracking-wide"
+                    >Z
+                      = (D − ΣE) / √Σσ²</code>
                     <p class="text-[11px] text-muted-foreground leading-relaxed">
                       How many standard deviations your deadline (D) is from the total expected time.
                     </p>
@@ -826,7 +953,8 @@
                     What if I only have one estimate?
                   </p>
                   <p class="text-xs text-muted-foreground leading-relaxed">
-                    Set O, M, and P to the same value. Variance becomes zero, indicating full confidence in that estimate.
+                    Set O, M, and P to the same value. Variance becomes zero, indicating full confidence in that
+                    estimate.
                   </p>
                 </div>
                 <div class="space-y-1">
@@ -834,7 +962,9 @@
                     What does a negative Z-score mean?
                   </p>
                   <p class="text-xs text-muted-foreground leading-relaxed">
-                    Your desired time is shorter than the expected total — probability drops below 50%, meaning the project is likely to overrun.
+                    Your desired time is shorter than the expected total — probability drops below 50%, meaning the
+                    project is
+                    likely to overrun.
                   </p>
                 </div>
                 <div class="space-y-1">
@@ -842,7 +972,9 @@
                     How do I export the results?
                   </p>
                   <p class="text-xs text-muted-foreground leading-relaxed">
-                    Use the <span class="font-medium text-foreground">Export</span> button in the Task Breakdown section to download an Excel file. Note that you must set a Desired Completion Time (D) before exporting.
+                    Use the <span class="font-medium text-foreground">Export</span> button in the Task Breakdown section
+                    to
+                    download an Excel file. Note that you must set a Desired Completion Time (D) before exporting.
                   </p>
                 </div>
                 <div class="space-y-1">
@@ -850,7 +982,8 @@
                     What does "Retain Milestone" do?
                   </p>
                   <p class="text-xs text-muted-foreground leading-relaxed">
-                    When checked, the milestone value is preserved for the next task you add. This is useful when adding multiple tasks to the same milestone.
+                    When checked, the milestone value is preserved for the next task you add. This is useful when adding
+                    multiple tasks to the same milestone.
                   </p>
                 </div>
                 <div class="space-y-1">
@@ -858,7 +991,9 @@
                     Can I edit estimates directly?
                   </p>
                   <p class="text-xs text-muted-foreground leading-relaxed">
-                    Yes! Click on any O, M, or P value in the task table to edit it directly. The PERT calculations update automatically.
+                    Yes! Click on any O, M, or P value in the task table to edit it directly. The PERT calculations
+                    update
+                    automatically.
                   </p>
                 </div>
               </div>
@@ -940,7 +1075,9 @@
                     :step="0.1"
                     :format-options="editTaskForm.optimistic !== null ? { minimumFractionDigits: 1 } : undefined"
                   >
-                    <NumberFieldContent><NumberFieldInput /></NumberFieldContent>
+                    <NumberFieldContent>
+                      <NumberFieldInput />
+                    </NumberFieldContent>
                   </NumberField>
                 </div>
                 <div class="grid gap-2">
@@ -951,7 +1088,9 @@
                     :step="0.1"
                     :format-options="editTaskForm.mostLikely !== null ? { minimumFractionDigits: 1 } : undefined"
                   >
-                    <NumberFieldContent><NumberFieldInput /></NumberFieldContent>
+                    <NumberFieldContent>
+                      <NumberFieldInput />
+                    </NumberFieldContent>
                   </NumberField>
                 </div>
                 <div class="grid gap-2">
@@ -962,7 +1101,9 @@
                     :step="0.1"
                     :format-options="editTaskForm.pessimistic !== null ? { minimumFractionDigits: 1 } : undefined"
                   >
-                    <NumberFieldContent><NumberFieldInput /></NumberFieldContent>
+                    <NumberFieldContent>
+                      <NumberFieldInput />
+                    </NumberFieldContent>
                   </NumberField>
                 </div>
               </div>
@@ -992,7 +1133,9 @@
         <DialogContent class="flex flex-col gap-0 p-0 max-w-md w-[calc(100vw-2rem)] rounded-xl overflow-hidden">
           <DialogHeader class="px-5 pt-5 pb-4 border-b border-border shrink-0">
             <DialogTitle class="flex items-center gap-2 text-sm text-destructive">
-              <div class="w-7 h-7 rounded-md bg-destructive/10 text-destructive flex items-center justify-center shrink-0">
+              <div
+                class="w-7 h-7 rounded-md bg-destructive/10 text-destructive flex items-center justify-center shrink-0"
+              >
                 <AlertTriangle class="w-3.5 h-3.5" />
               </div>
               Delete Task
@@ -1037,14 +1180,67 @@
           </div>
         </DialogContent>
       </Dialog>
+
+      <!-- Reset Confirmation Dialog -->
+      <Dialog v-model:open="showResetDialog">
+        <DialogContent class="flex flex-col gap-0 p-0 max-w-md w-[calc(100vw-2rem)] rounded-xl overflow-hidden">
+          <DialogHeader class="px-5 pt-5 pb-4 border-b border-border shrink-0">
+            <DialogTitle class="flex items-center gap-2 text-sm text-destructive">
+              <div
+                class="w-7 h-7 rounded-md bg-destructive/10 text-destructive flex items-center justify-center shrink-0"
+              >
+                <AlertTriangle class="w-3.5 h-3.5" />
+              </div>
+              Reset All Tasks
+            </DialogTitle>
+            <DialogDescription class="text-xs mt-1">
+              This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <div class="px-5 py-4 space-y-4">
+            <p class="text-sm">
+              Are you sure you want to reset all tasks? All data will be permanently cleared.
+            </p>
+            <div class="flex items-center gap-3 pt-2">
+              <Checkbox
+                id="dontShowResetWarning"
+                :model-value="!projectStore.resetWarning"
+                @update:model-value="projectStore.resetWarning = !$event"
+              />
+              <Label
+                for="dontShowResetWarning"
+                class="text-xs text-muted-foreground cursor-pointer"
+              >
+                Don't show this warning again
+              </Label>
+            </div>
+          </div>
+          <div class="px-5 py-4 border-t border-border shrink-0 flex gap-2">
+            <Button
+              variant="outline"
+              class="flex-1 font-mono text-xs"
+              @click="showResetDialog = false"
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              class="flex-1 font-mono text-xs"
+              @click="confirmReset()"
+            >
+              Reset
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted, watch } from 'vue'
+import { ref, reactive, computed, onMounted, watch } from 'vue'
 import ExcelJS from 'exceljs';
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import type { NewTask } from '@/types'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -1057,18 +1253,40 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Checkbox } from '@/components/ui/checkbox'
 import { Textarea } from '@/components/ui/textarea'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { ChevronLeft, Download, X, RotateCcw, Info, Plus, HelpCircle, Star, Target, AlertTriangle, CalendarClock, Pencil, GripVertical } from 'lucide-vue-next'
+import { ChevronLeft, Download, X, RotateCcw, Info, Plus, HelpCircle, Star, Target, AlertTriangle, CalendarClock, Pencil, GripVertical, Save } from 'lucide-vue-next'
 import { VueDraggable } from 'vue-draggable-plus'
 import { useProjectStore } from '@/stores/projectStore'
+import { useProjectListStore } from '@/stores/projectListStore'
 import { toast } from 'vue-sonner'
 
 const router = useRouter()
+const route = useRoute()
 const projectStore = useProjectStore()
+const projectListStore = useProjectListStore()
+
 const showInfoDialog = ref(false)
 const showEditDialog = ref(false)
+const showSaveDialog = ref(false)
 const editingTaskIndex = ref<number | null>(null)
 const showDeleteDialog = ref(false)
+const showResetDialog = ref(false)
 const deleteTaskIndex = ref<number | null>(null)
+
+const currentProjectId = ref<string | null>(null)
+const isNewProject = ref(false)
+
+const saveForm = reactive({ name: '' })
+
+function generateDefaultName(): string {
+  const count = projectListStore.projects.length + 1
+  return `New Project [${count}]`
+}
+
+const currentProjectName = computed(() => {
+  if (isNewProject.value) return saveForm.name || generateDefaultName()
+  const project = projectListStore.getProjectById(currentProjectId.value!)
+  return project?.name ?? 'Man Hours Estimator'
+})
 
 const editTaskForm = reactive({
   taskName: '',
@@ -1156,6 +1374,21 @@ function openDeleteDialog(index: number): void {
   }
 }
 
+function openResetDialog(): void {
+  if (projectStore.resetWarning) {
+    showResetDialog.value = true
+  } else {
+    projectStore.resetAll()
+    toast.success('All tasks reset successfully!')
+  }
+}
+
+function confirmReset(): void {
+  projectStore.resetAll()
+  showResetDialog.value = false
+  toast.success('All tasks reset successfully!')
+}
+
 function addTask(): void {
   if (!projectStore.addTask(newTaskForm)) {
     const missing = []
@@ -1169,8 +1402,28 @@ function addTask(): void {
   toast.success('Task added successfully!')
 }
 
-function goToHome(): void {
-  router.push('/')
+function goToProjects(): void {
+  router.push('/projects')
+}
+
+function confirmSave(): void {
+  if (!saveForm.name.trim()) return
+  const name = saveForm.name.trim()
+  const state = projectStore.exportState()
+
+  if (isNewProject.value) {
+    if (projectListStore.hasProject(currentProjectId.value!)) {
+      projectListStore.updateProject(currentProjectId.value!, { name, state })
+    } else {
+      projectListStore.createProjectWithId(currentProjectId.value!, name, state)
+    }
+    isNewProject.value = false
+    toast.success('Project saved successfully!')
+  } else {
+    projectListStore.updateProject(currentProjectId.value!, { name, state })
+    toast.success('Project updated successfully!')
+  }
+  showSaveDialog.value = false
 }
 
 function exportToExcel(): void {
@@ -1259,12 +1512,44 @@ function exportToExcel(): void {
 }
 
 onMounted(() => {
-  projectStore.loadFromStorage()
+  projectListStore.loadProjects()
+  const id = route.params.id as string
+
+  const project = projectListStore.getProjectById(id)
+  if (project) {
+    currentProjectId.value = id
+    isNewProject.value = false
+    saveForm.name = project.name
+    projectStore.loadFromProject(project.state)
+  } else {
+    currentProjectId.value = id
+    isNewProject.value = true
+    saveForm.name = generateDefaultName()
+    projectStore.resetAll()
+  }
 })
 
 watch(() => projectStore.taskList, () => {
-  projectStore.saveToStorage()
+  if (!currentProjectId.value || projectStore.taskList.length === 0) return
+  const state = projectStore.exportState()
+  if (projectListStore.hasProject(currentProjectId.value)) {
+    projectListStore.updateProject(currentProjectId.value, { state })
+  } else {
+    projectListStore.createProjectWithId(currentProjectId.value, saveForm.name, state)
+    isNewProject.value = false
+  }
 }, { deep: true })
+
+watch(() => projectStore.targetDuration, () => {
+  if (!currentProjectId.value || projectStore.taskList.length === 0) return
+  const state = projectStore.exportState()
+  if (projectListStore.hasProject(currentProjectId.value)) {
+    projectListStore.updateProject(currentProjectId.value, { state })
+  } else {
+    projectListStore.createProjectWithId(currentProjectId.value, saveForm.name, state)
+    isNewProject.value = false
+  }
+})
 </script>
 
 <style>
@@ -1273,11 +1558,13 @@ watch(() => projectStore.taskList, () => {
   outline-offset: -2px !important;
   background-color: hsl(var(--primary) / 0.08) !important;
 }
+
 .task-dragging {
   box-shadow: 0 8px 24px hsl(var(--primary) / 0.2) !important;
   opacity: 1 !important;
   transform: scale(1.01) !important;
 }
+
 .task-ghost {
   opacity: 0.3 !important;
   background-color: transparent !important;
@@ -1295,6 +1582,8 @@ watch(() => projectStore.taskList, () => {
 }
 
 @media (min-width: 400px) {
-  .xs\:inline { display: inline; }
+  .xs\:inline {
+    display: inline;
+  }
 }
 </style>

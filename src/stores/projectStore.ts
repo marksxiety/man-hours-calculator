@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { ref, computed, watch } from 'vue'
+import { ref, computed } from 'vue'
 import type { NewTask, Analysis, PERTTaskResult, StoredState } from '@/types'
 import { calculateExpectedTime } from '@/utils/calculateExpectedTime'
 import { calculateStandardDeviation } from '@/utils/calculateStandardDeviation'
@@ -8,13 +8,12 @@ import { calculateTotalExpectedTime, calculateTotalVariance } from '@/utils/calc
 import { calculateZScore } from '@/utils/calculateZScore'
 import { calculateProbability } from '@/utils/calculateProbability'
 
-const STORAGE_KEY = 'man-hours-calculator-state'
-
 export const useProjectStore = defineStore('project', () => {
   const taskList = ref<PERTTaskResult[]>([])
   const targetDuration = ref<number | null>(null)
   const retainMilestone = ref(false)
   const deleteWarning = ref(true)
+  const resetWarning = ref(true)
 
   const pertAnalysis = computed<Analysis>(() => {
     const totalExpectedTime = calculateTotalExpectedTime(taskList.value)
@@ -43,6 +42,24 @@ export const useProjectStore = defineStore('project', () => {
     return groups
   })
 
+  function loadFromProject(state: StoredState): void {
+    taskList.value = state.tasks || []
+    targetDuration.value = state.targetDuration ?? null
+    retainMilestone.value = state.retainMilestone ?? false
+    deleteWarning.value = state.deleteWarning ?? true
+    resetWarning.value = state.resetWarning ?? true
+  }
+
+  function exportState(): StoredState {
+    return {
+      tasks: taskList.value,
+      targetDuration: targetDuration.value,
+      retainMilestone: retainMilestone.value,
+      deleteWarning: deleteWarning.value,
+      resetWarning: resetWarning.value,
+    }
+  }
+
   function addTask(newTaskForm: NewTask): boolean {
     if (newTaskForm.optimistic === null || newTaskForm.mostLikely === null || newTaskForm.pessimistic === null) {
       return false
@@ -62,13 +79,11 @@ export const useProjectStore = defineStore('project', () => {
       standardDeviation,
       variance,
     })
-    saveToStorage()
     return true
   }
 
   function removeTask(index: number): void {
     taskList.value.splice(index, 1)
-    saveToStorage()
   }
 
   function updateTask(index: number, field: 'optimistic' | 'mostLikely' | 'pessimistic', value: number | null): void {
@@ -80,7 +95,6 @@ export const useProjectStore = defineStore('project', () => {
         task.standardDeviation = calculateStandardDeviation(task)
         task.variance = calculateVariance(task.standardDeviation)
       }
-      saveToStorage()
     }
   }
 
@@ -93,7 +107,6 @@ export const useProjectStore = defineStore('project', () => {
         task.standardDeviation = calculateStandardDeviation(task)
         task.variance = calculateVariance(task.standardDeviation)
       }
-      saveToStorage()
     }
   }
 
@@ -105,45 +118,10 @@ export const useProjectStore = defineStore('project', () => {
     taskList.value = []
     targetDuration.value = null
     retainMilestone.value = false
-    saveToStorage()
   }
 
   function setTargetDuration(value: number | null): void {
     targetDuration.value = value
-    saveToStorage()
-  }
-
-  watch([retainMilestone, deleteWarning], () => {
-    saveToStorage()
-  })
-
-  function saveToStorage(): void {
-    try {
-      const state: StoredState = {
-        tasks: taskList.value,
-        targetDuration: targetDuration.value,
-        retainMilestone: retainMilestone.value,
-        deleteWarning: deleteWarning.value,
-      }
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
-    } catch (error) {
-      console.error('Failed to save to localStorage:', error)
-    }
-  }
-
-  function loadFromStorage(): void {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY)
-      if (stored) {
-        const state: StoredState = JSON.parse(stored)
-        taskList.value = state.tasks || []
-        targetDuration.value = state.targetDuration
-        retainMilestone.value = state.retainMilestone ?? false
-        deleteWarning.value = state.deleteWarning ?? true
-      }
-    } catch (error) {
-      console.error('Failed to load from localStorage:', error)
-    }
   }
 
   return {
@@ -151,8 +129,11 @@ export const useProjectStore = defineStore('project', () => {
     targetDuration,
     retainMilestone,
     deleteWarning,
+    resetWarning,
     pertAnalysis,
     groupedTasks,
+    loadFromProject,
+    exportState,
     addTask,
     removeTask,
     updateTask,
@@ -160,7 +141,5 @@ export const useProjectStore = defineStore('project', () => {
     resetTaskForm,
     resetAll,
     setTargetDuration,
-    saveToStorage,
-    loadFromStorage,
   }
 })

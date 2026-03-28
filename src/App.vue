@@ -14,12 +14,15 @@
       aria-hidden="true"
     />
     <ScrollArea class="h-full">
-      <router-view v-slot="{ Component }">
+      <router-view v-slot="{ Component, route }">
         <Transition
           name="slide-left"
           mode="out-in"
         >
-          <component :is="Component" />
+          <component
+            :is="Component"
+            :key="route.path"
+          />
         </Transition>
       </router-view>
     </ScrollArea>
