@@ -212,6 +212,7 @@ describe('Project Store', () => {
       targetDuration: 100,
       retainMilestone: true,
       deleteWarning: true,
+      resetWarning: true,
     }
 
     const store = useProjectStore()
