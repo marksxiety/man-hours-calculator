@@ -150,7 +150,7 @@ import { Shield, Clock, BarChart2, ArrowRight } from 'lucide-vue-next'
 import { Icon } from '@iconify/vue'
 
 const router = useRouter()
-const goToDemo = () => router.push('/demo')
+const goToDemo = () => router.push('/projects')
 
 const steps = [
   {
