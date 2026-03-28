@@ -36,6 +36,10 @@ export const useProjectListStore = defineStore('projectList', () => {
 
   function createProject(name: string, state?: StoredState): string {
     const id = crypto.randomUUID()
+    return createProjectWithId(id, name, state)
+  }
+
+  function createProjectWithId(id: string, name: string, state?: StoredState): string {
     const now = new Date().toISOString()
     const project: Project = {
       id,
@@ -53,6 +57,10 @@ export const useProjectListStore = defineStore('projectList', () => {
     projects.value.push(project)
     saveProjects()
     return id
+  }
+
+  function hasProject(id: string): boolean {
+    return projects.value.some(p => p.id === id)
   }
 
   function updateProject(id: string, updates: Partial<Pick<Project, 'name' | 'state'>>): void {
@@ -105,5 +113,7 @@ export const useProjectListStore = defineStore('projectList', () => {
     togglePin,
     reorderPinnedProjects,
     deleteProject,
+    createProjectWithId,
+    hasProject,
   }
 })
