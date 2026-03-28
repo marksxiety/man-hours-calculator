@@ -15,6 +15,7 @@
               variant="ghost"
               size="icon"
               class="-ml-2"
+              title="Projects"
               @click="goToProjects()"
             >
               <ChevronLeft class="w-4 h-4" />
@@ -27,13 +28,7 @@
             <Button
               variant="outline"
               size="icon"
-              @click="createNewProject()"
-            >
-              <FilePlus2 class="w-4 h-4" />
-            </Button>
-            <Button
-              variant="outline"
-              size="icon"
+              title="Save"
               @click="showSaveDialog = true"
             >
               <Save class="w-4 h-4" />
@@ -41,6 +36,7 @@
             <Button
               variant="outline"
               size="icon"
+              title="Info"
               @click="showInfoDialog = true"
             >
               <Info class="w-4 h-4" />
@@ -1121,7 +1117,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Checkbox } from '@/components/ui/checkbox'
 import { Textarea } from '@/components/ui/textarea'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { ChevronLeft, Download, X, RotateCcw, Info, Plus, HelpCircle, Star, Target, AlertTriangle, CalendarClock, Pencil, GripVertical, Save, FilePlus2 } from 'lucide-vue-next'
+import { ChevronLeft, Download, X, RotateCcw, Info, Plus, HelpCircle, Star, Target, AlertTriangle, CalendarClock, Pencil, GripVertical, Save } from 'lucide-vue-next'
 import { VueDraggable } from 'vue-draggable-plus'
 import { useProjectStore } from '@/stores/projectStore'
 import { useProjectListStore } from '@/stores/projectListStore'
@@ -1256,10 +1252,6 @@ function addTask(): void {
 
 function goToProjects(): void {
   router.push('/projects')
-}
-
-function createNewProject(): void {
-  router.push('/demo/new')
 }
 
 function confirmSave(): void {
