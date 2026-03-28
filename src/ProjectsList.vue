@@ -19,7 +19,7 @@
               <ChevronLeft class="w-4 h-4" />
             </Button>
             <h1 class="text-2xl sm:text-3xl font-bold tracking-tight">
-              Man Hours History
+              Project Vault
             </h1>
           </div>
           <Button
@@ -58,11 +58,9 @@
       <template v-else>
         <div v-if="pinnedProjects.length > 0">
           <div class="flex items-center justify-between mb-4">
-            <div>
-              <p class="font-mono text-xs tracking-widest uppercase text-muted-foreground mb-1">
-                Pinned
-              </p>
-            </div>
+            <p class="font-mono text-xs tracking-widest uppercase text-muted-foreground">
+              Pinned
+            </p>
           </div>
 
           <VueDraggable
@@ -80,7 +78,7 @@
               class="group rounded-xl border border-primary/40 bg-primary/5 p-5 shadow-sm transition-all duration-200 hover:border-primary/50 hover:shadow-md cursor-pointer"
               @click="openProject(project.id)"
             >
-              <div class="flex items-start justify-between gap-3 mb-3">
+              <div class="flex items-start justify-between gap-3">
                 <div class="flex items-start gap-2 min-w-0 flex-1">
                   <GripVertical
                     class="w-4 h-4 mt-0.5 text-muted-foreground cursor-grab active:cursor-grabbing shrink-0 drag-handle"
@@ -89,7 +87,7 @@
                     <h3 class="text-sm font-semibold truncate leading-tight">
                       {{ project.name }}
                     </h3>
-                    <p class="text-[10px] text-muted-foreground font-mono mt-1">
+                    <p class="text-[11px] text-muted-foreground font-mono mt-0.5">
                       {{ formatDate(project.updatedAt) }}
                     </p>
                   </div>
@@ -104,12 +102,14 @@
                   </button>
                   <button
                     class="h-7 w-7 inline-flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                    title="Rename"
                     @click.stop="openRenameDialog(project)"
                   >
                     <Pencil class="w-3.5 h-3.5" />
                   </button>
                   <button
                     class="h-7 w-7 inline-flex items-center justify-center rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                    title="Delete"
                     @click.stop="openDeleteDialog(project)"
                   >
                     <X class="w-3.5 h-3.5" />
@@ -117,52 +117,39 @@
                 </div>
               </div>
 
-              <div class="flex items-center gap-4 pl-6">
-                <div class="flex items-baseline gap-1.5">
-                  <span class="text-lg font-bold tabular-nums text-primary">
-                    {{ getTotalExpected(project) }}
-                  </span>
-                  <span class="text-[10px] text-muted-foreground">hrs</span>
-                </div>
-                <div class="h-4 w-px bg-border/60" />
-                <div class="flex items-baseline gap-1.5">
-                  <span class="text-sm font-medium tabular-nums">
-                    {{ project.state.tasks.length }}
-                  </span>
-                  <span class="text-[10px] text-muted-foreground">tasks</span>
-                </div>
-              </div>
+              <div class="border-t border-border/50 mt-3 pt-3 pl-6">
+                <div class="flex items-baseline gap-1.5 flex-wrap">
+                  <span class="text-xl font-bold tabular-nums font-mono text-primary">{{ getTotalExpected(project)
+                  }}</span>
+                  <span class="text-[11px] text-muted-foreground font-mono">hrs</span>
 
-              <div class="mt-3 flex items-center gap-2 pl-6">
-                <Badge
-                  variant="secondary"
-                  class="font-mono text-[10px] gap-1"
+                  <span class="text-[11px] text-muted-foreground font-mono mx-1">|</span>
+
+                  <span class="text-xl font-bold tabular-nums font-mono text-foreground">{{ project.state.tasks.length
+                  }}</span>
+                  <span class="text-[11px] text-muted-foreground font-mono">tasks</span>
+
+                  <template v-if="project.state.targetDuration !== null">
+                    <span class="text-[11px] text-muted-foreground font-mono mx-1">|</span>
+                    <span class="text-[11px] text-muted-foreground font-mono">D: {{ project.state.targetDuration
+                    }}h</span>
+                  </template>
+                </div>
+
+                <p
+                  v-if="project.state.tasks.length > 0 && project.state.targetDuration !== null"
+                  class="text-[11px] text-muted-foreground font-mono mt-2"
                 >
-                  <Pin class="w-2.5 h-2.5" />
-                  Pinned
-                </Badge>
-                <Badge
-                  v-if="project.state.tasks.length > 0"
-                  variant="secondary"
-                  class="font-mono text-[10px]"
-                >
-                  {{ (calculateProbability(
-                    project.state.tasks.length === 0 || project.state.targetDuration === null
-                      ? 0
-                      : calculateZScore(
+                  {{
+                    (calculateProbability(
+                      calculateZScore(
                         project.state.targetDuration,
                         calculateTotalExpectedTime(project.state.tasks),
                         calculateTotalVariance(project.state.tasks)
                       )
-                  ) * 100).toFixed(1) }}% probability
-                </Badge>
-                <Badge
-                  v-if="project.state.targetDuration !== null"
-                  variant="outline"
-                  class="font-mono text-[10px]"
-                >
-                  D: {{ project.state.targetDuration }}h
-                </Badge>
+                    ) * 100).toFixed(1)
+                  }}% on-time probability
+                </p>
               </div>
             </div>
           </VueDraggable>
@@ -188,12 +175,12 @@
               class="group rounded-xl border border-border bg-card p-5 shadow-sm transition-all duration-200 hover:border-primary/30 hover:shadow-md cursor-pointer"
               @click="openProject(project.id)"
             >
-              <div class="flex items-start justify-between gap-3 mb-3">
+              <div class="flex items-start justify-between gap-3">
                 <div class="min-w-0 flex-1">
                   <h3 class="text-sm font-semibold truncate leading-tight">
                     {{ project.name }}
                   </h3>
-                  <p class="text-[10px] text-muted-foreground font-mono mt-1">
+                  <p class="text-[11px] text-muted-foreground font-mono mt-0.5">
                     {{ formatDate(project.updatedAt) }}
                   </p>
                 </div>
@@ -207,12 +194,14 @@
                   </button>
                   <button
                     class="h-7 w-7 inline-flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                    title="Rename"
                     @click.stop="openRenameDialog(project)"
                   >
                     <Pencil class="w-3.5 h-3.5" />
                   </button>
                   <button
                     class="h-7 w-7 inline-flex items-center justify-center rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                    title="Delete"
                     @click.stop="openDeleteDialog(project)"
                   >
                     <X class="w-3.5 h-3.5" />
@@ -220,45 +209,39 @@
                 </div>
               </div>
 
-              <div class="flex items-center gap-4">
-                <div class="flex items-baseline gap-1.5">
-                  <span class="text-lg font-bold tabular-nums text-primary">
-                    {{ getTotalExpected(project) }}
-                  </span>
-                  <span class="text-[10px] text-muted-foreground">hrs</span>
-                </div>
-                <div class="h-4 w-px bg-border/60" />
-                <div class="flex items-baseline gap-1.5">
-                  <span class="text-sm font-medium tabular-nums">
-                    {{ project.state.tasks.length }}
-                  </span>
-                  <span class="text-[10px] text-muted-foreground">tasks</span>
-                </div>
-              </div>
+              <div class="border-t border-border/50 mt-3 pt-3">
+                <div class="flex items-baseline gap-1.5 flex-wrap">
+                  <span class="text-xl font-bold tabular-nums font-mono text-primary">{{ getTotalExpected(project)
+                  }}</span>
+                  <span class="text-[11px] text-muted-foreground font-mono">hrs</span>
 
-              <div class="mt-3 flex items-center gap-2">
-                <Badge
-                  v-if="project.state.tasks.length > 0"
-                  variant="secondary"
-                  class="font-mono text-[10px]"
+                  <span class="text-[11px] text-muted-foreground font-mono mx-1">|</span>
+
+                  <span class="text-xl font-bold tabular-nums font-mono text-foreground">{{ project.state.tasks.length
+                  }}</span>
+                  <span class="text-[11px] text-muted-foreground font-mono">tasks</span>
+
+                  <template v-if="project.state.targetDuration !== null">
+                    <span class="text-[11px] text-muted-foreground font-mono mx-1">|</span>
+                    <span class="text-[11px] text-muted-foreground font-mono">D: {{ project.state.targetDuration
+                    }}h</span>
+                  </template>
+                </div>
+
+                <p
+                  v-if="project.state.tasks.length > 0 && project.state.targetDuration !== null"
+                  class="text-[11px] text-muted-foreground font-mono mt-2"
                 >
-                  {{ (calculateProbability(
-                    project.state.tasks.length === 0 || project.state.targetDuration === null
-                      ? 0
-                      : calculateZScore(
+                  {{
+                    (calculateProbability(
+                      calculateZScore(
                         project.state.targetDuration,
                         calculateTotalExpectedTime(project.state.tasks),
                         calculateTotalVariance(project.state.tasks)
                       )
-                  ) * 100).toFixed(1) }}% probability
-                </Badge>
-                <Badge
-                  v-if="project.state.targetDuration !== null"
-                  variant="outline"
-                  class="font-mono text-[10px]"
-                >
-                  D: {{ project.state.targetDuration }}h
-                </Badge>
+                    ) * 100).toFixed(1)
+                  }}% on-time probability
+                </p>
               </div>
             </div>
           </div>
@@ -323,8 +306,7 @@
           <div class="px-5 py-4">
             <p class="text-sm">
               Are you sure you want to delete <strong class="text-foreground">{{ deleteTarget?.name }}</strong>? All
-              tasks and
-              estimates will be lost.
+              tasks and estimates will be lost.
             </p>
           </div>
           <div class="px-5 py-4 border-t border-border shrink-0 flex gap-2">
