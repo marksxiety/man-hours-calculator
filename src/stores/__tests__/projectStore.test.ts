@@ -177,7 +177,7 @@ describe('Project Store', () => {
     expect(grouped[1].tasks).toHaveLength(1)
   })
 
-  it('should persist state to localStorage', () => {
+  it('should export state correctly', () => {
     const store = useProjectStore()
     const newTask: NewTask = {
       taskName: 'Test Task',
@@ -191,15 +191,12 @@ describe('Project Store', () => {
     store.addTask(newTask)
     store.setTargetDuration(100)
 
-    const stored = localStorage.getItem('man-hours-calculator-state')
-    expect(stored).not.toBeNull()
-
-    const state = JSON.parse(stored!)
+    const state = store.exportState()
     expect(state.tasks).toHaveLength(1)
     expect(state.targetDuration).toBe(100)
   })
 
-  it('should load state from localStorage', () => {
+  it('should load state from project', () => {
     const savedState = {
       tasks: [{
         taskName: 'Test Task',
@@ -214,12 +211,11 @@ describe('Project Store', () => {
       }],
       targetDuration: 100,
       retainMilestone: true,
+      deleteWarning: true,
     }
 
-    localStorage.setItem('man-hours-calculator-state', JSON.stringify(savedState))
-
     const store = useProjectStore()
-    store.loadFromStorage()
+    store.loadFromProject(savedState)
 
     expect(store.taskList).toHaveLength(1)
     expect(store.taskList[0].taskName).toBe('Test Task')
