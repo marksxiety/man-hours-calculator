@@ -416,7 +416,8 @@ function goToHome(): void {
 }
 
 function createNewProject(): void {
-  router.push('/demo/new')
+  const id = crypto.randomUUID()
+  router.push(`/demo/${id}`)
 }
 
 function openProject(id: string): void {
