@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.2.1] - 2026-03-30
+
+### Refactoring
+- Extract HelpTooltip component for reusable icon-based help tooltips in Demo
+- Extract AnalysisMetricCard component for metric display with optional highlight
+- Extract ConfirmDialog component for destructive action confirmations with optional checkbox
+- Extract ProjectCard component with pin toggle, rename, delete, and drag handle support
+- Extract InfoDialog component with PERT steps, formulas, and FAQ content
+- Replace inline project card HTML in ProjectsList with reusable ProjectCard component
+- Replace inline HoverCard tooltips and metric cards in Demo with extracted components
+- Replace inline info dialog with InfoDialog component
+- Modularize Excel export into @/utils/excel with buildFilename, buildSheetContents, and index modules
+- Replace inline ExcelJS workbook construction in Demo with @/utils/excel module
+- Remove unused monolithic exportToExcel.ts replaced by modular excel/ utils
+
+---
+
 ## [1.2.0] - 2026-03-28
 
 ### Features
