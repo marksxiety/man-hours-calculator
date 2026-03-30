@@ -1239,7 +1239,7 @@
 
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted, watch } from 'vue'
-import ExcelJS from 'exceljs';
+import { exportToExcel as exportWorkbook } from '@/utils/excel'
 import { useRouter, useRoute } from 'vue-router'
 import type { NewTask } from '@/types'
 import { Badge } from '@/components/ui/badge'
@@ -1431,83 +1431,11 @@ function exportToExcel(): void {
     toast.error('Please add a Desired Completion Time (D) before exporting')
     return
   }
-  const workbook = new ExcelJS.Workbook()
-  const taskSheet = workbook.addWorksheet('Task Breakdown')
-  taskSheet.columns = [
-    { header: 'Milestone', key: 'milestone', width: 25 },
-    { header: 'Task Name', key: 'taskName', width: 30 },
-    { header: 'Description', key: 'description', width: 50 },
-    { header: 'Optimistic (O)', key: 'optimistic', width: 16 },
-    { header: 'Most Likely (M)', key: 'mostLikely', width: 16 },
-    { header: 'Pessimistic (P)', key: 'pessimistic', width: 16 },
-    { header: 'Expected', key: 'expectedTime', width: 16 },
-    { header: 'Std Dev', key: 'standardDeviation', width: 16 },
-    { header: 'Variance', key: 'variance', width: 16 },
-  ]
-  projectStore.taskList.forEach((task) => {
-    taskSheet.addRow({
-      milestone: task.milestone || 'Uncategorized',
-      taskName: task.taskName,
-      description: task.description || '',
-      optimistic: task.optimistic,
-      mostLikely: task.mostLikely,
-      pessimistic: task.pessimistic,
-      expectedTime: parseFloat(task.expectedTime.toFixed(2)),
-      standardDeviation: parseFloat(task.standardDeviation.toFixed(3)),
-      variance: parseFloat(task.variance.toFixed(3)),
-    })
-  })
-  taskSheet.addRow([])
-  const totalRow = taskSheet.addRow({
-    taskName: 'TOTALS',
-    expectedTime: parseFloat(projectStore.pertAnalysis.totalExpectedTime.toFixed(2)),
-    variance: parseFloat(projectStore.pertAnalysis.totalVariance.toFixed(3)),
-  })
-  totalRow.font = { bold: true }
-  totalRow.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF0F0F0' } }
-  const taskHeader = taskSheet.getRow(1)
-  taskHeader.font = { bold: true }
-  taskHeader.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE0E0E0' } }
-  taskHeader.alignment = { horizontal: 'center' }
-  const analysisSheet = workbook.addWorksheet('PERT Analysis')
-  analysisSheet.columns = [
-    { header: 'Metric', key: 'metric', width: 35 },
-    { header: 'Value', key: 'value', width: 20 },
-  ]
-  const analysisHeader = analysisSheet.getRow(1)
-  analysisHeader.font = { bold: true }
-  analysisHeader.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE0E0E0' } }
-  const { totalExpectedTime, totalVariance, zScore, probability } = projectStore.pertAnalysis
-  const analysisRows = [
-    { metric: 'Desired Completion Time (D)', value: projectStore.targetDuration },
-    { metric: 'Total Expected Time', value: parseFloat(totalExpectedTime.toFixed(2)) },
-    { metric: 'Total Variance', value: parseFloat(totalVariance.toFixed(3)) },
-    { metric: 'Standard Deviation', value: parseFloat(Math.sqrt(totalVariance).toFixed(3)) },
-    { metric: 'Z-Score', value: parseFloat(zScore.toFixed(3)) },
-    { metric: 'On-Time Probability (%)', value: parseFloat(probability.toFixed(1)) },
-  ]
-  analysisRows.forEach((row) => analysisSheet.addRow(row))
-  const probabilityRow = analysisSheet.getRow(analysisSheet.rowCount)
-  probabilityRow.font = { bold: true }
-  probabilityRow.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFE8F5E9' } }
-  const now = new Date()
-  const pad = (n: number) => String(n).padStart(2, '0')
-  const YY = String(now.getFullYear()).slice(2)
-  const MM = pad(now.getMonth() + 1)
-  const DD = pad(now.getDate())
-  const HH = pad(now.getHours())
-  const SS = pad(now.getSeconds())
-  const timestamp = `${YY}-${MM}-${DD}_${HH}-${SS}`
-  workbook.xlsx.writeBuffer().then((buffer) => {
-    const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
-    const url = URL.createObjectURL(blob)
-    const link = document.createElement('a')
-    link.href = url
-    link.download = `ManHoursEstimation_${timestamp}.xlsx`
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-    URL.revokeObjectURL(url)
+  exportWorkbook({
+    projectName: saveForm.name.trim(),
+    tasks: projectStore.taskList,
+    analysis: projectStore.pertAnalysis,
+    targetDuration: projectStore.targetDuration,
   })
 }
 
