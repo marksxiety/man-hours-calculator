@@ -117,35 +117,11 @@
                 <div class="flex items-center justify-between">
                   <div class="flex items-center gap-1.5">
                     <Label class="font-mono text-[10px] uppercase text-muted-foreground">Optimistic (O)</Label>
-                    <HoverCard
-                      :open-delay="100"
-                      :close-delay="50"
-                    >
-                      <HoverCardTrigger as-child>
-                        <button
-                          class="inline-flex items-center justify-center w-4 h-4 rounded-full border border-border text-muted-foreground hover:border-foreground/40 hover:bg-muted transition-colors"
-                        >
-                          <HelpCircle class="w-2.5 h-2.5" />
-                        </button>
-                      </HoverCardTrigger>
-                      <HoverCardContent
-                        class="w-56 p-4"
-                        side="top"
-                        align="start"
-                      >
-                        <div class="flex flex-col gap-2">
-                          <div class="w-7 h-7 rounded-md bg-muted flex items-center justify-center">
-                            <Star class="w-3.5 h-3.5 text-muted-foreground" />
-                          </div>
-                          <p class="text-xs font-medium leading-none">
-                            Best case scenario
-                          </p>
-                          <p class="text-xs text-muted-foreground leading-relaxed">
-                            Minimum hours if everything goes perfectly. Used as the lower bound in the PERT formula.
-                          </p>
-                        </div>
-                      </HoverCardContent>
-                    </HoverCard>
+                    <HelpTooltip
+                      :icon="Star"
+                      title="Best case scenario"
+                      description="Minimum hours if everything goes perfectly. Used as the lower bound in the PERT formula."
+                    />
                   </div>
                 </div>
                 <NumberField
@@ -164,35 +140,11 @@
               <div class="flex flex-col gap-2 w-full">
                 <div class="flex items-center gap-1.5">
                   <Label class="font-mono text-[10px] uppercase text-muted-foreground">Most Likely (M)</Label>
-                  <HoverCard
-                    :open-delay="100"
-                    :close-delay="50"
-                  >
-                    <HoverCardTrigger as-child>
-                      <button
-                        class="inline-flex items-center justify-center w-4 h-4 rounded-full border border-border text-muted-foreground hover:border-foreground/40 hover:bg-muted transition-colors"
-                      >
-                        <HelpCircle class="w-2.5 h-2.5" />
-                      </button>
-                    </HoverCardTrigger>
-                    <HoverCardContent
-                      class="w-56 p-4"
-                      side="top"
-                      align="start"
-                    >
-                      <div class="flex flex-col gap-2">
-                        <div class="w-7 h-7 rounded-md bg-muted flex items-center justify-center">
-                          <Target class="w-3.5 h-3.5 text-muted-foreground" />
-                        </div>
-                        <p class="text-xs font-medium leading-none">
-                          Realistic estimate
-                        </p>
-                        <p class="text-xs text-muted-foreground leading-relaxed">
-                          Most probable hours. Weighted 4× in the PERT expected value.
-                        </p>
-                      </div>
-                    </HoverCardContent>
-                  </HoverCard>
+                  <HelpTooltip
+                    :icon="Target"
+                    title="Realistic estimate"
+                    description="Most probable hours. Weighted 4× in the PERT expected value."
+                  />
                 </div>
                 <NumberField
                   v-model="newTaskForm.mostLikely"
@@ -210,35 +162,11 @@
               <div class="flex flex-col gap-2 w-full">
                 <div class="flex items-center gap-1.5">
                   <Label class="font-mono text-[10px] uppercase text-muted-foreground">Pessimistic (P)</Label>
-                  <HoverCard
-                    :open-delay="100"
-                    :close-delay="50"
-                  >
-                    <HoverCardTrigger as-child>
-                      <button
-                        class="inline-flex items-center justify-center w-4 h-4 rounded-full border border-border text-muted-foreground hover:border-foreground/40 hover:bg-muted transition-colors"
-                      >
-                        <HelpCircle class="w-2.5 h-2.5" />
-                      </button>
-                    </HoverCardTrigger>
-                    <HoverCardContent
-                      class="w-56 p-4"
-                      side="top"
-                      align="start"
-                    >
-                      <div class="flex flex-col gap-2">
-                        <div class="w-7 h-7 rounded-md bg-muted flex items-center justify-center">
-                          <AlertTriangle class="w-3.5 h-3.5 text-muted-foreground" />
-                        </div>
-                        <p class="text-xs font-medium leading-none">
-                          Worst case scenario
-                        </p>
-                        <p class="text-xs text-muted-foreground leading-relaxed">
-                          Maximum hours if problems arise. Upper bound in the PERT formula.
-                        </p>
-                      </div>
-                    </HoverCardContent>
-                  </HoverCard>
+                  <HelpTooltip
+                    :icon="AlertTriangle"
+                    title="Worst case scenario"
+                    description="Maximum hours if problems arise. Upper bound in the PERT formula."
+                  />
                 </div>
                 <NumberField
                   v-model="newTaskForm.pessimistic"
@@ -287,35 +215,11 @@
                 >
                   Desired Completion Time (D)
                 </Label>
-                <HoverCard
-                  :open-delay="100"
-                  :close-delay="50"
-                >
-                  <HoverCardTrigger as-child>
-                    <button
-                      class="inline-flex items-center justify-center w-4 h-4 rounded-full border border-border text-muted-foreground hover:border-foreground/40 hover:bg-muted transition-colors"
-                    >
-                      <HelpCircle class="w-2.5 h-2.5" />
-                    </button>
-                  </HoverCardTrigger>
-                  <HoverCardContent
-                    class="w-56 p-4"
-                    side="top"
-                    align="start"
-                  >
-                    <div class="flex flex-col gap-2">
-                      <div class="w-7 h-7 rounded-md bg-muted flex items-center justify-center">
-                        <CalendarClock class="w-3.5 h-3.5 text-muted-foreground" />
-                      </div>
-                      <p class="text-xs font-medium leading-none">
-                        Target deadline
-                      </p>
-                      <p class="text-xs text-muted-foreground leading-relaxed">
-                        Your desired completion hours. Used to calculate the Z-score and on-time probability.
-                      </p>
-                    </div>
-                  </HoverCardContent>
-                </HoverCard>
+                <HelpTooltip
+                  :icon="CalendarClock"
+                  title="Target deadline"
+                  description="Your desired completion hours. Used to calculate the Z-score and on-time probability."
+                />
               </div>
               <NumberField
                 :model-value="projectStore.targetDuration"
@@ -331,50 +235,27 @@
             </div>
 
             <div class="grid grid-cols-2 gap-3">
-              <div class="rounded-lg border border-border/50 bg-muted/50 p-3">
-                <div class="font-mono text-[10px] tracking-widest uppercase text-muted-foreground">
-                  Total Expected
-                </div>
-                <div class="text-xl font-bold tabular-nums mt-1">
-                  {{ projectStore.pertAnalysis.totalExpectedTime.toFixed(2) }}
-                </div>
-                <div class="mt-1 text-[10px] leading-tight text-muted-foreground">
-                  Sum of expected durations
-                </div>
-              </div>
-              <div class="rounded-lg border border-border/50 bg-muted/50 p-3">
-                <div class="font-mono text-[10px] tracking-widest uppercase text-muted-foreground">
-                  Total Variance
-                </div>
-                <div class="text-xl font-bold tabular-nums mt-1">
-                  {{ projectStore.pertAnalysis.totalVariance.toFixed(3) }}
-                </div>
-                <div class="mt-1 text-[10px] leading-tight text-muted-foreground">
-                  Higher = less confident
-                </div>
-              </div>
-              <div class="rounded-lg border border-border/50 bg-muted/50 p-3">
-                <div class="font-mono text-[10px] tracking-widest uppercase text-muted-foreground">
-                  Z-Score
-                </div>
-                <div class="text-xl font-bold tabular-nums mt-1">
-                  {{ projectStore.pertAnalysis.zScore.toFixed(3) }}
-                </div>
-                <div class="mt-1 text-[10px] leading-tight text-muted-foreground">
-                  (Target − Expected) / Std Dev
-                </div>
-              </div>
-              <div class="rounded-lg border border-primary/30 bg-primary/10 p-3 shadow-sm">
-                <div class="font-mono text-[10px] tracking-widest uppercase text-primary">
-                  On-Time Probability
-                </div>
-                <div class="text-2xl font-black tabular-nums text-primary mt-1">
-                  {{ projectStore.pertAnalysis.probability.toFixed(1) }}%
-                </div>
-                <div class="mt-1 text-[10px] leading-tight text-primary/70 italic">
-                  Based on Z-score lookup
-                </div>
-              </div>
+              <AnalysisMetricCard
+                label="Total Expected"
+                :value="projectStore.pertAnalysis.totalExpectedTime.toFixed(2)"
+                subtitle="Sum of expected durations"
+              />
+              <AnalysisMetricCard
+                label="Total Variance"
+                :value="projectStore.pertAnalysis.totalVariance.toFixed(3)"
+                subtitle="Higher = less confident"
+              />
+              <AnalysisMetricCard
+                label="Z-Score"
+                :value="projectStore.pertAnalysis.zScore.toFixed(3)"
+                subtitle="(Target − Expected) / Std Dev"
+              />
+              <AnalysisMetricCard
+                label="On-Time Probability"
+                :value="`${projectStore.pertAnalysis.probability.toFixed(1)}%`"
+                subtitle="Based on Z-score lookup"
+                highlighted
+              />
             </div>
           </div>
         </div>
@@ -1128,111 +1009,29 @@
         </DialogContent>
       </Dialog>
 
-      <!-- Delete Confirmation Dialog -->
-      <Dialog v-model:open="showDeleteDialog">
-        <DialogContent class="flex flex-col gap-0 p-0 max-w-md w-[calc(100vw-2rem)] rounded-xl overflow-hidden">
-          <DialogHeader class="px-5 pt-5 pb-4 border-b border-border shrink-0">
-            <DialogTitle class="flex items-center gap-2 text-sm text-destructive">
-              <div
-                class="w-7 h-7 rounded-md bg-destructive/10 text-destructive flex items-center justify-center shrink-0"
-              >
-                <AlertTriangle class="w-3.5 h-3.5" />
-              </div>
-              Delete Task
-            </DialogTitle>
-            <DialogDescription class="text-xs mt-1">
-              This action cannot be undone.
-            </DialogDescription>
-          </DialogHeader>
-          <div class="px-5 py-4 space-y-4">
-            <p class="text-sm">
-              Are you sure you want to delete this task?
-            </p>
-            <div class="flex items-center gap-3 pt-2">
-              <Checkbox
-                id="dontShowDeleteWarning"
-                :model-value="!projectStore.deleteWarning"
-                @update:model-value="projectStore.deleteWarning = !$event"
-              />
-              <Label
-                for="dontShowDeleteWarning"
-                class="text-xs text-muted-foreground cursor-pointer"
-              >
-                Don't show this warning again
-              </Label>
-            </div>
-          </div>
-          <div class="px-5 py-4 border-t border-border shrink-0 flex gap-2">
-            <Button
-              variant="outline"
-              class="flex-1 font-mono text-xs"
-              @click="showDeleteDialog = false"
-            >
-              Cancel
-            </Button>
-            <Button
-              variant="destructive"
-              class="flex-1 font-mono text-xs"
-              @click="confirmDeleteTask()"
-            >
-              Delete
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <ConfirmDialog
+        v-model="showDeleteDialog"
+        title="Delete Task"
+        message="Are you sure you want to delete this task?"
+        confirm-label="Delete"
+        checkbox-id="dontShowDeleteWarning"
+        :show-checkbox="true"
+        :suppress-warning="projectStore.deleteWarning"
+        @confirm="confirmDeleteTask()"
+        @update:suppress-warning="projectStore.deleteWarning = !$event"
+      />
 
-      <!-- Reset Confirmation Dialog -->
-      <Dialog v-model:open="showResetDialog">
-        <DialogContent class="flex flex-col gap-0 p-0 max-w-md w-[calc(100vw-2rem)] rounded-xl overflow-hidden">
-          <DialogHeader class="px-5 pt-5 pb-4 border-b border-border shrink-0">
-            <DialogTitle class="flex items-center gap-2 text-sm text-destructive">
-              <div
-                class="w-7 h-7 rounded-md bg-destructive/10 text-destructive flex items-center justify-center shrink-0"
-              >
-                <AlertTriangle class="w-3.5 h-3.5" />
-              </div>
-              Reset All Tasks
-            </DialogTitle>
-            <DialogDescription class="text-xs mt-1">
-              This action cannot be undone.
-            </DialogDescription>
-          </DialogHeader>
-          <div class="px-5 py-4 space-y-4">
-            <p class="text-sm">
-              Are you sure you want to reset all tasks? All data will be permanently cleared.
-            </p>
-            <div class="flex items-center gap-3 pt-2">
-              <Checkbox
-                id="dontShowResetWarning"
-                :model-value="!projectStore.resetWarning"
-                @update:model-value="projectStore.resetWarning = !$event"
-              />
-              <Label
-                for="dontShowResetWarning"
-                class="text-xs text-muted-foreground cursor-pointer"
-              >
-                Don't show this warning again
-              </Label>
-            </div>
-          </div>
-          <div class="px-5 py-4 border-t border-border shrink-0 flex gap-2">
-            <Button
-              variant="outline"
-              class="flex-1 font-mono text-xs"
-              @click="showResetDialog = false"
-            >
-              Cancel
-            </Button>
-            <Button
-              variant="destructive"
-              class="flex-1 font-mono text-xs"
-              @click="confirmReset()"
-            >
-              Reset
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <ConfirmDialog
+        v-model="showResetDialog"
+        title="Reset All Tasks"
+        message="Are you sure you want to reset all tasks? All data will be permanently cleared."
+        confirm-label="Reset"
+        checkbox-id="dontShowResetWarning"
+        :show-checkbox="true"
+        :suppress-warning="projectStore.resetWarning"
+        @confirm="confirmReset()"
+        @update:suppress-warning="projectStore.resetWarning = !$event"
+      />
     </div>
   </div>
 </template>
@@ -1253,7 +1052,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Checkbox } from '@/components/ui/checkbox'
 import { Textarea } from '@/components/ui/textarea'
 import { ScrollArea } from '@/components/ui/scroll-area'
-import { ChevronLeft, Download, X, RotateCcw, Info, Plus, HelpCircle, Star, Target, AlertTriangle, CalendarClock, Pencil, GripVertical, Save } from 'lucide-vue-next'
+import HelpTooltip from '@/components/HelpTooltip.vue'
+import AnalysisMetricCard from '@/components/AnalysisMetricCard.vue'
+import ConfirmDialog from '@/components/ConfirmDialog.vue'
+import { ChevronLeft, Download, X, RotateCcw, Info, Plus, Star, Target, AlertTriangle, CalendarClock, Pencil, GripVertical, Save } from 'lucide-vue-next'
 import { VueDraggable } from 'vue-draggable-plus'
 import { useProjectStore } from '@/stores/projectStore'
 import { useProjectListStore } from '@/stores/projectListStore'
