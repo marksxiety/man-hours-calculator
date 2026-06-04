@@ -20,16 +20,30 @@
             >
               <ChevronLeft class="w-4 h-4" />
             </Button>
-            <h1 class="text-2xl sm:text-3xl font-bold tracking-tight truncate max-w-50 sm:max-w-none">
+            <h1
+              v-if="!isEditingTitle"
+              class="text-2xl sm:text-3xl font-bold tracking-tight truncate max-w-50 sm:max-w-none cursor-pointer hover:text-primary/80 transition-colors"
+              title="Click to rename"
+              @click="startEditingTitle()"
+            >
               {{ currentProjectName }}
             </h1>
+            <input
+              v-else
+              ref="titleInputRef"
+              v-model="titleDraft"
+              class="text-2xl sm:text-3xl font-bold tracking-tight bg-transparent border-none outline-none max-w-50 sm:max-w-none w-full"
+              @keyup.enter="confirmTitleEdit()"
+              @keyup.escape="cancelTitleEdit()"
+              @blur="confirmTitleEdit()"
+            />
           </div>
           <div class="flex items-center gap-2">
             <Button
               variant="outline"
               size="icon"
-              title="Rename"
-              @click="showSaveDialog = true"
+              title="Save"
+              @click="confirmSave()"
             >
               <Save class="w-4 h-4" />
             </Button>
@@ -602,54 +616,6 @@
         </div>
       </div>
 
-      <!-- Save Project Dialog -->
-      <Dialog v-model:open="showSaveDialog">
-        <DialogContent class="flex flex-col gap-0 p-0 max-w-md w-[calc(100vw-2rem)] rounded-xl overflow-hidden">
-          <DialogHeader class="px-5 pt-5 pb-4 border-b border-border shrink-0">
-            <DialogTitle class="flex items-center gap-2 text-sm">
-              <div class="w-7 h-7 rounded-md bg-muted text-primary flex items-center justify-center shrink-0">
-                <Save class="w-3.5 h-3.5" />
-              </div>
-              Save Project
-            </DialogTitle>
-            <DialogDescription class="text-xs mt-1">
-              {{ isNewProject ? 'Save this project with a name.' : 'Update the project name or save changes.' }}
-            </DialogDescription>
-          </DialogHeader>
-          <div class="px-5 py-4">
-            <div class="grid gap-2">
-              <Label
-                for="projectName"
-                class="text-xs font-medium"
-              >Project Name</Label>
-              <Input
-                id="projectName"
-                v-model="saveForm.name"
-                type="text"
-                placeholder="Enter project name"
-                @keyup.enter="confirmSave()"
-              />
-            </div>
-          </div>
-          <div class="px-5 py-4 border-t border-border shrink-0 flex gap-2">
-            <Button
-              variant="outline"
-              class="flex-1 font-mono text-xs"
-              @click="showSaveDialog = false"
-            >
-              Cancel
-            </Button>
-            <Button
-              class="flex-1 font-mono text-xs"
-              :disabled="!saveForm.name.trim()"
-              @click="confirmSave()"
-            >
-              Save
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-
       <InfoDialog v-model="showInfoDialog" />
 
       <!-- Edit Task Dialog (unchanged) -->
@@ -798,7 +764,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, onMounted, watch } from 'vue'
+import { ref, reactive, computed, onMounted, watch, nextTick } from 'vue'
 import { exportToExcel as exportWorkbook } from '@/utils/excel'
 import { useRouter, useRoute } from 'vue-router'
 import type { NewTask } from '@/types'
@@ -829,7 +795,6 @@ const projectListStore = useProjectListStore()
 
 const showInfoDialog = ref(false)
 const showEditDialog = ref(false)
-const showSaveDialog = ref(false)
 const editingTaskIndex = ref<number | null>(null)
 const showDeleteDialog = ref(false)
 const showResetDialog = ref(false)
@@ -837,12 +802,40 @@ const deleteTaskIndex = ref<number | null>(null)
 
 const currentProjectId = ref<string | null>(null)
 const isNewProject = ref(false)
+const isEditingTitle = ref(false)
+const titleDraft = ref('')
+const titleInputRef = ref<HTMLInputElement | null>(null)
 
 const saveForm = reactive({ name: '' })
 
 function generateDefaultName(): string {
   const count = projectListStore.projects.length + 1
   return `New Project [${count}]`
+}
+
+function startEditingTitle(): void {
+  titleDraft.value = saveForm.name
+  isEditingTitle.value = true
+  nextTick(() => {
+    const input = titleInputRef.value
+    if (input) {
+      input.focus()
+      input.select()
+    }
+  })
+}
+
+function confirmTitleEdit(): void {
+  if (!isEditingTitle.value) return
+  const trimmed = titleDraft.value.trim()
+  if (trimmed) {
+    saveForm.name = trimmed
+  }
+  isEditingTitle.value = false
+}
+
+function cancelTitleEdit(): void {
+  isEditingTitle.value = false
 }
 
 const currentProjectName = computed(() => {
@@ -986,7 +979,6 @@ function confirmSave(): void {
     projectListStore.updateProject(currentProjectId.value!, { name, state })
     toast.success('Project updated successfully!')
   }
-  showSaveDialog.value = false
 }
 
 function exportToExcel(): void {
@@ -1017,6 +1009,7 @@ onMounted(() => {
     isNewProject.value = true
     saveForm.name = generateDefaultName()
     projectStore.resetAll()
+    nextTick(() => startEditingTitle())
   }
 })
 
