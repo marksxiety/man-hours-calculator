@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import type { NewTask, Analysis, PERTTaskResult, StoredState } from '@/types'
 import { calculateExpectedTime } from '@/utils/calculateExpectedTime'
 import { calculateStandardDeviation } from '@/utils/calculateStandardDeviation'
@@ -11,6 +11,7 @@ import { calculateProbability } from '@/utils/calculateProbability'
 export const useProjectStore = defineStore('project', () => {
   const taskList = ref<PERTTaskResult[]>([])
   const targetDuration = ref<number | null>(null)
+  const targetDurationEdited = ref(false)
   const retainMilestone = ref(false)
   const deleteWarning = ref(true)
   const resetWarning = ref(true)
@@ -22,6 +23,16 @@ export const useProjectStore = defineStore('project', () => {
     const probability = taskList.value.length === 0 ? 0 : calculateProbability(zScore) * 100
     return { totalExpectedTime, totalVariance, zScore, probability }
   })
+
+  watch(
+    () => pertAnalysis.value.totalExpectedTime,
+    (totalExpected) => {
+      if (!targetDurationEdited.value && totalExpected > 0) {
+        targetDuration.value = +(totalExpected * 1.01).toFixed(2)
+      }
+    },
+    { immediate: true }
+  )
 
   const groupedTasks = computed(() => {
     const groups: { milestone: string; tasks: PERTTaskResult[] }[] = []
@@ -45,6 +56,7 @@ export const useProjectStore = defineStore('project', () => {
   function loadFromProject(state: StoredState): void {
     taskList.value = state.tasks || []
     targetDuration.value = state.targetDuration ?? null
+    targetDurationEdited.value = state.targetDurationEdited ?? false
     retainMilestone.value = state.retainMilestone ?? false
     deleteWarning.value = state.deleteWarning ?? true
     resetWarning.value = state.resetWarning ?? true
@@ -54,6 +66,7 @@ export const useProjectStore = defineStore('project', () => {
     return {
       tasks: taskList.value,
       targetDuration: targetDuration.value,
+      targetDurationEdited: targetDurationEdited.value,
       retainMilestone: retainMilestone.value,
       deleteWarning: deleteWarning.value,
       resetWarning: resetWarning.value,
@@ -117,16 +130,19 @@ export const useProjectStore = defineStore('project', () => {
   function resetAll(): void {
     taskList.value = []
     targetDuration.value = null
+    targetDurationEdited.value = false
     retainMilestone.value = false
   }
 
   function setTargetDuration(value: number | null): void {
     targetDuration.value = value
+    targetDurationEdited.value = true
   }
 
   return {
     taskList,
     targetDuration,
+    targetDurationEdited,
     retainMilestone,
     deleteWarning,
     resetWarning,
