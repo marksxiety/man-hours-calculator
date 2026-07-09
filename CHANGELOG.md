@@ -2,6 +2,26 @@
 
 ## [1.2.1] - 2026-03-30
 
+### Features
+
+- **Inline project title now auto-saves on edit confirm**
+
+  **Concern:** The project title required an explicit Save button click to persist. Clicking outside the input (blur) reverted the title to its previous value, making the inline edit feel broken — users expected Enter or blur to save immediately.
+
+  **Fix:** `confirmTitleEdit()` now calls `confirmSave()` immediately after updating the local draft name. On Enter or blur, the title is persisted to `projectListStore` right away. The standalone Save button in the header was removed since it's no longer needed.
+
+  *Old flow:* Click title → type → press Enter/blur → title reverts → must click Save button → title persists.  
+  *New flow:* Click title → type → press Enter/blur → title persists immediately.
+
+- **Desired Completion Time now defaults to Total Expected + 1%**
+
+  **Concern:** The Desired Completion Time (D) field started empty (`null`). Users had to manually enter a value before seeing the probability analysis, and there was no sensible default based on their task estimates.
+
+  **Fix:** Added a per-project `targetDurationEdited` flag stored in `StoredState`. A watch on `pertAnalysis.totalExpectedTime` auto-sets `targetDuration = totalExpected × 1.01` when the flag is `false`. Once the user manually edits the field, `targetDurationEdited` becomes `true` and auto-computation stops — the value stays exactly as the user set it.
+
+  *Old flow:* Load project → D is empty → must manually enter a value → probability shows.  
+  *New flow:* Add tasks → D auto-fills as `totalExpected × 1.01` → probability shows immediately. Edit D once → value sticks permanently.
+
 ### Refactoring
 - Extract HelpTooltip component for reusable icon-based help tooltips in Demo
 - Extract AnalysisMetricCard component for metric display with optional highlight

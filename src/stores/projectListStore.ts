@@ -49,6 +49,7 @@ export const useProjectListStore = defineStore('projectList', () => {
       state: state ?? {
         tasks: [],
         targetDuration: null,
+        targetDurationEdited: false,
         retainMilestone: false,
         deleteWarning: true,
         resetWarning: true,
