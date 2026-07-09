@@ -42,14 +42,6 @@
             <Button
               variant="outline"
               size="icon"
-              title="Save"
-              @click="confirmSave()"
-            >
-              <Save class="w-4 h-4" />
-            </Button>
-            <Button
-              variant="outline"
-              size="icon"
               title="Info"
               @click="showInfoDialog = true"
             >
@@ -782,7 +774,7 @@ import HelpTooltip from '@/components/HelpTooltip.vue'
 import AnalysisMetricCard from '@/components/AnalysisMetricCard.vue'
 import ConfirmDialog from '@/components/ConfirmDialog.vue'
 import InfoDialog from '@/components/InfoDialog.vue'
-import { ChevronLeft, Download, X, RotateCcw, Info, Plus, Star, Target, AlertTriangle, CalendarClock, Pencil, GripVertical, Save } from 'lucide-vue-next'
+import { ChevronLeft, Download, X, RotateCcw, Info, Plus, Star, Target, AlertTriangle, CalendarClock, Pencil, GripVertical } from 'lucide-vue-next'
 import { VueDraggable } from 'vue-draggable-plus'
 import { useProjectStore } from '@/stores/projectStore'
 import { useProjectListStore } from '@/stores/projectListStore'
@@ -830,6 +822,7 @@ function confirmTitleEdit(): void {
   const trimmed = titleDraft.value.trim()
   if (trimmed) {
     saveForm.name = trimmed
+    confirmSave()
   }
   isEditingTitle.value = false
 }
