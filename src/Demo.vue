@@ -125,8 +125,8 @@
                     <Label class="font-mono text-[10px] uppercase text-muted-foreground">Optimistic (O)</Label>
                     <HelpTooltip
                       :icon="Star"
-                      title="Best case scenario"
-                      description="Minimum hours if everything goes perfectly. Used as the lower bound in the PERT formula."
+                      title="Best case scenario (in hours)"
+                      description="Minimum hours if everything goes perfectly. Accepts decimals (e.g. 1.5). Should be less than or equal to Most Likely. Used as the lower bound in the PERT formula."
                     />
                   </div>
                 </div>
@@ -148,8 +148,8 @@
                   <Label class="font-mono text-[10px] uppercase text-muted-foreground">Most Likely (M)</Label>
                   <HelpTooltip
                     :icon="Target"
-                    title="Realistic estimate"
-                    description="Most probable hours. Weighted 4× in the PERT expected value."
+                    title="Realistic estimate (in hours)"
+                    description="Most probable hours to complete the task. Accepts decimals (e.g. 2.5). Should sit between Optimistic and Pessimistic. Weighted 4× in the PERT expected value."
                   />
                 </div>
                 <NumberField
@@ -170,8 +170,8 @@
                   <Label class="font-mono text-[10px] uppercase text-muted-foreground">Pessimistic (P)</Label>
                   <HelpTooltip
                     :icon="AlertTriangle"
-                    title="Worst case scenario"
-                    description="Maximum hours if problems arise. Upper bound in the PERT formula."
+                    title="Worst case scenario (in hours)"
+                    description="Maximum realistic hours if problems arise. Accepts decimals (e.g. 4). Should be greater than or equal to Most Likely — avoid extreme outliers. Upper bound in the PERT formula."
                   />
                 </div>
                 <NumberField
@@ -223,8 +223,8 @@
                 </Label>
                 <HelpTooltip
                   :icon="CalendarClock"
-                  title="Target deadline"
-                  description="Your desired completion hours. Used to calculate the Z-score and on-time probability."
+                  title="Target deadline (total project hours)"
+                  description="Your desired completion time for the whole project, in total hours (not a calendar date). Accepts decimals. Used to calculate the Z-score and on-time probability against the summed PERT estimate."
                 />
               </div>
               <NumberField
