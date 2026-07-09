@@ -210,6 +210,7 @@ describe('Project Store', () => {
         variance: 1.77,
       }],
       targetDuration: 100,
+      targetDurationEdited: true,
       retainMilestone: true,
       deleteWarning: true,
       resetWarning: true,
@@ -221,6 +222,7 @@ describe('Project Store', () => {
     expect(store.taskList).toHaveLength(1)
     expect(store.taskList[0].taskName).toBe('Test Task')
     expect(store.targetDuration).toBe(100)
+    expect(store.targetDurationEdited).toBe(true)
     expect(store.retainMilestone).toBe(true)
   })
 })
