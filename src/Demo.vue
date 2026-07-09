@@ -36,7 +36,7 @@
               @keyup.enter="confirmTitleEdit()"
               @keyup.escape="cancelTitleEdit()"
               @blur="confirmTitleEdit()"
-            />
+            >
           </div>
           <div class="flex items-center gap-2">
             <Button
