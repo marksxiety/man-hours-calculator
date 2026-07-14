@@ -1,5 +1,5 @@
 import type { PERTTaskResult, Analysis } from '@/types'
-import { buildExportFilename } from '@/utils/excel/buildFilename'
+import { buildExportFilename } from '@/utils/buildFilename'
 
 interface ExportParams {
   projectName: string
