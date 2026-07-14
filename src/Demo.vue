@@ -274,16 +274,59 @@
               Task Breakdown
             </p>
             <div class="flex gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                class="gap-1.5 font-mono text-xs"
-                :disabled="projectStore.taskList.length === 0"
-                @click="exportToExcel()"
-              >
-                <Download class="w-3.5 h-3.5" />
-                <span class="hidden xs:inline">Export</span>
-              </Button>
+              <Popover v-model:open="popoverOpen">
+                <PopoverTrigger
+                  :disabled="projectStore.taskList.length === 0 || exportingFormat !== null"
+                  as-child
+                >
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    class="gap-1.5 font-mono text-xs"
+                  >
+                    <template v-if="exportingFormat !== null">
+                      <Loader2 class="w-3.5 h-3.5 animate-spin" />
+                    </template>
+                    <template v-else>
+                      <Download class="w-3.5 h-3.5" />
+                    </template>
+                    <span class="hidden xs:inline">Export</span>
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent
+                  align="end"
+                  class="w-40 p-1"
+                >
+                  <Button
+                    variant="ghost"
+                    class="w-full justify-start gap-2 text-xs font-normal"
+                    :disabled="projectStore.targetDuration === null || exportingFormat !== null"
+                    @click="exportToExcel()"
+                  >
+                    <template v-if="exportingFormat === 'excel'">
+                      <Loader2 class="w-3.5 h-3.5 animate-spin" />
+                    </template>
+                    <template v-else>
+                      <FileSpreadsheet class="w-3.5 h-3.5" />
+                    </template>
+                    Excel
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    class="w-full justify-start gap-2 text-xs font-normal"
+                    :disabled="projectStore.targetDuration === null || exportingFormat !== null"
+                    @click="exportToJsonFile()"
+                  >
+                    <template v-if="exportingFormat === 'json'">
+                      <Loader2 class="w-3.5 h-3.5 animate-spin" />
+                    </template>
+                    <template v-else>
+                      <FileJson class="w-3.5 h-3.5" />
+                    </template>
+                    JSON
+                  </Button>
+                </PopoverContent>
+              </Popover>
               <Button
                 size="sm"
                 class="gap-1.5 font-mono text-xs"
@@ -758,6 +801,7 @@
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted, watch, nextTick } from 'vue'
 import { exportToExcel as exportWorkbook } from '@/utils/excel'
+import { exportToJson } from '@/utils/json'
 import { useRouter, useRoute } from 'vue-router'
 import type { NewTask } from '@/types'
 import { Badge } from '@/components/ui/badge'
@@ -766,6 +810,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { NumberField, NumberFieldContent, NumberFieldInput } from '@/components/ui/number-field'
+import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
 import { HoverCard, HoverCardTrigger, HoverCardContent } from '@/components/ui/hover-card'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -774,7 +819,7 @@ import HelpTooltip from '@/components/HelpTooltip.vue'
 import AnalysisMetricCard from '@/components/AnalysisMetricCard.vue'
 import ConfirmDialog from '@/components/ConfirmDialog.vue'
 import InfoDialog from '@/components/InfoDialog.vue'
-import { ChevronLeft, Download, X, RotateCcw, Info, Plus, Star, Target, AlertTriangle, CalendarClock, Pencil, GripVertical } from 'lucide-vue-next'
+import { ChevronLeft, Download, X, RotateCcw, Info, Plus, Star, Target, AlertTriangle, CalendarClock, Pencil, GripVertical, FileSpreadsheet, FileJson, Loader2 } from 'lucide-vue-next'
 import { VueDraggable } from 'vue-draggable-plus'
 import { useProjectStore } from '@/stores/projectStore'
 import { useProjectListStore } from '@/stores/projectListStore'
@@ -794,6 +839,9 @@ const deleteTaskIndex = ref<number | null>(null)
 
 const currentProjectId = ref<string | null>(null)
 const isNewProject = ref(false)
+
+const exportingFormat = ref<'excel' | 'json' | null>(null)
+const popoverOpen = ref(false)
 const isEditingTitle = ref(false)
 const titleDraft = ref('')
 const titleInputRef = ref<HTMLInputElement | null>(null)
@@ -974,17 +1022,40 @@ function confirmSave(): void {
   }
 }
 
-function exportToExcel(): void {
+async function exportToExcel(): Promise<void> {
   if (projectStore.targetDuration === null) {
     toast.error('Please add a Desired Completion Time (D) before exporting')
     return
   }
-  exportWorkbook({
-    projectName: saveForm.name.trim(),
-    tasks: projectStore.taskList,
-    analysis: projectStore.pertAnalysis,
-    targetDuration: projectStore.targetDuration,
-  })
+  exportingFormat.value = 'excel'
+  try {
+    await exportWorkbook({
+      projectName: saveForm.name.trim(),
+      tasks: projectStore.taskList,
+      analysis: projectStore.pertAnalysis,
+      targetDuration: projectStore.targetDuration,
+    })
+  } finally {
+    exportingFormat.value = null
+  }
+}
+
+async function exportToJsonFile(): Promise<void> {
+  if (projectStore.targetDuration === null) {
+    toast.error('Please add a Desired Completion Time (D) before exporting')
+    return
+  }
+  exportingFormat.value = 'json'
+  try {
+    await exportToJson({
+      projectName: saveForm.name.trim(),
+      tasks: projectStore.taskList,
+      analysis: projectStore.pertAnalysis,
+      targetDuration: projectStore.targetDuration,
+    })
+  } finally {
+    exportingFormat.value = null
+  }
 }
 
 onMounted(() => {
