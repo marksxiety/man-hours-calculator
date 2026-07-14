@@ -1,6 +1,6 @@
 import ExcelJS from 'exceljs'
 import type { PERTTaskResult, Analysis } from '@/types'
-import { buildExportFilename } from './buildFilename'
+import { buildExportFilename } from '@/utils/buildFilename'
 import { buildTaskBreakdownSheet, buildPERTAnalysisSheet } from './buildSheetContents'
 
 export interface ExportParams {
@@ -31,5 +31,5 @@ export async function exportToExcel({ projectName, tasks, analysis, targetDurati
   URL.revokeObjectURL(url)
 }
 
-export { buildExportFilename, sanitizeProjectName } from './buildFilename'
+export { buildExportFilename, sanitizeProjectName } from '@/utils/buildFilename'
 export { buildTaskBreakdownSheet, buildPERTAnalysisSheet } from './buildSheetContents'

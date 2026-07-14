@@ -13,8 +13,8 @@ function buildTimestamp(): string {
   return `${YY}-${MM}-${DD}_${HH}-${SS}`
 }
 
-export function buildExportFilename(projectName: string): string {
+export function buildExportFilename(projectName: string, extension = 'xlsx'): string {
   const sanitized = sanitizeProjectName(projectName)
   const timestamp = buildTimestamp()
-  return `${sanitized}_${timestamp}.xlsx`
+  return `${sanitized}_${timestamp}.${extension}`
 }
