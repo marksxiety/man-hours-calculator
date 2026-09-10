@@ -1,5 +1,25 @@
 # Changelog
 
+## [1.3.0] - 2026-10-09
+
+### Features
+- Add app version badge to the bottom-left of the app shell using the package version injected at build time
+- Add estimate validation (O ≤ M ≤ P) with inline warnings in the add-task form and edit-task dialog, plus store-level guards in addTask and editTask
+- Add versioned localStorage envelope with legacy bare-array migration and corrupt-safe reads for project persistence
+- Add duplicate project action to project cards and table rows
+- Add project search and sort (name, hours, task count, created, updated) with persisted sort preference to the Project Vault
+- Auto-save task and target-duration changes so a project created from a new project is persisted as soon as the first task is added
+
+### Refactoring
+- Extract task table, mobile task list, and edit-task dialog from Demo into dedicated components
+- Replace native sort select with shadcn-vue Select component
+
+### Tests
+- Add unit tests for estimate validation, persistence migration/round-trip, project list filters, and project list store (duplicate, suggest default name)
+- Add O ≤ M ≤ P guard coverage to project store tests
+
+---
+
 ## [1.2.1] - 2026-03-30
 
 ### Features
