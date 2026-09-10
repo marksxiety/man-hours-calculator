@@ -37,6 +37,8 @@
         class="h-5 w-5 animate-in zoom-in duration-300"
       />
     </Button>
+
+    <VersionBadge />
   </main>
 </template>
 
@@ -46,6 +48,7 @@ import { Button } from '@/components/ui/button'
 import { ScrollArea } from '@/components/ui/scroll-area'
 import { Sun, Moon, Monitor } from 'lucide-vue-next'
 import { useAppearance } from '@/composables/useAppearance'
+import VersionBadge from '@/components/VersionBadge.vue'
 import 'vue-sonner/style.css'
 import { Toaster } from '@/components/ui/sonner'
 
