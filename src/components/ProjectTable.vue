@@ -46,6 +46,7 @@
         @open="emit('open', $event)"
         @toggle-pin="emit('togglePin', $event)"
         @rename="emit('rename', $event)"
+        @duplicate="emit('duplicate', $event)"
         @delete="emit('delete', $event)"
       />
     </VueDraggable>
@@ -62,6 +63,7 @@
         @open="emit('open', $event)"
         @toggle-pin="emit('togglePin', $event)"
         @rename="emit('rename', $event)"
+        @duplicate="emit('duplicate', $event)"
         @delete="emit('delete', $event)"
       />
     </div>
@@ -85,6 +87,7 @@ const emit = defineEmits<{
   open: [id: string]
   togglePin: [id: string]
   rename: [project: Project]
+  duplicate: [project: Project]
   delete: [project: Project]
   reorder: [projects: Project[]]
 }>()
