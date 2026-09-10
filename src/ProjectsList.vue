@@ -57,6 +57,47 @@
       </div>
 
       <div
+        v-if="projectListStore.projects.length > 0"
+        class="flex flex-wrap items-center gap-3 mb-6"
+      >
+        <div class="relative flex-1 min-w-50">
+          <Search class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <Input
+            :model-value="filters.query.value"
+            type="text"
+            placeholder="Search projects..."
+            class="pl-9"
+            @update:model-value="handleQueryChange"
+          />
+        </div>
+        <Select
+          :model-value="filters.sortKey.value"
+          @update:model-value="handleSortChange"
+        >
+          <SelectTrigger class="w-42.5">
+            <SelectValue placeholder="Sort by" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="updated">
+              Recently updated
+            </SelectItem>
+            <SelectItem value="created">
+              Oldest
+            </SelectItem>
+            <SelectItem value="name">
+              Name (A–Z)
+            </SelectItem>
+            <SelectItem value="hours">
+              Total hours
+            </SelectItem>
+            <SelectItem value="tasks">
+              Task count
+            </SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div
         v-if="projectListStore.projects.length === 0"
         class="flex flex-col items-center justify-center py-24 text-center"
       >
@@ -104,13 +145,14 @@
                 @open="openProject"
                 @toggle-pin="handleTogglePin"
                 @rename="openRenameDialog"
+                @duplicate="handleDuplicate"
                 @delete="openDeleteDialog"
               />
             </VueDraggable>
           </div>
 
           <div
-            v-if="unpinnedProjects.length > 0"
+            v-if="filteredAndSorted.length > 0"
             class="mt-4"
           >
             <div
@@ -124,13 +166,14 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <ProjectCard
-                v-for="project in unpinnedProjects"
+                v-for="project in filteredAndSorted"
                 :key="project.id"
                 :project="project"
                 :is-pinned="false"
                 @open="openProject"
                 @toggle-pin="handleTogglePin"
                 @rename="openRenameDialog"
+                @duplicate="handleDuplicate"
                 @delete="openDeleteDialog"
               />
             </div>
@@ -151,13 +194,14 @@
               @open="openProject"
               @toggle-pin="handleTogglePin"
               @rename="openRenameDialog"
+              @duplicate="handleDuplicate"
               @delete="openDeleteDialog"
               @reorder="onPinnedReorder"
             />
           </div>
 
           <div
-            v-if="unpinnedProjects.length > 0"
+            v-if="filteredAndSorted.length > 0"
             class="mt-4"
           >
             <div
@@ -170,10 +214,11 @@
             </div>
 
             <ProjectTable
-              :projects="unpinnedProjects"
+              :projects="filteredAndSorted"
               @open="openProject"
               @toggle-pin="handleTogglePin"
               @rename="openRenameDialog"
+              @duplicate="handleDuplicate"
               @delete="openDeleteDialog"
             />
           </div>
@@ -271,17 +316,40 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
-import { ChevronLeft, Plus, FolderOpen, Pencil, AlertTriangle, LayoutGrid, Table } from 'lucide-vue-next'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { ChevronLeft, Plus, FolderOpen, Pencil, AlertTriangle, LayoutGrid, Table, Search } from 'lucide-vue-next'
 import { VueDraggable } from 'vue-draggable-plus'
 import ProjectCard from '@/components/ProjectCard.vue'
 import ProjectTable from '@/components/ProjectTable.vue'
 import { useProjectListStore } from '@/stores/projectListStore'
 import { useProjectsView } from '@/composables/useProjectsView'
+import { useProjectListFilters, type ProjectSortKey } from '@/composables/useProjectListFilters'
 import { toast } from 'vue-sonner'
 
 const router = useRouter()
 const projectListStore = useProjectListStore()
 const { view, setView } = useProjectsView()
+
+const unpinnedProjects = computed(() =>
+  [...projectListStore.projects]
+    .filter(p => !p.pinned)
+    .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
+)
+
+const filters = useProjectListFilters(unpinnedProjects)
+const filteredAndSorted = filters.filteredAndSorted
+
+function handleQueryChange(value: unknown): void {
+  if (typeof value === 'string') {
+    filters.setQuery(value)
+  }
+}
+
+function handleSortChange(value: unknown): void {
+  if (typeof value === 'string') {
+    filters.setSortKey(value as ProjectSortKey)
+  }
+}
 
 const showRenameDialog = ref(false)
 const showDeleteDialog = ref(false)
@@ -292,12 +360,6 @@ const renameForm = ref({ name: '' })
 
 const pinnedProjects = computed(() =>
   [...projectListStore.projects].filter(p => p.pinned)
-)
-
-const unpinnedProjects = computed(() =>
-  [...projectListStore.projects]
-    .filter(p => !p.pinned)
-    .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
 )
 
 function onPinnedReorder(newOrder: Project[]): void {
@@ -318,6 +380,13 @@ function goToHome(): void {
 function createNewProject(): void {
   const id = crypto.randomUUID()
   router.push(`/demo/${id}`)
+}
+
+function handleDuplicate(project: Project): void {
+  const newId = projectListStore.duplicateProject(project.id)
+  if (newId) {
+    toast.success('Project duplicated successfully!')
+  }
 }
 
 function openProject(id: string): void {
