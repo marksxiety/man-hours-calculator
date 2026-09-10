@@ -44,7 +44,7 @@
       </template>
     </div>
 
-    <div class="flex items-center justify-center gap-1 shrink-0 w-16">
+    <div class="flex items-center justify-center gap-2 shrink-0 w-16">
       <button
         class="h-7 w-7 inline-flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
         :title="isPinned ? 'Unpin' : 'Pin'"
@@ -67,6 +67,13 @@
         <Pencil class="w-3.5 h-3.5" />
       </button>
       <button
+        class="h-7 w-7 inline-flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+        title="Duplicate"
+        @click.stop="emit('duplicate', project)"
+      >
+        <Copy class="w-3.5 h-3.5" />
+      </button>
+      <button
         class="h-7 w-7 inline-flex items-center justify-center rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
         title="Delete"
         @click.stop="emit('delete', project)"
@@ -80,7 +87,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import type { Project } from '@/types'
-import { Pencil, X, Pin, PinOff, GripVertical } from 'lucide-vue-next'
+import { Pencil, X, Pin, PinOff, GripVertical, Copy } from 'lucide-vue-next'
 import { useProjectStats } from '@/composables/useProjectStats'
 
 const props = withDefaults(defineProps<{
@@ -95,6 +102,7 @@ const emit = defineEmits<{
   open: [id: string]
   togglePin: [id: string]
   rename: [project: Project]
+  duplicate: [project: Project]
   delete: [project: Project]
 }>()
 
