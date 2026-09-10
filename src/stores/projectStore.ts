@@ -7,6 +7,7 @@ import { calculateVariance } from '@/utils/calculateVariance'
 import { calculateTotalExpectedTime, calculateTotalVariance } from '@/utils/calculateTotals'
 import { calculateZScore } from '@/utils/calculateZScore'
 import { calculateProbability } from '@/utils/calculateProbability'
+import { validateEstimateOrder } from '@/utils/validateEstimates'
 
 export const useProjectStore = defineStore('project', () => {
   const taskList = ref<PERTTaskResult[]>([])
@@ -77,6 +78,9 @@ export const useProjectStore = defineStore('project', () => {
     if (newTaskForm.optimistic === null || newTaskForm.mostLikely === null || newTaskForm.pessimistic === null) {
       return false
     }
+    if (!validateEstimateOrder(newTaskForm.optimistic, newTaskForm.mostLikely, newTaskForm.pessimistic).valid) {
+      return false
+    }
 
     const expectedTime = calculateExpectedTime(newTaskForm)
     const standardDeviation = calculateStandardDeviation(newTaskForm)
@@ -113,13 +117,20 @@ export const useProjectStore = defineStore('project', () => {
 
   function editTask(index: number, updates: Partial<Pick<PERTTaskResult, 'taskName' | 'milestone' | 'description' | 'optimistic' | 'mostLikely' | 'pessimistic'>>): void {
     const task = taskList.value[index]
-    if (task) {
-      Object.assign(task, updates)
-      if (task.optimistic !== null && task.mostLikely !== null && task.pessimistic !== null) {
-        task.expectedTime = calculateExpectedTime(task)
-        task.standardDeviation = calculateStandardDeviation(task)
-        task.variance = calculateVariance(task.standardDeviation)
-      }
+    if (!task) return
+
+    const optimistic = updates.optimistic ?? task.optimistic
+    const mostLikely = updates.mostLikely ?? task.mostLikely
+    const pessimistic = updates.pessimistic ?? task.pessimistic
+    if (optimistic !== null && mostLikely !== null && pessimistic !== null && !validateEstimateOrder(optimistic, mostLikely, pessimistic).valid) {
+      return
+    }
+
+    Object.assign(task, updates)
+    if (task.optimistic !== null && task.mostLikely !== null && task.pessimistic !== null) {
+      task.expectedTime = calculateExpectedTime(task)
+      task.standardDeviation = calculateStandardDeviation(task)
+      task.variance = calculateVariance(task.standardDeviation)
     }
   }
 
