@@ -1,29 +1,17 @@
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { ref, toRaw } from 'vue'
 import type { Project, StoredState } from '@/types'
-
-const STORAGE_KEY = 'man-hours-projects'
+import { readProjects, writeProjects } from '@/utils/persistence'
 
 export const useProjectListStore = defineStore('projectList', () => {
   const projects = ref<Project[]>([])
 
   function loadProjects(): void {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY)
-      if (stored) {
-        projects.value = JSON.parse(stored)
-      }
-    } catch (error) {
-      console.error('Failed to load projects from localStorage:', error)
-    }
+    projects.value = readProjects() ?? []
   }
 
   function saveProjects(): void {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(projects.value))
-    } catch (error) {
-      console.error('Failed to save projects to localStorage:', error)
-    }
+    writeProjects(projects.value)
   }
 
   function getProjectById(id: string): Project | undefined {
@@ -37,6 +25,31 @@ export const useProjectListStore = defineStore('projectList', () => {
   function createProject(name: string, state?: StoredState): string {
     const id = crypto.randomUUID()
     return createProjectWithId(id, name, state)
+  }
+
+  function suggestDefaultName(): string {
+    const names = new Set(projects.value.map(p => p.name))
+    let n = 1
+    while (names.has(`New Project [${n}]`)) n++
+    return `New Project [${n}]`
+  }
+
+  function duplicateProject(id: string): string | null {
+    const project = projects.value.find(p => p.id === id)
+    if (!project) return null
+
+    const now = new Date().toISOString()
+    const copy: Project = {
+      id: crypto.randomUUID(),
+      name: `${project.name} (copy)`,
+      createdAt: now,
+      updatedAt: now,
+      state: structuredClone(toRaw(project.state)),
+      pinned: false,
+    }
+    projects.value.push(copy)
+    saveProjects()
+    return copy.id
   }
 
   function createProjectWithId(id: string, name: string, state?: StoredState): string {
@@ -111,6 +124,8 @@ export const useProjectListStore = defineStore('projectList', () => {
     getProjectById,
     getProjectCount,
     createProject,
+    suggestDefaultName,
+    duplicateProject,
     updateProject,
     togglePin,
     reorderPinnedProjects,
