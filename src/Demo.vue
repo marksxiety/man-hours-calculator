@@ -22,7 +22,7 @@
             </Button>
             <h1
               v-if="!isEditingTitle"
-              class="text-2xl sm:text-3xl font-bold tracking-tight truncate max-w-50 sm:max-w-none cursor-pointer hover:text-primary/80 transition-colors"
+              class="text-2xl sm:text-3xl font-bold tracking-tight truncate max-w-50 sm:max-w-2xl cursor-pointer hover:text-primary/80 transition-colors"
               title="Click to rename"
               @click="startEditingTitle()"
             >
@@ -188,8 +188,15 @@
               </div>
             </div>
 
+            <p
+              v-if="estimateValidation.issues.length > 0"
+              class="text-[11px] text-destructive"
+            >
+              {{ estimateValidation.issues.map(estimateIssueMessage).join(' ') }}
+            </p>
+
             <Button
-              :disabled="!newTaskForm.taskName.trim()"
+              :disabled="!canAdd"
               class="w-full font-mono gap-2"
               @click="addTask()"
             >
@@ -349,302 +356,23 @@
 
             <template v-else>
               <div class="hidden md:block">
-                <div
-                  class="flex items-center gap-3 px-4 py-2.5 bg-muted/50 border-b border-border text-xs font-semibold text-muted-foreground"
-                >
-                  <div class="w-4 shrink-0" />
-                  <div class="w-28 shrink-0">
-                    Milestone
-                  </div>
-                  <div class="flex-1 min-w-0">
-                    Task / Description
-                  </div>
-                  <div class="flex items-center gap-2 shrink-0">
-                    <div class="w-14 text-center">
-                      O
-                    </div>
-                    <div class="w-14 text-center">
-                      M
-                    </div>
-                    <div class="w-14 text-center">
-                      P
-                    </div>
-                  </div>
-                  <div class="flex items-center gap-2 shrink-0 tabular-nums">
-                    <div class="w-16 text-center">
-                      Expected
-                    </div>
-                    <div class="w-14 text-center">
-                      Std Dev
-                    </div>
-                    <div class="w-14 text-center">
-                      Variance
-                    </div>
-                  </div>
-                  <div class="w-16 shrink-0 text-center">
-                    Actions
-                  </div>
-                </div>
-
-                <VueDraggable
-                  v-model="projectStore.taskList"
-                  class="divide-y divide-border/50"
-                  handle=".drag-handle"
-                  chosen-class="task-chosen"
-                  drag-class="task-dragging"
-                  ghost-class="task-ghost"
-                >
-                  <div
-                    v-for="(task, index) in projectStore.taskList"
-                    :key="task.taskName + index"
-                    class="group flex items-center gap-3 px-4 py-3 transition-all duration-200 hover:bg-muted/30"
-                  >
-                    <GripVertical
-                      class="w-4 h-4 text-muted-foreground cursor-grab active:cursor-grabbing shrink-0 drag-handle"
-                    />
-
-                    <div class="w-28 shrink-0">
-                      <p class="text-xs font-medium uppercase truncate">
-                        {{ task.milestone || '—' }}
-                      </p>
-                    </div>
-
-                    <div class="flex-1 min-w-0">
-                      <HoverCard
-                        :open-delay="100"
-                        :close-delay="50"
-                      >
-                        <HoverCardTrigger as-child>
-                          <div class="cursor-pointer space-y-0.5">
-                            <p class="text-sm font-medium truncate leading-tight">
-                              {{ task.taskName }}
-                            </p>
-                            <p class="text-xs text-muted-foreground truncate leading-snug">
-                              {{ task.description || 'No description' }}
-                            </p>
-                          </div>
-                        </HoverCardTrigger>
-                        <HoverCardContent
-                          class="w-72 max-w-72 p-4"
-                          side="top"
-                          align="start"
-                        >
-                          <div class="space-y-2">
-                            <p class="text-sm font-semibold leading-tight">
-                              {{ task.taskName }}
-                            </p>
-                            <Separator />
-                            <p class="text-xs text-muted-foreground leading-relaxed whitespace-pre-wrap">
-                              {{ task.description || 'No description provided' }}
-                            </p>
-                          </div>
-                        </HoverCardContent>
-                      </HoverCard>
-                    </div>
-
-                    <div class="flex items-center gap-2 shrink-0">
-                      <div class="w-14">
-                        <NumberField
-                          :model-value="task.optimistic"
-                          :min="0"
-                          :step="0.1"
-                          :format-options="task.optimistic !== null ? { minimumFractionDigits: 1 } : undefined"
-                          @update:model-value="projectStore.updateTask(index, 'optimistic', $event)"
-                        >
-                          <NumberFieldContent>
-                            <NumberFieldInput class="bg-background text-center tabular-nums h-7 text-xs px-1" />
-                          </NumberFieldContent>
-                        </NumberField>
-                      </div>
-                      <div class="w-14">
-                        <NumberField
-                          :model-value="task.mostLikely"
-                          :min="0"
-                          :step="0.1"
-                          :format-options="task.mostLikely !== null ? { minimumFractionDigits: 1 } : undefined"
-                          @update:model-value="projectStore.updateTask(index, 'mostLikely', $event)"
-                        >
-                          <NumberFieldContent>
-                            <NumberFieldInput class="bg-background text-center tabular-nums h-7 text-xs px-1" />
-                          </NumberFieldContent>
-                        </NumberField>
-                      </div>
-                      <div class="w-14">
-                        <NumberField
-                          :model-value="task.pessimistic"
-                          :min="0"
-                          :step="0.1"
-                          :format-options="task.pessimistic !== null ? { minimumFractionDigits: 1 } : undefined"
-                          @update:model-value="projectStore.updateTask(index, 'pessimistic', $event)"
-                        >
-                          <NumberFieldContent>
-                            <NumberFieldInput class="bg-background text-center tabular-nums h-7 text-xs px-1" />
-                          </NumberFieldContent>
-                        </NumberField>
-                      </div>
-                    </div>
-
-                    <div class="flex items-center gap-2 shrink-0 text-xs tabular-nums">
-                      <div class="w-16 text-center font-bold text-primary">
-                        {{ task.expectedTime.toFixed(2) }}
-                      </div>
-                      <div class="w-14 text-center">
-                        {{ task.standardDeviation.toFixed(3) }}
-                      </div>
-                      <div class="w-14 text-center">
-                        {{ task.variance.toFixed(3) }}
-                      </div>
-                    </div>
-
-                    <div class="flex items-center justify-center gap-1 shrink-0 w-16">
-                      <button
-                        class="h-7 w-7 inline-flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-                        @click="openEditDialog(index)"
-                      >
-                        <Pencil class="w-3.5 h-3.5" />
-                      </button>
-                      <button
-                        class="h-7 w-7 inline-flex items-center justify-center rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
-                        @click="openDeleteDialog(index)"
-                      >
-                        <X class="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                  </div>
-                </VueDraggable>
+                <TaskTable
+                  :tasks="projectStore.taskList"
+                  @update="handleTaskUpdate"
+                  @edit="openEditDialog"
+                  @delete="openDeleteDialog"
+                  @reorder="handleReorderTasks"
+                />
               </div>
 
               <div class="md:hidden">
-                <VueDraggable
-                  v-model="projectStore.taskList"
-                  class="divide-y divide-border/50"
-                  handle=".drag-handle-mobile"
-                  chosen-class="task-chosen"
-                  drag-class="task-dragging"
-                  ghost-class="task-ghost"
-                >
-                  <div
-                    v-for="(task, index) in projectStore.taskList"
-                    :key="task.taskName + index + 'mobile'"
-                    class="px-4 py-3.5 transition-all duration-200 hover:bg-muted/20 active:bg-muted/30"
-                  >
-                    <div class="flex items-start gap-2.5">
-                      <GripVertical
-                        class="w-4 h-4 mt-0.5 text-muted-foreground/60 cursor-grab active:cursor-grabbing shrink-0 drag-handle-mobile"
-                      />
-                      <div class="flex-1 min-w-0">
-                        <div class="space-y-1.5 pb-3">
-                          <div class="flex items-center gap-2 flex-wrap">
-                            <span
-                              v-if="task.milestone"
-                              class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-mono font-semibold uppercase tracking-wider bg-muted text-muted-foreground border border-border/60"
-                            >
-                              {{ task.milestone }}
-                            </span>
-                            <p class="text-sm font-semibold leading-tight truncate">
-                              {{ task.taskName }}
-                            </p>
-                          </div>
-                          <p
-                            v-if="task.description"
-                            class="text-xs text-muted-foreground leading-snug line-clamp-2"
-                          >
-                            {{ task.description }}
-                          </p>
-                        </div>
-
-                        <Separator class="mb-3" />
-
-                        <div class="grid grid-cols-3 gap-2 pb-3">
-                          <div class="flex flex-col gap-0.5">
-                            <span
-                              class="font-mono text-[10px] uppercase text-muted-foreground font-semibold"
-                            >Optimistic</span>
-                            <NumberField
-                              :model-value="task.optimistic"
-                              :min="0"
-                              :step="0.1"
-                              :format-options="task.optimistic !== null ? { minimumFractionDigits: 1 } : undefined"
-                              @update:model-value="projectStore.updateTask(index, 'optimistic', $event)"
-                            >
-                              <NumberFieldContent>
-                                <NumberFieldInput class="bg-background text-center tabular-nums text-xs h-7" />
-                              </NumberFieldContent>
-                            </NumberField>
-                          </div>
-                          <div class="flex flex-col gap-0.5">
-                            <span class="font-mono text-[10px] uppercase text-muted-foreground font-semibold">Most
-                              Likely</span>
-                            <NumberField
-                              :model-value="task.mostLikely"
-                              :min="0"
-                              :step="0.1"
-                              :format-options="task.mostLikely !== null ? { minimumFractionDigits: 1 } : undefined"
-                              @update:model-value="projectStore.updateTask(index, 'mostLikely', $event)"
-                            >
-                              <NumberFieldContent>
-                                <NumberFieldInput class="bg-background text-center tabular-nums text-xs h-7" />
-                              </NumberFieldContent>
-                            </NumberField>
-                          </div>
-                          <div class="flex flex-col gap-0.5">
-                            <span
-                              class="font-mono text-[10px] uppercase text-muted-foreground font-semibold"
-                            >Pessimistic</span>
-                            <NumberField
-                              :model-value="task.pessimistic"
-                              :min="0"
-                              :step="0.1"
-                              :format-options="task.pessimistic !== null ? { minimumFractionDigits: 1 } : undefined"
-                              @update:model-value="projectStore.updateTask(index, 'pessimistic', $event)"
-                            >
-                              <NumberFieldContent>
-                                <NumberFieldInput class="bg-background text-center tabular-nums text-xs h-7" />
-                              </NumberFieldContent>
-                            </NumberField>
-                          </div>
-                        </div>
-
-                        <Separator class="mb-3" />
-
-                        <div class="flex items-center gap-3">
-                          <div class="flex items-baseline gap-1">
-                            <span class="font-mono text-[9px] uppercase text-muted-foreground">Expected</span>
-                            <span class="text-sm font-black tabular-nums text-primary">{{ task.expectedTime.toFixed(2)
-                            }}</span>
-                            <span class="text-[10px] text-muted-foreground">hrs</span>
-                          </div>
-                          <div class="h-3 w-px bg-border/60" />
-                          <div class="flex items-baseline gap-1">
-                            <span class="font-mono text-[9px] uppercase text-muted-foreground">Variance</span>
-                            <span class="text-xs tabular-nums text-muted-foreground">{{ task.variance.toFixed(3)
-                            }}</span>
-                          </div>
-                          <div class="h-3 w-px bg-border/60" />
-                          <div class="flex items-baseline gap-1">
-                            <span class="font-mono text-[9px] uppercase text-muted-foreground">Std Dev</span>
-                            <span class="text-xs tabular-nums text-muted-foreground">{{
-                              task.standardDeviation.toFixed(3) }}</span>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="flex flex-col gap-1 shrink-0">
-                        <button
-                          class="h-7 w-7 inline-flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-                          @click="openEditDialog(index)"
-                        >
-                          <Pencil class="w-3.5 h-3.5" />
-                        </button>
-                        <button
-                          class="h-7 w-7 inline-flex items-center justify-center rounded-md text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
-                          @click="openDeleteDialog(index)"
-                        >
-                          <X class="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </VueDraggable>
+                <TaskListMobile
+                  :tasks="projectStore.taskList"
+                  @update="handleTaskUpdate"
+                  @edit="openEditDialog"
+                  @delete="openDeleteDialog"
+                  @reorder="handleReorderTasks"
+                />
               </div>
             </template>
           </div>
@@ -653,123 +381,11 @@
 
       <InfoDialog v-model="showInfoDialog" />
 
-      <!-- Edit Task Dialog (unchanged) -->
-      <Dialog v-model:open="showEditDialog">
-        <DialogContent class="flex flex-col gap-0 p-0 max-w-md w-[calc(100vw-2rem)] rounded-xl overflow-hidden">
-          <DialogHeader class="px-5 pt-5 pb-4 border-b border-border shrink-0">
-            <DialogTitle class="flex items-center gap-2 text-sm">
-              <div class="w-7 h-7 rounded-md bg-muted text-primary flex items-center justify-center shrink-0">
-                <Pencil class="w-3.5 h-3.5" />
-              </div>
-              Edit Task
-            </DialogTitle>
-            <DialogDescription class="text-xs mt-1">
-              Update task details. You can edit estimates directly in the table.
-            </DialogDescription>
-          </DialogHeader>
-          <div class="px-5 py-4 space-y-4">
-            <div class="grid gap-2">
-              <Label
-                for="edit-milestone"
-                class="text-xs font-medium"
-              >Milestone</Label>
-              <Input
-                id="edit-milestone"
-                v-model="editTaskForm.milestone"
-                type="text"
-                placeholder="e.g. Planning"
-              />
-            </div>
-            <div class="grid gap-2">
-              <Label
-                for="edit-taskName"
-                class="text-xs font-medium"
-              >Task Name</Label>
-              <Input
-                id="edit-taskName"
-                v-model="editTaskForm.taskName"
-                type="text"
-                placeholder="e.g. API Integration"
-              />
-            </div>
-            <div class="grid gap-2">
-              <Label
-                for="edit-description"
-                class="text-xs font-medium"
-              >Description (Optional)</Label>
-              <Textarea
-                id="edit-description"
-                v-model="editTaskForm.description"
-                placeholder="Add additional details about this task..."
-                class="resize-none min-h-16 max-h-24"
-              />
-            </div>
-            <Separator />
-            <div class="space-y-3">
-              <p class="text-xs font-medium">
-                Estimates
-              </p>
-              <div class="grid grid-cols-3 gap-3">
-                <div class="grid gap-2">
-                  <Label class="font-mono text-[10px] uppercase text-muted-foreground">Optimistic (O)</Label>
-                  <NumberField
-                    v-model="editTaskForm.optimistic"
-                    :min="0"
-                    :step="0.1"
-                    :format-options="editTaskForm.optimistic !== null ? { minimumFractionDigits: 1 } : undefined"
-                  >
-                    <NumberFieldContent>
-                      <NumberFieldInput />
-                    </NumberFieldContent>
-                  </NumberField>
-                </div>
-                <div class="grid gap-2">
-                  <Label class="font-mono text-[10px] uppercase text-muted-foreground">Most Likely (M)</Label>
-                  <NumberField
-                    v-model="editTaskForm.mostLikely"
-                    :min="0"
-                    :step="0.1"
-                    :format-options="editTaskForm.mostLikely !== null ? { minimumFractionDigits: 1 } : undefined"
-                  >
-                    <NumberFieldContent>
-                      <NumberFieldInput />
-                    </NumberFieldContent>
-                  </NumberField>
-                </div>
-                <div class="grid gap-2">
-                  <Label class="font-mono text-[10px] uppercase text-muted-foreground">Pessimistic (P)</Label>
-                  <NumberField
-                    v-model="editTaskForm.pessimistic"
-                    :min="0"
-                    :step="0.1"
-                    :format-options="editTaskForm.pessimistic !== null ? { minimumFractionDigits: 1 } : undefined"
-                  >
-                    <NumberFieldContent>
-                      <NumberFieldInput />
-                    </NumberFieldContent>
-                  </NumberField>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="px-5 py-4 border-t border-border shrink-0 flex gap-2">
-            <Button
-              variant="outline"
-              class="flex-1 font-mono text-xs"
-              @click="showEditDialog = false"
-            >
-              Cancel
-            </Button>
-            <Button
-              class="flex-1 font-mono text-xs"
-              :disabled="!editTaskForm.taskName.trim() || editTaskForm.optimistic === null || editTaskForm.mostLikely === null || editTaskForm.pessimistic === null"
-              @click="saveEditTask()"
-            >
-              Save Changes
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+      <EditTaskDialog
+        v-model:open="showEditDialog"
+        :initial-task="editingTaskIndex !== null ? projectStore.taskList[editingTaskIndex] : null"
+        @save="handleEditSave"
+      />
 
       <ConfirmDialog
         v-model="showDeleteDialog"
@@ -803,7 +419,7 @@ import { ref, reactive, computed, onMounted, watch, nextTick } from 'vue'
 import { exportToExcel as exportWorkbook } from '@/utils/excel'
 import { exportToJson } from '@/utils/json'
 import { useRouter, useRoute } from 'vue-router'
-import type { NewTask } from '@/types'
+import type { NewTask, PERTTaskResult } from '@/types'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -811,18 +427,19 @@ import { Label } from '@/components/ui/label'
 import { Separator } from '@/components/ui/separator'
 import { NumberField, NumberFieldContent, NumberFieldInput } from '@/components/ui/number-field'
 import { Popover, PopoverTrigger, PopoverContent } from '@/components/ui/popover'
-import { HoverCard, HoverCardTrigger, HoverCardContent } from '@/components/ui/hover-card'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Textarea } from '@/components/ui/textarea'
 import HelpTooltip from '@/components/HelpTooltip.vue'
 import AnalysisMetricCard from '@/components/AnalysisMetricCard.vue'
 import ConfirmDialog from '@/components/ConfirmDialog.vue'
 import InfoDialog from '@/components/InfoDialog.vue'
-import { ChevronLeft, Download, X, RotateCcw, Info, Plus, Star, Target, AlertTriangle, CalendarClock, Pencil, GripVertical, FileSpreadsheet, FileJson, Loader2 } from 'lucide-vue-next'
-import { VueDraggable } from 'vue-draggable-plus'
+import TaskTable from '@/components/TaskTable.vue'
+import TaskListMobile from '@/components/TaskListMobile.vue'
+import EditTaskDialog from '@/components/EditTaskDialog.vue'
+import { ChevronLeft, Download, RotateCcw, Info, Plus, Star, Target, AlertTriangle, CalendarClock, FileSpreadsheet, FileJson, Loader2 } from 'lucide-vue-next'
 import { useProjectStore } from '@/stores/projectStore'
 import { useProjectListStore } from '@/stores/projectListStore'
+import { validateEstimateOrder, estimateIssueMessage } from '@/utils/validateEstimates'
 import { toast } from 'vue-sonner'
 
 const router = useRouter()
@@ -849,8 +466,37 @@ const titleInputRef = ref<HTMLInputElement | null>(null)
 const saveForm = reactive({ name: '' })
 
 function generateDefaultName(): string {
-  const count = projectListStore.projects.length + 1
-  return `New Project [${count}]`
+  return projectListStore.suggestDefaultName()
+}
+
+const newTaskForm = reactive<NewTask>({
+  taskName: '',
+  milestone: '',
+  description: '',
+  optimistic: null,
+  mostLikely: null,
+  pessimistic: null,
+})
+
+const estimateValidation = computed(() =>
+  validateEstimateOrder(newTaskForm.optimistic, newTaskForm.mostLikely, newTaskForm.pessimistic),
+)
+
+const canAdd = computed(() =>
+  newTaskForm.taskName.trim().length > 0 &&
+  newTaskForm.optimistic !== null &&
+  newTaskForm.mostLikely !== null &&
+  newTaskForm.pessimistic !== null &&
+  estimateValidation.value.valid,
+)
+
+function resetTaskForm(): void {
+  newTaskForm.taskName = ''
+  newTaskForm.description = ''
+  if (!projectStore.retainMilestone) newTaskForm.milestone = ''
+  newTaskForm.optimistic = null
+  newTaskForm.mostLikely = null
+  newTaskForm.pessimistic = null
 }
 
 function startEditingTitle(): void {
@@ -868,7 +514,7 @@ function startEditingTitle(): void {
 function confirmTitleEdit(): void {
   if (!isEditingTitle.value) return
   const trimmed = titleDraft.value.trim()
-  if (trimmed) {
+  if (trimmed && trimmed !== saveForm.name) {
     saveForm.name = trimmed
     confirmSave()
   }
@@ -885,79 +531,50 @@ const currentProjectName = computed(() => {
   return project?.name ?? 'Man Hours Estimator'
 })
 
-const editTaskForm = reactive({
-  taskName: '',
-  milestone: '',
-  description: '',
-  optimistic: null as number | null,
-  mostLikely: null as number | null,
-  pessimistic: null as number | null,
-})
+function addTask(): void {
+  if (!canAdd.value) {
+    const missing: string[] = []
+    if (newTaskForm.optimistic === null) missing.push('Optimistic (O)')
+    if (newTaskForm.mostLikely === null) missing.push('Most Likely (M)')
+    if (newTaskForm.pessimistic === null) missing.push('Pessimistic (P)')
+    if (missing.length > 0) {
+      toast.error(`Please fill in all fields: ${missing.join(', ')}`)
+    } else {
+      toast.error(estimateValidation.value.issues.map(estimateIssueMessage).join(' '))
+    }
+    return
+  }
+  projectStore.addTask(newTaskForm)
+  resetTaskForm()
+  toast.success('Task added successfully!')
+}
 
-const newTaskForm = reactive<NewTask>({
-  taskName: '',
-  milestone: '',
-  description: '',
-  optimistic: null,
-  mostLikely: null,
-  pessimistic: null,
-})
+function handleTaskUpdate(index: number, field: 'optimistic' | 'mostLikely' | 'pessimistic', value: number | null): void {
+  projectStore.updateTask(index, field, value)
+}
 
-function resetTaskForm(): void {
-  newTaskForm.taskName = ''
-  newTaskForm.description = ''
-  if (!projectStore.retainMilestone) newTaskForm.milestone = ''
-  newTaskForm.optimistic = null
-  newTaskForm.mostLikely = null
-  newTaskForm.pessimistic = null
+function handleReorderTasks(newOrder: PERTTaskResult[]): void {
+  projectStore.taskList.splice(0, projectStore.taskList.length, ...newOrder)
 }
 
 function openEditDialog(index: number): void {
-  const task = projectStore.taskList[index]
-  if (task) {
-    editingTaskIndex.value = index
-    editTaskForm.taskName = task.taskName
-    editTaskForm.milestone = task.milestone
-    editTaskForm.description = task.description
-    editTaskForm.optimistic = task.optimistic
-    editTaskForm.mostLikely = task.mostLikely
-    editTaskForm.pessimistic = task.pessimistic
-    showEditDialog.value = true
-  }
+  editingTaskIndex.value = index
+  showEditDialog.value = true
 }
 
-function saveEditTask(): void {
-  if (!editTaskForm.taskName.trim()) { toast.error('Task name is required'); return }
-  if (!editTaskForm.milestone.trim()) { toast.error('Milestone is required'); return }
-  if (editTaskForm.optimistic == null || editTaskForm.mostLikely == null || editTaskForm.pessimistic == null) {
-    const missing = []
-    if (editTaskForm.optimistic == null) missing.push('Optimistic (O)')
-    if (editTaskForm.mostLikely == null) missing.push('Most Likely (M)')
-    if (editTaskForm.pessimistic == null) missing.push('Pessimistic (P)')
-    toast.error(`Please fill in: ${missing.join(', ')}`)
-    return
-  }
+function handleEditSave(updates: {
+  taskName: string
+  milestone: string
+  description: string
+  optimistic: number | null
+  mostLikely: number | null
+  pessimistic: number | null
+}): void {
   if (editingTaskIndex.value !== null) {
-    projectStore.editTask(editingTaskIndex.value, {
-      taskName: editTaskForm.taskName,
-      milestone: editTaskForm.milestone,
-      description: editTaskForm.description,
-      optimistic: editTaskForm.optimistic,
-      mostLikely: editTaskForm.mostLikely,
-      pessimistic: editTaskForm.pessimistic,
-    })
+    projectStore.editTask(editingTaskIndex.value, updates)
     showEditDialog.value = false
     editingTaskIndex.value = null
     toast.success('Task updated successfully!')
-  }
-}
-
-function confirmDeleteTask(): void {
-  if (deleteTaskIndex.value !== null) {
-    projectStore.removeTask(deleteTaskIndex.value)
-    showDeleteDialog.value = false
-    deleteTaskIndex.value = null
-    toast.success('Task deleted successfully!')
   }
 }
 
@@ -967,6 +584,15 @@ function openDeleteDialog(index: number): void {
     showDeleteDialog.value = true
   } else {
     projectStore.removeTask(index)
+    toast.success('Task deleted successfully!')
+  }
+}
+
+function confirmDeleteTask(): void {
+  if (deleteTaskIndex.value !== null) {
+    projectStore.removeTask(deleteTaskIndex.value)
+    showDeleteDialog.value = false
+    deleteTaskIndex.value = null
     toast.success('Task deleted successfully!')
   }
 }
@@ -984,19 +610,6 @@ function confirmReset(): void {
   projectStore.resetAll()
   showResetDialog.value = false
   toast.success('All tasks reset successfully!')
-}
-
-function addTask(): void {
-  if (!projectStore.addTask(newTaskForm)) {
-    const missing = []
-    if (newTaskForm.optimistic === null) missing.push('Optimistic (O)')
-    if (newTaskForm.mostLikely === null) missing.push('Most Likely (M)')
-    if (newTaskForm.pessimistic === null) missing.push('Pessimistic (P)')
-    toast.error(`Please fill in all fields: ${missing.join(', ')}`)
-    return
-  }
-  resetTaskForm()
-  toast.success('Task added successfully!')
 }
 
 function goToProjects(): void {
@@ -1116,17 +729,6 @@ watch(() => projectStore.targetDuration, () => {
 .task-ghost {
   opacity: 0.3 !important;
   background-color: transparent !important;
-}
-
-@media (max-width: 767px) {
-  .drag-handle-mobile {
-    min-width: 1.5rem;
-    min-height: 2.5rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    touch-action: none;
-  }
 }
 
 @media (min-width: 400px) {
