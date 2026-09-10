@@ -22,14 +22,37 @@
               Project Vault
             </h1>
           </div>
-          <Button
-            v-if="projectListStore.projects.length > 0"
-            class="gap-2 font-mono"
-            @click="createNewProject()"
-          >
-            <Plus class="w-4 h-4" />
-            New Project
-          </Button>
+          <div class="flex items-center gap-2">
+            <div
+              v-if="projectListStore.projects.length > 0"
+              class="flex items-center gap-1 p-1 rounded-lg border border-border bg-muted/40"
+            >
+              <button
+                class="h-7 w-7 inline-flex items-center justify-center rounded-md transition-colors"
+                :class="view === 'grid' ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'"
+                title="Grid view"
+                @click="setView('grid')"
+              >
+                <LayoutGrid class="w-3.5 h-3.5" />
+              </button>
+              <button
+                class="h-7 w-7 inline-flex items-center justify-center rounded-md transition-colors"
+                :class="view === 'table' ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'"
+                title="Table view"
+                @click="setView('table')"
+              >
+                <Table class="w-3.5 h-3.5" />
+              </button>
+            </div>
+            <Button
+              v-if="projectListStore.projects.length > 0"
+              class="gap-2 font-mono"
+              @click="createNewProject()"
+            >
+              <Plus class="w-4 h-4" />
+              New Project
+            </Button>
+          </div>
         </div>
       </div>
 
@@ -56,61 +79,105 @@
       </div>
 
       <template v-else>
-        <div v-if="pinnedProjects.length > 0">
-          <div class="flex items-center justify-between mb-4">
-            <p class="font-mono text-xs tracking-widest uppercase text-muted-foreground">
-              Pinned
-            </p>
+        <template v-if="view === 'grid'">
+          <div v-if="pinnedProjects.length > 0">
+            <div class="flex items-center justify-between mb-4">
+              <p class="font-mono text-xs tracking-widest uppercase text-muted-foreground">
+                Pinned
+              </p>
+            </div>
+
+            <VueDraggable
+              v-model="pinnedProjects"
+              class="grid grid-cols-1 sm:grid-cols-2 gap-4"
+              handle=".drag-handle"
+              chosen-class="project-chosen"
+              drag-class="project-dragging"
+              ghost-class="project-ghost"
+              @update:model-value="onPinnedReorder"
+            >
+              <ProjectCard
+                v-for="project in pinnedProjects"
+                :key="project.id"
+                :project="project"
+                :is-pinned="true"
+                @open="openProject"
+                @toggle-pin="handleTogglePin"
+                @rename="openRenameDialog"
+                @delete="openDeleteDialog"
+              />
+            </VueDraggable>
           </div>
 
-          <VueDraggable
-            v-model="pinnedProjects"
-            class="grid grid-cols-1 sm:grid-cols-2 gap-4"
-            handle=".drag-handle"
-            chosen-class="project-chosen"
-            drag-class="project-dragging"
-            ghost-class="project-ghost"
-            @update:model-value="onPinnedReorder"
-          >
-            <ProjectCard
-              v-for="project in pinnedProjects"
-              :key="project.id"
-              :project="project"
-              :is-pinned="true"
-              @open="openProject"
-              @toggle-pin="handleTogglePin"
-              @rename="openRenameDialog"
-              @delete="openDeleteDialog"
-            />
-          </VueDraggable>
-        </div>
-
-        <div
-          v-if="unpinnedProjects.length > 0"
-          class="mt-4"
-        >
           <div
-            v-if="pinnedProjects.length > 0"
-            class="flex items-center justify-between mb-4"
+            v-if="unpinnedProjects.length > 0"
+            class="mt-4"
           >
-            <p class="font-mono text-xs tracking-widest uppercase text-muted-foreground">
-              Other Projects
-            </p>
+            <div
+              v-if="pinnedProjects.length > 0"
+              class="flex items-center justify-between mb-4"
+            >
+              <p class="font-mono text-xs tracking-widest uppercase text-muted-foreground">
+                Other Projects
+              </p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <ProjectCard
+                v-for="project in unpinnedProjects"
+                :key="project.id"
+                :project="project"
+                :is-pinned="false"
+                @open="openProject"
+                @toggle-pin="handleTogglePin"
+                @rename="openRenameDialog"
+                @delete="openDeleteDialog"
+              />
+            </div>
+          </div>
+        </template>
+
+        <template v-else>
+          <div v-if="pinnedProjects.length > 0">
+            <div class="flex items-center justify-between mb-4">
+              <p class="font-mono text-xs tracking-widest uppercase text-muted-foreground">
+                Pinned
+              </p>
+            </div>
+
+            <ProjectTable
+              :projects="pinnedProjects"
+              draggable
+              @open="openProject"
+              @toggle-pin="handleTogglePin"
+              @rename="openRenameDialog"
+              @delete="openDeleteDialog"
+              @reorder="onPinnedReorder"
+            />
           </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <ProjectCard
-              v-for="project in unpinnedProjects"
-              :key="project.id"
-              :project="project"
-              :is-pinned="false"
+          <div
+            v-if="unpinnedProjects.length > 0"
+            class="mt-4"
+          >
+            <div
+              v-if="pinnedProjects.length > 0"
+              class="flex items-center justify-between mb-4"
+            >
+              <p class="font-mono text-xs tracking-widest uppercase text-muted-foreground">
+                Other Projects
+              </p>
+            </div>
+
+            <ProjectTable
+              :projects="unpinnedProjects"
               @open="openProject"
               @toggle-pin="handleTogglePin"
               @rename="openRenameDialog"
               @delete="openDeleteDialog"
             />
           </div>
-        </div>
+        </template>
       </template>
 
       <Dialog v-model:open="showRenameDialog">
@@ -204,14 +271,17 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
-import { ChevronLeft, Plus, FolderOpen, Pencil, AlertTriangle } from 'lucide-vue-next'
+import { ChevronLeft, Plus, FolderOpen, Pencil, AlertTriangle, LayoutGrid, Table } from 'lucide-vue-next'
 import { VueDraggable } from 'vue-draggable-plus'
 import ProjectCard from '@/components/ProjectCard.vue'
+import ProjectTable from '@/components/ProjectTable.vue'
 import { useProjectListStore } from '@/stores/projectListStore'
+import { useProjectsView } from '@/composables/useProjectsView'
 import { toast } from 'vue-sonner'
 
 const router = useRouter()
 const projectListStore = useProjectListStore()
+const { view, setView } = useProjectsView()
 
 const showRenameDialog = ref(false)
 const showDeleteDialog = ref(false)
@@ -302,6 +372,22 @@ onMounted(() => {
 }
 
 .project-ghost {
+  opacity: 0.3 !important;
+  background-color: transparent !important;
+}
+
+.project-row-chosen {
+  outline: 2px solid hsl(var(--primary)) !important;
+  outline-offset: -2px !important;
+  background-color: hsl(var(--primary) / 0.08) !important;
+}
+
+.project-row-dragging {
+  box-shadow: 0 8px 24px hsl(var(--primary) / 0.2) !important;
+  opacity: 1 !important;
+}
+
+.project-row-ghost {
   opacity: 0.3 !important;
   background-color: transparent !important;
 }
