@@ -22,15 +22,79 @@
               Project Vault
             </h1>
           </div>
-          <Button
-            v-if="projectListStore.projects.length > 0"
-            class="gap-2 font-mono"
-            @click="createNewProject()"
-          >
-            <Plus class="w-4 h-4" />
-            New Project
-          </Button>
+          <div class="flex items-center gap-2">
+            <div
+              v-if="projectListStore.projects.length > 0"
+              class="flex items-center gap-1 p-1 rounded-lg border border-border bg-muted/40"
+            >
+              <button
+                class="h-7 w-7 inline-flex items-center justify-center rounded-md transition-colors"
+                :class="view === 'grid' ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'"
+                title="Grid view"
+                @click="setView('grid')"
+              >
+                <LayoutGrid class="w-3.5 h-3.5" />
+              </button>
+              <button
+                class="h-7 w-7 inline-flex items-center justify-center rounded-md transition-colors"
+                :class="view === 'table' ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'"
+                title="Table view"
+                @click="setView('table')"
+              >
+                <Table class="w-3.5 h-3.5" />
+              </button>
+            </div>
+            <Button
+              v-if="projectListStore.projects.length > 0"
+              class="gap-2 font-mono"
+              @click="createNewProject()"
+            >
+              <Plus class="w-4 h-4" />
+              New Project
+            </Button>
+          </div>
         </div>
+      </div>
+
+      <div
+        v-if="projectListStore.projects.length > 0"
+        class="flex flex-wrap items-center gap-3 mb-6"
+      >
+        <div class="relative flex-1 min-w-50">
+          <Search class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <Input
+            :model-value="filters.query.value"
+            type="text"
+            placeholder="Search projects..."
+            class="pl-9"
+            @update:model-value="handleQueryChange"
+          />
+        </div>
+        <Select
+          :model-value="filters.sortKey.value"
+          @update:model-value="handleSortChange"
+        >
+          <SelectTrigger class="w-42.5">
+            <SelectValue placeholder="Sort by" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="updated">
+              Recently updated
+            </SelectItem>
+            <SelectItem value="created">
+              Oldest
+            </SelectItem>
+            <SelectItem value="name">
+              Name (A–Z)
+            </SelectItem>
+            <SelectItem value="hours">
+              Total hours
+            </SelectItem>
+            <SelectItem value="tasks">
+              Task count
+            </SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       <div
@@ -56,61 +120,109 @@
       </div>
 
       <template v-else>
-        <div v-if="pinnedProjects.length > 0">
-          <div class="flex items-center justify-between mb-4">
-            <p class="font-mono text-xs tracking-widest uppercase text-muted-foreground">
-              Pinned
-            </p>
+        <template v-if="view === 'grid'">
+          <div v-if="pinnedProjects.length > 0">
+            <div class="flex items-center justify-between mb-4">
+              <p class="font-mono text-xs tracking-widest uppercase text-muted-foreground">
+                Pinned
+              </p>
+            </div>
+
+            <VueDraggable
+              v-model="pinnedProjects"
+              class="grid grid-cols-1 sm:grid-cols-2 gap-4"
+              handle=".drag-handle"
+              chosen-class="project-chosen"
+              drag-class="project-dragging"
+              ghost-class="project-ghost"
+              @update:model-value="onPinnedReorder"
+            >
+              <ProjectCard
+                v-for="project in pinnedProjects"
+                :key="project.id"
+                :project="project"
+                :is-pinned="true"
+                @open="openProject"
+                @toggle-pin="handleTogglePin"
+                @rename="openRenameDialog"
+                @duplicate="handleDuplicate"
+                @delete="openDeleteDialog"
+              />
+            </VueDraggable>
           </div>
 
-          <VueDraggable
-            v-model="pinnedProjects"
-            class="grid grid-cols-1 sm:grid-cols-2 gap-4"
-            handle=".drag-handle"
-            chosen-class="project-chosen"
-            drag-class="project-dragging"
-            ghost-class="project-ghost"
-            @update:model-value="onPinnedReorder"
-          >
-            <ProjectCard
-              v-for="project in pinnedProjects"
-              :key="project.id"
-              :project="project"
-              :is-pinned="true"
-              @open="openProject"
-              @toggle-pin="handleTogglePin"
-              @rename="openRenameDialog"
-              @delete="openDeleteDialog"
-            />
-          </VueDraggable>
-        </div>
-
-        <div
-          v-if="unpinnedProjects.length > 0"
-          class="mt-4"
-        >
           <div
-            v-if="pinnedProjects.length > 0"
-            class="flex items-center justify-between mb-4"
+            v-if="filteredAndSorted.length > 0"
+            class="mt-4"
           >
-            <p class="font-mono text-xs tracking-widest uppercase text-muted-foreground">
-              Other Projects
-            </p>
-          </div>
+            <div
+              v-if="pinnedProjects.length > 0"
+              class="flex items-center justify-between mb-4"
+            >
+              <p class="font-mono text-xs tracking-widest uppercase text-muted-foreground">
+                Other Projects
+              </p>
+            </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <ProjectCard
-              v-for="project in unpinnedProjects"
-              :key="project.id"
-              :project="project"
-              :is-pinned="false"
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <ProjectCard
+                v-for="project in filteredAndSorted"
+                :key="project.id"
+                :project="project"
+                :is-pinned="false"
+                @open="openProject"
+                @toggle-pin="handleTogglePin"
+                @rename="openRenameDialog"
+                @duplicate="handleDuplicate"
+                @delete="openDeleteDialog"
+              />
+            </div>
+          </div>
+        </template>
+
+        <template v-else>
+          <div v-if="pinnedProjects.length > 0">
+            <div class="flex items-center justify-between mb-4">
+              <p class="font-mono text-xs tracking-widest uppercase text-muted-foreground">
+                Pinned
+              </p>
+            </div>
+
+            <ProjectTable
+              :projects="pinnedProjects"
+              draggable
               @open="openProject"
               @toggle-pin="handleTogglePin"
               @rename="openRenameDialog"
+              @duplicate="handleDuplicate"
+              @delete="openDeleteDialog"
+              @reorder="onPinnedReorder"
+            />
+          </div>
+
+          <div
+            v-if="filteredAndSorted.length > 0"
+            class="mt-4"
+          >
+            <div
+              v-if="pinnedProjects.length > 0"
+              class="flex items-center justify-between mb-4"
+            >
+              <p class="font-mono text-xs tracking-widest uppercase text-muted-foreground">
+                Other Projects
+              </p>
+            </div>
+
+            <ProjectTable
+              :projects="filteredAndSorted"
+              @open="openProject"
+              @toggle-pin="handleTogglePin"
+              @rename="openRenameDialog"
+              @duplicate="handleDuplicate"
               @delete="openDeleteDialog"
             />
           </div>
-        </div>
+        </template>
       </template>
 
       <Dialog v-model:open="showRenameDialog">
@@ -204,14 +316,40 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
-import { ChevronLeft, Plus, FolderOpen, Pencil, AlertTriangle } from 'lucide-vue-next'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { ChevronLeft, Plus, FolderOpen, Pencil, AlertTriangle, LayoutGrid, Table, Search } from 'lucide-vue-next'
 import { VueDraggable } from 'vue-draggable-plus'
 import ProjectCard from '@/components/ProjectCard.vue'
+import ProjectTable from '@/components/ProjectTable.vue'
 import { useProjectListStore } from '@/stores/projectListStore'
+import { useProjectsView } from '@/composables/useProjectsView'
+import { useProjectListFilters, type ProjectSortKey } from '@/composables/useProjectListFilters'
 import { toast } from 'vue-sonner'
 
 const router = useRouter()
 const projectListStore = useProjectListStore()
+const { view, setView } = useProjectsView()
+
+const unpinnedProjects = computed(() =>
+  [...projectListStore.projects]
+    .filter(p => !p.pinned)
+    .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
+)
+
+const filters = useProjectListFilters(unpinnedProjects)
+const filteredAndSorted = filters.filteredAndSorted
+
+function handleQueryChange(value: unknown): void {
+  if (typeof value === 'string') {
+    filters.setQuery(value)
+  }
+}
+
+function handleSortChange(value: unknown): void {
+  if (typeof value === 'string') {
+    filters.setSortKey(value as ProjectSortKey)
+  }
+}
 
 const showRenameDialog = ref(false)
 const showDeleteDialog = ref(false)
@@ -222,12 +360,6 @@ const renameForm = ref({ name: '' })
 
 const pinnedProjects = computed(() =>
   [...projectListStore.projects].filter(p => p.pinned)
-)
-
-const unpinnedProjects = computed(() =>
-  [...projectListStore.projects]
-    .filter(p => !p.pinned)
-    .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())
 )
 
 function onPinnedReorder(newOrder: Project[]): void {
@@ -248,6 +380,13 @@ function goToHome(): void {
 function createNewProject(): void {
   const id = crypto.randomUUID()
   router.push(`/demo/${id}`)
+}
+
+function handleDuplicate(project: Project): void {
+  const newId = projectListStore.duplicateProject(project.id)
+  if (newId) {
+    toast.success('Project duplicated successfully!')
+  }
 }
 
 function openProject(id: string): void {
@@ -302,6 +441,22 @@ onMounted(() => {
 }
 
 .project-ghost {
+  opacity: 0.3 !important;
+  background-color: transparent !important;
+}
+
+.project-row-chosen {
+  outline: 2px solid hsl(var(--primary)) !important;
+  outline-offset: -2px !important;
+  background-color: hsl(var(--primary) / 0.08) !important;
+}
+
+.project-row-dragging {
+  box-shadow: 0 8px 24px hsl(var(--primary) / 0.2) !important;
+  opacity: 1 !important;
+}
+
+.project-row-ghost {
   opacity: 0.3 !important;
   background-color: transparent !important;
 }

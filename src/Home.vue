@@ -5,7 +5,7 @@
         variant="outline"
         class="mb-8 font-mono text-xs tracking-widest uppercase"
       >
-        PERT-based estimation
+        For developers who estimate
       </Badge>
 
       <h1 class="text-5xl sm:text-6xl font-bold tracking-tight leading-[1.08] mb-6">
@@ -14,9 +14,12 @@
       </h1>
 
       <p class="text-muted-foreground text-base leading-relaxed max-w-xl mb-8">
-        Man-Hours Calculator replaces instinct-based project quotes with
-        <strong class="text-foreground font-medium">structured, statistical estimates</strong>
-        — so you commit to timelines you can actually defend.
+        Man-Hours Calculator turns
+        <strong class="text-foreground font-medium">"it'll probably take a week"</strong>
+        into a number you can actually defend — built on
+        <strong class="text-foreground font-medium">PERT</strong>, the three-point estimation
+        technique project managers have used for decades. Give each task a best case, worst case,
+        and realistic guess, and get back a timeline backed by math, not vibes.
       </p>
 
       <div class="flex items-center gap-6">
@@ -156,7 +159,7 @@ const steps = [
   {
     num: '01',
     title: 'Three-point input',
-    description: 'For every task, provide three estimates: Optimistic (best case), Most Likely (realistic), and Pessimistic (worst case). No more single-number guesses that silently ignore risk.',
+    description: "Break each task into three numbers instead of one guess: Optimistic (best case), Most Likely (realistic), and Pessimistic (worst case). No more single-number estimates that silently ignore risk.",
   },
   {
     num: '02',
