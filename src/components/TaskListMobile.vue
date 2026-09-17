@@ -6,7 +6,6 @@
     chosen-class="task-chosen"
     drag-class="task-dragging"
     ghost-class="task-ghost"
-    @update:model-value="onReorder"
   >
     <div
       v-for="(task, index) in orderedTasks"
@@ -133,7 +132,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { computed } from 'vue'
 import type { PERTTaskResult } from '@/types'
 import { Separator } from '@/components/ui/separator'
 import { NumberField, NumberFieldContent, NumberFieldInput } from '@/components/ui/number-field'
@@ -151,20 +150,10 @@ const emit = defineEmits<{
   reorder: [tasks: PERTTaskResult[]]
 }>()
 
-const orderedTasks = ref<PERTTaskResult[]>([])
-
-watch(
-  () => props.tasks,
-  (tasks) => {
-    orderedTasks.value = [...tasks]
-  },
-  { immediate: true },
-)
-
-function onReorder(newOrder: PERTTaskResult[]): void {
-  orderedTasks.value = newOrder
-  emit('reorder', newOrder)
-}
+const orderedTasks = computed<PERTTaskResult[]>({
+  get: () => props.tasks,
+  set: (tasks) => emit('reorder', tasks),
+})
 </script>
 
 <style>
