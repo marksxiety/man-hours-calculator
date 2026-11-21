@@ -1,7 +1,50 @@
-<svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-<circle cx="12" cy="12" r="10" stroke="#000000" stroke-width="2"/>
-<path d="M12 6V12L15 15" stroke="#000000" stroke-width="2" stroke-linecap="round"/>
-<rect x="7" y="14" width="2" height="4" rx="1" fill="#000000"/>
-<rect x="10" y="11" width="2" height="7" rx="1" fill="#000000"/>
-<rect x="13" y="13" width="2" height="5" rx="1" fill="#000000"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="none" role="img" aria-label="Man-Hours PERT Calculator">
+  <style>
+    .logo {
+      --c-bg: #7c3aed;
+      --c-clock: #f5f3ff;
+      --c-pert: #a78bfa;
+      --c-hub: #f5f3ff;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .logo {
+        --c-bg: #4c1d95;
+        --c-clock: #f5f3ff;
+        --c-pert: #a78bfa;
+        --c-hub: #a78bfa;
+      }
+    }
+
+    .bg          { fill: var(--c-bg); }
+    .clock-line  { stroke: var(--c-clock); stroke-linecap: round; }
+    .pert-line   { stroke: var(--c-pert); stroke-linecap: round; }
+    .pert-dot    { fill: var(--c-pert); }
+    .center-hub  { fill: var(--c-hub); }
+  </style>
+
+  <g class="logo">
+    <!-- Squircle Container -->
+    <rect x="16" y="16" width="224" height="224" rx="56" class="bg" />
+
+    <!-- Clock Ring (broken cleanly around the diagonal PERT line) -->
+    <g class="clock-line" stroke-width="11">
+      <path d="M 74.9 159.9 A 62 62 0 0 1 159.9 74.9" />
+      <path d="M 181.1 96.1 A 62 62 0 0 1 96.1 181.1" />
+    </g>
+
+    <!-- Clock Hands (12:00, 4:30) -->
+    <g class="clock-line" stroke-width="10">
+      <line x1="128" y1="128" x2="128" y2="84" />
+      <line x1="128" y1="128" x2="158" y2="158" />
+    </g>
+
+    <!-- Diagonal PERT Path & Endpoints -->
+    <line class="pert-line" x1="62" y1="194" x2="194" y2="62" stroke-width="11" />
+    <circle class="pert-dot" cx="62" cy="194" r="10.5" />
+    <circle class="pert-dot" cx="194" cy="62" r="10.5" />
+
+    <!-- Center Hub -->
+    <circle class="center-hub" cx="128" cy="128" r="10" />
+  </g>
 </svg>
