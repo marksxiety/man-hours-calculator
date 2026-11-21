@@ -10,4 +10,12 @@ const pinia = createPinia()
 app.use(pinia)
 app.use(router)
 
-app.mount('#app')
+async function bootstrap(): Promise<void> {
+  if (import.meta.env.MODE === 'demo') {
+    const { seedDemoData } = await import('./demo/seed')
+    seedDemoData()
+  }
+  app.mount('#app')
+}
+
+void bootstrap()

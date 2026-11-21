@@ -48,6 +48,16 @@ The dev server supports:
 - TypeScript checking
 - Vue SFC compilation
 
+### Demo Mode
+
+To launch the app pre-populated with sample projects and tasks (useful for screenshots and demos):
+
+```bash
+npm run dev:demo
+```
+
+This opens the Project Vault at `http://localhost:5173/projects` with ten seeded projects (three pinned). Demo data is stored under a separate key (`man-hours-projects-demo`), so it never reads or overwrites your real saved projects. Edits made in demo mode persist across refreshes; bump `DEMO_SEED_VERSION` in `src/demo/projects.ts` to force a reset.
+
 ### Running Tests
 
 ```bash
