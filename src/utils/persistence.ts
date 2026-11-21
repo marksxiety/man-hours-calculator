@@ -1,6 +1,7 @@
 import type { Project } from '@/types'
 
 export const STORAGE_KEY = 'man-hours-projects'
+export const DEMO_STORAGE_KEY = 'man-hours-projects-demo'
 export const STORAGE_VERSION = 1
 
 interface ProjectEnvelope {
@@ -23,9 +24,13 @@ export function migrateProjects(raw: unknown): Project[] | null {
   return null
 }
 
+export function getStorageKey(): string {
+  return import.meta.env.MODE === 'demo' ? DEMO_STORAGE_KEY : STORAGE_KEY
+}
+
 export function readProjects(): Project[] | null {
   try {
-    const stored = localStorage.getItem(STORAGE_KEY)
+    const stored = localStorage.getItem(getStorageKey())
     if (!stored) return null
     return migrateProjects(JSON.parse(stored))
   } catch {
@@ -35,5 +40,5 @@ export function readProjects(): Project[] | null {
 
 export function writeProjects(projects: Project[]): void {
   const envelope: ProjectEnvelope = { version: STORAGE_VERSION, projects }
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(envelope))
+  localStorage.setItem(getStorageKey(), JSON.stringify(envelope))
 }
